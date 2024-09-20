@@ -31,9 +31,6 @@ import com.example.inventory.ui.item.ItemEditDestination
 import com.example.inventory.ui.item.ItemEditScreen
 import com.example.inventory.ui.item.ItemEntryDestination
 import com.example.inventory.ui.item.ItemEntryScreen
-import androidx.compose.animation.*
-import androidx.compose.animation.core.tween
-import androidx.navigation.compose.*
 
 
 /**
@@ -73,7 +70,7 @@ fun InventoryNavHost(
         }
         composable(
             route = ItemEditDestination.routeWithArgs,
-            arguments = listOf(navArgument(ItemEditDestination.itemIdArg) {
+            arguments = listOf(navArgument(ItemEditDestination.ITEM_ID_ARG) {
                 type = NavType.IntType
             })
         ) {

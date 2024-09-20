@@ -44,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -63,7 +64,6 @@ import com.example.inventory.ui.navigation.NavigationDestination
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
@@ -200,7 +200,7 @@ fun InventoryItem(
 ) {
     val shape = RoundedCornerShape(8.dp)
     val interactionSource = remember { MutableInteractionSource() }
-    val ripple = rememberRipple(bounded = true)
+    val ripple = ripple(bounded = true)
 
     Card(
         shape = shape,

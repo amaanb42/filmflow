@@ -15,7 +15,6 @@
  */
 package com.example.inventory
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -30,15 +29,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.inventory.ui.theme.InventoryTheme
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -65,7 +63,6 @@ data class BottomNavigationItem(
     val badgeCount: Int? = null
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,8 +72,8 @@ class MainActivity : ComponentActivity() {
                 val items = listOf(
                     BottomNavigationItem(
                         title = "Planning",
-                        selectedIcon = Icons.Filled.List,
-                        unselectedIcon = Icons.Outlined.List,
+                        selectedIcon = Icons.AutoMirrored.Filled.List,
+                        unselectedIcon = Icons.AutoMirrored.Outlined.List,
                         hasNews = false
                     ),
                     BottomNavigationItem(
