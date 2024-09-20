@@ -12,18 +12,18 @@ import kotlinx.coroutines.flow.stateIn
 /**
  * ViewModel to retrieve all items in the Room database.
  */
-class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
+class SearchViewModel(itemsRepository: ItemsRepository) : ViewModel() {
 
     /**
-     * Holds home ui state. The list of items are retrieved from [ItemsRepository] and mapped to
-     * [HomeUiState]
+     * Holds search ui state. The list of items are retrieved from [ItemsRepository] and mapped to
+     * [SearchUiState]
      */
-    val homeUiState: StateFlow<HomeUiState> =
-        itemsRepository.getAllItemsStream().map { HomeUiState(it) }
+    val searchUiState: StateFlow<SearchUiState> =
+        itemsRepository.getAllItemsStream().map { SearchUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = HomeUiState()
+                initialValue = SearchUiState()
             )
 
     companion object {
@@ -32,6 +32,6 @@ class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
 }
 
 /**
- * Ui State for HomeScreen
+ * Ui State for SearchScreen
  */
-data class HomeUiState(val itemList: List<Item> = listOf())
+data class SearchUiState(val itemList: List<Item> = listOf())
