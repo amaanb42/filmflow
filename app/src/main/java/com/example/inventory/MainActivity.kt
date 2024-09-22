@@ -32,9 +32,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Done
-import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -53,6 +53,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.inventory.ui.home.CompletedDestination
 import com.example.inventory.ui.home.HomeDestination
+import com.example.inventory.ui.home.SearchDestination
 
 
 data class BottomNavigationItem(
@@ -84,9 +85,9 @@ class MainActivity : ComponentActivity() {
                         badgeCount = null
                     ),
                     BottomNavigationItem(
-                        title = "Settings",
-                        selectedIcon = Icons.Filled.Settings,
-                        unselectedIcon = Icons.Outlined.Settings,
+                        title = "Search",
+                        selectedIcon = Icons.Filled.Search,
+                        unselectedIcon = Icons.Outlined.Search,
                         hasNews = false
                     )
                 )
@@ -106,7 +107,7 @@ class MainActivity : ComponentActivity() {
                             // Show the NavigationBar only on specified screens
                             // Use AnimatedVisibility for the NavigationBar
                             AnimatedVisibility(
-                                visible = currentRoute in listOf(HomeDestination.route, CompletedDestination.route, "settings_route"),
+                                visible = currentRoute in listOf(HomeDestination.route, CompletedDestination.route, SearchDestination.route),
                                 enter = slideInVertically(
                                     // Start the slide from below the screen
                                     initialOffsetY = { fullHeight -> fullHeight },
@@ -133,9 +134,7 @@ class MainActivity : ComponentActivity() {
                                                     when (index) {
                                                         0 -> if (currentRoute != HomeDestination.route) navController.navigate(HomeDestination.route)
                                                         1 -> if (currentRoute != CompletedDestination.route) navController.navigate(CompletedDestination.route)
-                                                        2 -> {
-                                                            // For "Settings", no action defined yet
-                                                        }
+                                                        2 -> if (currentRoute != SearchDestination.route) navController.navigate(SearchDestination.route)
                                                     }
                                                 } catch (e: Exception) {
                                                     Log.e("NavigationError", "Error navigating to index $index", e)

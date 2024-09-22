@@ -16,6 +16,7 @@
 <resources>
     <string name="app_name">Movie List</string>
     <string name="warning">Warning</string>
+    <string name="search_title">Search Screen</string>
     <string name="back_button">Back</string>
     <string name="delete">Delete</string>
     <string name="delete_question">Are you sure you want to remove this movie?</string>

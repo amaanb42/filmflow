@@ -27,6 +27,8 @@ import com.example.inventory.ui.home.CompletedDestination
 import com.example.inventory.ui.home.CompletedScreen
 import com.example.inventory.ui.home.HomeDestination
 import com.example.inventory.ui.home.HomeScreen
+import com.example.inventory.ui.home.SearchDestination
+import com.example.inventory.ui.home.SearchScreen
 import com.example.inventory.ui.item.ItemEditDestination
 import com.example.inventory.ui.item.ItemEditScreen
 import com.example.inventory.ui.item.ItemEntryDestination
@@ -46,11 +48,7 @@ fun InventoryNavHost(
         startDestination = HomeDestination.route,
         modifier = modifier
     ) {
-        composable(
-            route = HomeDestination.route,
-
-
-        ) {
+        composable(route = HomeDestination.route) {
             HomeScreen(
                 navigateToItemEntry = { navController.navigate(ItemEntryDestination.route) },
                 navigateToEditItem = { navController.navigate("${ItemEditDestination.route}/$it") }
@@ -61,6 +59,9 @@ fun InventoryNavHost(
                 navigateToItemEntry = { navController.navigate(ItemEntryDestination.route) },
                 navigateToEditItem = { navController.navigate("${ItemEditDestination.route}/$it") }
             )
+        }
+        composable(route = SearchDestination.route) {
+            SearchScreen()
         }
         composable(route = ItemEntryDestination.route) {
             ItemEntryScreen(
