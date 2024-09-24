@@ -19,6 +19,15 @@ interface MovieDao {
     @Query("SELECT * FROM movies WHERE movieID = :movieID")
     fun getMovie(movieID: Int): Flow<Movie?>
 
+    /* Update user's rating */
+    @Query("UPDATE movies SET userRating = :newRating WHERE movieID = :movieID")
+    suspend fun updateUserRating(movieID: Int, newRating: Float)
+
+    /* Delete movie by id */
+    @Query("DELETE FROM movies " +
+            "WHERE movieID = :movieID")
+    suspend fun deleteMovieByID(movieID: Int)
+
     /* Insert a new movie */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(movie: Movie)

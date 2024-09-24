@@ -15,5 +15,6 @@ data class Show(
     val episodeCount: Int?,
     val firstAirDate: String?,
     val lastAirDate: String?,
+    val userRating: Float?,
     val genres: List<String>?
 )

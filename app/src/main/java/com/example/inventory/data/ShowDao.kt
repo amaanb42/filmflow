@@ -19,6 +19,15 @@ interface ShowDao {
     @Query("SELECT * FROM shows WHERE showID = :showID")
     fun getShow(showID: Int): Flow<Show?>
 
+    /* Update user's rating */
+    @Query("UPDATE shows SET userRating = :newRating WHERE showID = :showID")
+    suspend fun updateUserRating(showID: Int, newRating: Float)
+
+    /* Delete show by id */
+    @Query("DELETE FROM shows " +
+            "WHERE showID = :showID")
+    suspend fun deleteShowByID(showID: Int)
+
     /* Insert a new show */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(show: Show)
