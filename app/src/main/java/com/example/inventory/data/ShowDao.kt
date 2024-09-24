@@ -17,7 +17,7 @@ interface ShowDao {
 
     /* Get a show */
     @Query("SELECT * FROM shows WHERE showID = :showID")
-    fun getShow(showID: Int): Flow<Show>
+    fun getShow(showID: Int): Flow<Show?>
 
     /* Insert a new show */
     @Insert(onConflict = OnConflictStrategy.IGNORE)

@@ -17,7 +17,7 @@ interface UserListDao {
 
     /* Get a list (USE ONLY FOR RETRIEVING MOVIE AND SHOW COUNTS) */
     @Query("SELECT * FROM user_lists WHERE listName=:listName")
-    fun getList(listName: String): Flow<UserList>
+    fun getList(listName: String): Flow<UserList?>
 
     /* Insert a new list */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
