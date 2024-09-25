@@ -1,7 +1,7 @@
 package com.example.inventory.data
 
 import kotlinx.coroutines.flow.Flow
-
+/* UNSURE IF NECESSARY */
 interface UserListRepository {
     fun getAllListsStream(): Flow<List<UserList>>
     fun getListStream(listName: String): Flow<UserList?>
