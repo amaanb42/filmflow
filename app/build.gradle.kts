@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+
 @file:Suppress("UnstableApiUsage")
+
+import java.util.Properties
+
 
 plugins {
     id("com.android.application")
@@ -36,6 +40,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val properties = Properties()
+        properties.load(project.rootProject.file("local.properties").inputStream())
+
+        buildConfigField("String", "API_KEY", "\"${properties.getProperty("API_KEY")}\"")
+        buildConfigField("String", "API_ACCESS_TOKEN", "\"${properties.getProperty("API_ACCESS_TOKEN")}\"")
     }
 
     buildTypes {
@@ -56,6 +66,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.7"
@@ -80,6 +91,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
     implementation("androidx.navigation:navigation-compose:2.8.1")
+    implementation("com.squareup.okhttp3:okhttp:4.9.1")
+    implementation("io.coil-kt:coil:2.7.0")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     //Room
     implementation("androidx.room:room-runtime:2.6.1")
