@@ -34,7 +34,12 @@ fun parseMovieList(movies: JSONArray): MutableList<Movie>{
         val movie = movies.getJSONObject(i)
         val movieToAdd = Movie(movie.get("id") as Int, movie.get("title") as String, movie.get("overview") as String,
             movie.get("poster_path").toString()?:"", movie.get("release_date") as String, movie.get("vote_average") as Double)
-        movieAttributes.add(movieToAdd)
+
+        //If the movie poster is null then it doesn't show up, to change remove the if and leave the "movieAttributes.add(movieToAdd)" as it is
+        if((movie.get("poster_path").toString()?:"") != "null"){
+            movieAttributes.add(movieToAdd)
+        }
+
 //        println("${movieToAdd}")
     }
     return movieAttributes

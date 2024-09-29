@@ -31,12 +31,17 @@ import kotlinx.coroutines.launch
 import androidx.compose.material3.Card
 import com.example.inventory.data.Movie
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import kotlinx.coroutines.delay
 
 object SearchDestination : NavigationDestination {
     override val route = "search"
@@ -44,13 +49,13 @@ object SearchDestination : NavigationDestination {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
 @Composable
 @Preview
 fun SearchScreen() {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    var tempMovie by remember { mutableStateOf(mutableListOf<Movie>()) } // mutableStateOf to trigger recomposition
+    var tempMovieList by remember { mutableStateOf(mutableListOf<Movie>()) } // mutableStateOf to trigger recomposition
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -78,8 +83,9 @@ fun SearchScreen() {
 
                 // Keep the search bar active and trigger search
                 coroutineScope.launch(Dispatchers.IO) {
+                    delay(200)
                     val result = async {
-                        tempMovie = getMovieQuery(text)
+                        tempMovieList = getMovieQuery(text)
                     }.await()
 
                     // No need to change 'active' here, so the search bar stays open
@@ -108,13 +114,17 @@ fun SearchScreen() {
                     Icon(
                         modifier = Modifier.clickable { text = "" },
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close Icon"
+                        contentDescription = "Close Icon",
                     )
                 }
             }
         ) {
             // Display movie search results if any
-            SearchRows(tempMovie)
+            if (text.isNotEmpty()){
+                SearchRows(tempMovieList)
+            }else{
+                tempMovieList.clear()
+            }
         }
     }
 }
@@ -124,14 +134,16 @@ fun SearchRows(movieList: List<Movie>) {
     if (movieList.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
+            modifier = Modifier.fillMaxHeight(.90f),
             horizontalArrangement = Arrangement.spacedBy(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+
         ) {
             items(movieList) { movie ->
-                Card {
+                Card( modifier = Modifier.padding(top = 15.dp, start = 15.dp, end = 15.dp)){
                     AsyncImage(
                         model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
-                        contentDescription = null
+                        contentDescription = null, modifier = Modifier.clickable { println("clicked") }
                     )
                 }
             }
