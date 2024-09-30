@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.Movie
@@ -159,18 +161,29 @@ fun SearchScreen() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 145.dp)
-                    .padding(top = 8.dp),
+                    .padding(top = 0.dp),
             ) {
                 Text(text = stringResource(R.string.random_button))
             }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier.fillMaxHeight(.90f)
+                modifier = Modifier.padding(top = 15.dp, start = 20.dp, end = 20.dp)
             ) {
+                // Add the "Trending" text as the first item
+                item(span = { GridItemSpan(2) }) { // Make it span both columns
+                    Text(
+                        text = "Trending",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp), // Add some top padding for spacing
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp
+                    )
+                }
                 items(trendingMovies.take(4)){ movie ->
                     Column (
                         modifier = Modifier.padding(15.dp),
-                        horizontalAlignment =Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Card{
                             AsyncImage(
@@ -178,7 +191,7 @@ fun SearchScreen() {
                                 contentDescription = null,
                                 modifier = Modifier
                                     .clickable { }
-                                    .width(150.dp)
+                                        .width(145.dp)
                                     .aspectRatio(0.6667f),
                                 contentScale = ContentScale.Crop
                             )
