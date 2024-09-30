@@ -7,9 +7,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 import com.example.inventory.data.Movie
 
+const val apiAccessToken = BuildConfig.API_ACCESS_TOKEN
+
 fun getMovieQuery(name: String): MutableList<Movie>{
     val client = OkHttpClient()
-    val api_access_token = BuildConfig.API_ACCESS_TOKEN
 
     // Gets rid of trailing and leading space and replaces the middle spaces with "%20"
     val queryName = name.trim().replace(" ","%20")
@@ -18,7 +19,7 @@ fun getMovieQuery(name: String): MutableList<Movie>{
         .url("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1") // Added sort_by parameter
         .get()
         .addHeader("accept", "application/json")
-        .addHeader("Authorization", "Bearer $api_access_token")
+        .addHeader("Authorization", "Bearer $apiAccessToken")
         .build()
 
     val response = client.newCall(request).execute()
@@ -31,6 +32,23 @@ fun getMovieQuery(name: String): MutableList<Movie>{
     movieList.sortByDescending { it.popularity }
 
     return movieList
+}
+
+fun getTrendingMovies(): List<Movie>{
+    val client = OkHttpClient()
+    val request = Request.Builder()
+        .url("https://api.themoviedb.org/3/trending/movie/week?language=en-US")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("Authorization", "Bearer $apiAccessToken")
+        .build()
+
+    val response = client.newCall(request).execute()
+    val responseBody = response.body?.string()
+    val results : JSONArray = JSONObject(responseBody).getJSONArray(("results"))
+    println(results)
+
+    return parseMovieList(results)
 }
 
 // Does it pull all this data for each movie in the search result?

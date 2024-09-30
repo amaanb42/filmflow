@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -44,6 +45,7 @@ import coil.compose.AsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.Movie
 import com.example.inventory.data.api.getMovieQuery
+import com.example.inventory.data.api.getTrendingMovies
 import com.example.inventory.ui.navigation.NavigationDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -56,15 +58,18 @@ object SearchDestination : NavigationDestination {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState",
+    "CoroutineCreationDuringComposition"
+)
 @Composable
 @Preview
 fun SearchScreen() {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     var tempMovieList by remember { mutableStateOf(mutableListOf<Movie>()) }
-
+    var trendingMovies by remember { mutableStateOf(listOf<Movie>())}
     val coroutineScope = rememberCoroutineScope()
+
 
     val searchBarPadding by animateDpAsState(
         targetValue = if (active) 0.dp else 24.dp,
@@ -77,6 +82,13 @@ fun SearchScreen() {
     )
 
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    //Need Coroutine to do any API searches
+    coroutineScope.launch(Dispatchers.IO) {
+        val result = async {
+            trendingMovies = getTrendingMovies()
+        }.await()
+    }
 
     Scaffold { padding -> // Removed topBar
         Column(
@@ -150,6 +162,34 @@ fun SearchScreen() {
                     .padding(top = 8.dp),
             ) {
                 Text(text = stringResource(R.string.random_button))
+            }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.fillMaxHeight(.90f)
+            ) {
+                items(trendingMovies.take(4)){ movie ->
+                    Column (
+                        modifier = Modifier.padding(15.dp),
+                        horizontalAlignment =Alignment.CenterHorizontally
+                    ) {
+                        Card{
+                            AsyncImage(
+                                model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .clickable { println("clicked") }
+                                    .width(150.dp)
+                                    .aspectRatio(0.6667f),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                        Text(
+                            text = movie.title,
+                            modifier = Modifier.padding(top = 8.dp), // Add some spacing between image and text
+                            textAlign = TextAlign.Center // Center the text within its container
+                        )
+                    }
+                }
             }
         }
     }
