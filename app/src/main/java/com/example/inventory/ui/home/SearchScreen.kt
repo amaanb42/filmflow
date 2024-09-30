@@ -191,7 +191,7 @@ fun SearchScreen() {
                                 contentDescription = null,
                                 modifier = Modifier
                                     .clickable { }
-                                        .width(145.dp)
+                                        .width(135.dp)
                                     .aspectRatio(0.6667f),
                                 contentScale = ContentScale.Crop
                             )
