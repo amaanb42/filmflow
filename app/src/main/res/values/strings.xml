@@ -27,6 +27,7 @@
     <string name="no">No</string>
     <string name="rating">Rating</string>
     <string name="save_action">Save</string>
+    <string name="random_button">Randomize</string>
     <string name="yes">Yes</string>
     <string name="required_fields">*required fields</string>
 </resources>
