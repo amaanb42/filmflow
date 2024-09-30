@@ -32,10 +32,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -164,15 +166,25 @@ fun SearchRows(movieList: List<Movie>) {
             contentPadding = PaddingValues(bottom = 24.dp, start = 8.dp, end = 8.dp) // Add bottom padding
             ) {
             items(movieList) { movie ->
-                Card( modifier = Modifier.padding(top = 15.dp, start = 15.dp, end = 15.dp)){
-                    AsyncImage(
-                        model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clickable { println("clicked") }
-                            .fillMaxWidth()
-                            .aspectRatio(0.6667f),
-                        contentScale = ContentScale.Crop //mess between Crop and Fill
+                Column(
+                    modifier = Modifier.padding(top = 15.dp, start = 15.dp, end = 15.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally // Center the text
+                ) {
+                    Card {
+                        AsyncImage(
+                            model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clickable { println("clicked") }
+                                .fillMaxWidth()
+                                .aspectRatio(0.6667f),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    Text(
+                        text = movie.title,
+                        modifier = Modifier.padding(top = 8.dp), // Add some spacing between image and text
+                        textAlign = TextAlign.Center // Center the text within its container
                     )
                 }
             }
