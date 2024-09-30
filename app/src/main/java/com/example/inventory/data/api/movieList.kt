@@ -15,7 +15,7 @@ fun getMovieQuery(name: String): MutableList<Movie>{
     val queryName = name.trim().replace(" ","%20")
 
     val request = Request.Builder()
-        .url("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1")
+        .url("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1") // Added sort_by parameter
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer ${api_access_token}")
@@ -24,16 +24,31 @@ fun getMovieQuery(name: String): MutableList<Movie>{
     val response = client.newCall(request).execute()
     val responseBody = response.body?.string()
     val results : JSONArray = JSONObject(responseBody).getJSONArray(("results"))
-//    println(results)
-    return parseMovieList(results)
+
+    val movieList = parseMovieList(results)
+
+    // Sort by popularity (descending) and then by title (ascending)
+    movieList.sortWith(
+        compareByDescending<Movie> { it.popularity }
+            .thenBy { it.title }
+    )
+
+    return movieList
 }
 
 fun parseMovieList(movies: JSONArray): MutableList<Movie>{
     val movieAttributes: MutableList<Movie> = mutableListOf()
     for ( i in 0 until movies.length()){
         val movie = movies.getJSONObject(i)
-        val movieToAdd = Movie(movie.get("id") as Int, movie.get("title") as String, movie.get("overview") as String,
-            movie.get("poster_path").toString()?:"", movie.get("release_date") as String, movie.get("vote_average") as Double)
+        val movieToAdd = Movie(
+            movie.get("id") as Int,
+            movie.get("title") as String,
+            movie.get("overview") as String,
+            movie.get("poster_path").toString() ?: "",
+            movie.get("release_date") as String,
+            movie.get("vote_average") as Double,
+            movie.get("popularity") as Double // Include popularity
+        )
 
         //If the movie poster is null then it doesn't show up, to change remove the if and leave the "movieAttributes.add(movieToAdd)" as it is
         if((movie.get("poster_path").toString()?:"") != "null"){
