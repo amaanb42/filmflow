@@ -9,14 +9,11 @@ import com.example.inventory.data.Movie
 
 const val apiAccessToken = BuildConfig.API_ACCESS_TOKEN
 
-fun getMovieQuery(name: String): MutableList<Movie>{
+fun apiRequest(url: String) : JSONArray {
     val client = OkHttpClient()
 
-    // Gets rid of trailing and leading space and replaces the middle spaces with "%20"
-    val queryName = name.trim().replace(" ","%20")
-
     val request = Request.Builder()
-        .url("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1") // Added sort_by parameter
+        .url(url) // Added sort_by parameter
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $apiAccessToken")
@@ -25,8 +22,14 @@ fun getMovieQuery(name: String): MutableList<Movie>{
     val response = client.newCall(request).execute()
     val responseBody = response.body?.string()
     val results : JSONArray = JSONObject(responseBody).getJSONArray(("results"))
+    return results
+}
 
-    val movieList = parseMovieList(results)
+fun getMovieQuery(name: String): MutableList<Movie>{
+    // Gets rid of trailing and leading space and replaces the middle spaces with "%20"
+    val queryName = name.trim().replace(" ","%20")
+
+    val movieList = parseMovieList(apiRequest("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1"))
 
     // Sort the movieList by popularity in descending order
     movieList.sortByDescending { it.popularity }
@@ -35,20 +38,7 @@ fun getMovieQuery(name: String): MutableList<Movie>{
 }
 
 fun getTrendingMovies(): List<Movie>{
-    val client = OkHttpClient()
-    val request = Request.Builder()
-        .url("https://api.themoviedb.org/3/trending/movie/week?language=en-US")
-        .get()
-        .addHeader("accept", "application/json")
-        .addHeader("Authorization", "Bearer $apiAccessToken")
-        .build()
-
-    val response = client.newCall(request).execute()
-    val responseBody = response.body?.string()
-    val results : JSONArray = JSONObject(responseBody).getJSONArray(("results"))
-    println(results)
-
-    return parseMovieList(results)
+    return parseMovieList(apiRequest("https://api.themoviedb.org/3/trending/movie/week?language=en-US"))
 }
 
 // Does it pull all this data for each movie in the search result?
