@@ -27,11 +27,8 @@ fun getMovieQuery(name: String): MutableList<Movie>{
 
     val movieList = parseMovieList(results)
 
-    // Sort by popularity (descending) and then by title (ascending)
-    movieList.sortWith(
-        compareByDescending<Movie> { it.popularity }
-            .thenBy { it.title }
-    )
+    // Sort the movieList by popularity in descending order
+    movieList.sortByDescending { it.popularity }
 
     return movieList
 }
