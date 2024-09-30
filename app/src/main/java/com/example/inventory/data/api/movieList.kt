@@ -18,7 +18,7 @@ fun getMovieQuery(name: String): MutableList<Movie>{
         .url("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1") // Added sort_by parameter
         .get()
         .addHeader("accept", "application/json")
-        .addHeader("Authorization", "Bearer ${api_access_token}")
+        .addHeader("Authorization", "Bearer $api_access_token")
         .build()
 
     val response = client.newCall(request).execute()
@@ -36,6 +36,10 @@ fun getMovieQuery(name: String): MutableList<Movie>{
     return movieList
 }
 
+// Does it pull all this data for each movie in the search result?
+// If so, we should only pull the id, title, poster, and popularity for the results.
+// Then get all of the extensive data for a movie once the user has selected it
+// maybe have a MovieSearchResult class and a MovieDetailed class
 fun parseMovieList(movies: JSONArray): MutableList<Movie>{
     val movieAttributes: MutableList<Movie> = mutableListOf()
     for ( i in 0 until movies.length()){
