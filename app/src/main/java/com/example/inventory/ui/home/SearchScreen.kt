@@ -177,7 +177,7 @@ fun SearchScreen() {
                                 model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .clickable { println("clicked") }
+                                    .clickable { }
                                     .width(150.dp)
                                     .aspectRatio(0.6667f),
                                 contentScale = ContentScale.Crop
@@ -215,7 +215,7 @@ fun SearchRows(movieList: List<Movie>) {
                             model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                             contentDescription = null,
                             modifier = Modifier
-                                .clickable { println("clicked") }
+                                .clickable { }
                                 .fillMaxWidth()
                                 .aspectRatio(0.6667f),
                             contentScale = ContentScale.Crop
