@@ -2,6 +2,7 @@ package com.example.inventory.data
 
 import kotlinx.coroutines.flow.Flow
 /* PROBABLY WILL NEED */
+/* ANY NEW DAO FUNCTIONS WILL NEED TO BE OVERRIDDEN IN HERE */
 class OfflineUserListRepository(private val userListDao: UserListDao) : UserListRepository {
     override fun getAllListsStream(): Flow<List<UserList>> = userListDao.getAllLists()
     override fun getListStream(listName: String): Flow<UserList?> = userListDao.getList(listName)

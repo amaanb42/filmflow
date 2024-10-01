@@ -5,7 +5,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.inventory.data.AppDatabase
-import com.example.inventory.data.ListMovies
 import com.example.inventory.data.ListShows
 import com.example.inventory.data.ListShowsDao
 import com.example.inventory.data.Show
