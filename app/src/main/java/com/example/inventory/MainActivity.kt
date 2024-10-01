@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.inventory
 
 import android.os.Bundle
@@ -31,10 +16,10 @@ import com.example.inventory.ui.theme.InventoryTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Done
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -51,10 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.inventory.ui.home.CompletedDestination
-import com.example.inventory.ui.home.HomeDestination
+import com.example.inventory.ui.navigation.InventoryNavHost
 import com.example.inventory.ui.home.SearchDestination
-
 
 data class BottomNavigationItem(
     val title: String,
@@ -72,23 +55,23 @@ class MainActivity : ComponentActivity() {
             InventoryTheme {
                 val items = listOf(
                     BottomNavigationItem(
-                        title = "Planning",
+                        title = "List",
                         selectedIcon = Icons.AutoMirrored.Filled.List,
                         unselectedIcon = Icons.AutoMirrored.Outlined.List,
                         hasNews = false
                     ),
                     BottomNavigationItem(
-                        title = "Completed",
-                        selectedIcon = Icons.Filled.Done,
-                        unselectedIcon = Icons.Outlined.Done,
-                        hasNews = false,
-                        badgeCount = null
-                    ),
-                    BottomNavigationItem(
-                        title = "Search",
+                        title = "Discover",
                         selectedIcon = Icons.Filled.Search,
                         unselectedIcon = Icons.Outlined.Search,
                         hasNews = false
+                    ),
+                    BottomNavigationItem(
+                        title = "Settings",
+                        selectedIcon = Icons.Filled.Settings,
+                        unselectedIcon = Icons.Outlined.Settings,
+                        hasNews = false,
+                        badgeCount = null
                     )
                 )
 
@@ -107,7 +90,7 @@ class MainActivity : ComponentActivity() {
                             // Show the NavigationBar only on specified screens
                             // Use AnimatedVisibility for the NavigationBar
                             AnimatedVisibility(
-                                visible = currentRoute in listOf(HomeDestination.route, CompletedDestination.route, SearchDestination.route),
+                                visible = currentRoute in listOf(SearchDestination.route), //add ListDestination.route and SettingsDestination.route in comma separated list
                                 enter = slideInVertically(
                                     // Start the slide from below the screen
                                     initialOffsetY = { fullHeight -> fullHeight },
@@ -132,9 +115,10 @@ class MainActivity : ComponentActivity() {
                                                 try {
                                                     val currentRoute = navController.currentBackStackEntry?.destination?.route
                                                     when (index) {
-                                                        0 -> if (currentRoute != HomeDestination.route) navController.navigate(HomeDestination.route)
-                                                        1 -> if (currentRoute != CompletedDestination.route) navController.navigate(CompletedDestination.route)
-                                                        2 -> if (currentRoute != SearchDestination.route) navController.navigate(SearchDestination.route)
+                                                        //0 -> if (currentRoute != ListDestination.route) navController.navigate(ListDestination.route)
+                                                        1 -> if (currentRoute != SearchDestination.route) navController.navigate(SearchDestination.route)
+                                                        //2 -> if (currentRoute != SettingsDestination.route) navController.navigate(SettingsDestination.route)
+
                                                     }
                                                 } catch (e: Exception) {
                                                     Log.e("NavigationError", "Error navigating to index $index", e)
@@ -164,9 +148,8 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     ) {
-                        // Content of the Scaffold goes here.
-                        // For example, this could be where you put your navigation logic.
-                        InventoryApp(navController = navController)
+                        // Replace InventoryApp with InventoryNavHost
+                        InventoryNavHost(navController = navController)
                     }
                 }
             }
