@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.inventory.R
-import com.example.inventory.data.MovieSearchResult
+import com.example.inventory.data.api.MovieSearchResult
 import com.example.inventory.data.api.getMovieQuery
 import com.example.inventory.data.api.getTrendingMovies
 import com.example.inventory.ui.navigation.NavigationDestination

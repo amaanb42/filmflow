@@ -5,7 +5,6 @@ import okhttp3.Request
 import  com.example.inventory.BuildConfig
 import org.json.JSONArray
 import org.json.JSONObject
-import com.example.inventory.data.MovieSearchResult
 
 const val apiAccessToken = BuildConfig.API_ACCESS_TOKEN
 
@@ -52,10 +51,7 @@ fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
         val movieToAdd = MovieSearchResult(
             movie.get("id") as Int,
             movie.get("title") as String,
-            movie.get("overview") as String,
             movie.get("poster_path").toString() ?: "",
-            movie.get("release_date") as String,
-            movie.get("vote_average") as Double,
             movie.get("popularity") as Double // Include popularity
         )
 
