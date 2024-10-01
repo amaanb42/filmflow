@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
                 )
 
                 val navController = rememberNavController()
-                var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
+                var selectedItemIndex by rememberSaveable { mutableIntStateOf(1) } // 0, 1, 2 changes which navbar icon is highlighted at startup
 
                 // Determine the current route
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
