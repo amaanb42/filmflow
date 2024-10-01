@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.inventory.R
-import com.example.inventory.data.Movie
+import com.example.inventory.data.MovieSearchResult
 import com.example.inventory.data.api.getMovieQuery
 import com.example.inventory.data.api.getTrendingMovies
 import com.example.inventory.ui.navigation.NavigationDestination
@@ -68,8 +68,8 @@ object SearchDestination : NavigationDestination {
 fun SearchScreen() {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
-    var tempMovieList by remember { mutableStateOf(mutableListOf<Movie>()) }
-    var trendingMovies by remember { mutableStateOf(listOf<Movie>())}
+    var tempMovieList by remember { mutableStateOf(mutableListOf<MovieSearchResult>()) }
+    var trendingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
     val coroutineScope = rememberCoroutineScope()
 
 
@@ -209,7 +209,7 @@ fun SearchScreen() {
 }
 
 @Composable
-fun SearchRows(movieList: List<Movie>) {
+fun SearchRows(movieList: List<MovieSearchResult>) {
     if (movieList.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),

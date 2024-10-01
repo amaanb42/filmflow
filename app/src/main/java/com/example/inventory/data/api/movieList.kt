@@ -5,7 +5,7 @@ import okhttp3.Request
 import  com.example.inventory.BuildConfig
 import org.json.JSONArray
 import org.json.JSONObject
-import com.example.inventory.data.Movie
+import com.example.inventory.data.MovieSearchResult
 
 const val apiAccessToken = BuildConfig.API_ACCESS_TOKEN
 
@@ -25,7 +25,7 @@ fun apiRequest(url: String) : JSONArray {
     return results
 }
 
-fun getMovieQuery(name: String): MutableList<Movie>{
+fun getMovieQuery(name: String): MutableList<MovieSearchResult>{
     // Gets rid of trailing and leading space and replaces the middle spaces with "%20"
     val queryName = name.trim().replace(" ","%20")
 
@@ -37,7 +37,7 @@ fun getMovieQuery(name: String): MutableList<Movie>{
     return movieList
 }
 
-fun getTrendingMovies(): List<Movie>{
+fun getTrendingMovies(): List<MovieSearchResult>{
     return parseMovieList(apiRequest("https://api.themoviedb.org/3/trending/movie/week?language=en-US"))
 }
 
@@ -45,11 +45,11 @@ fun getTrendingMovies(): List<Movie>{
 // If so, we should only pull the id, title, poster, and popularity for the results.
 // Then get all of the extensive data for a movie once the user has selected it
 // maybe have a MovieSearchResult class and a MovieDetailed class
-fun parseMovieList(movies: JSONArray): MutableList<Movie>{
-    val movieAttributes: MutableList<Movie> = mutableListOf()
+fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
+    val movieAttributes: MutableList<MovieSearchResult> = mutableListOf()
     for ( i in 0 until movies.length()){
         val movie = movies.getJSONObject(i)
-        val movieToAdd = Movie(
+        val movieToAdd = MovieSearchResult(
             movie.get("id") as Int,
             movie.get("title") as String,
             movie.get("overview") as String,

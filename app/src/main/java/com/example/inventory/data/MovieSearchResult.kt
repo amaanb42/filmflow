@@ -1,6 +1,6 @@
 package com.example.inventory.data
 
-data class Movie(
+data class MovieSearchResult(
     val id: Int,
     val title: String,
     val overview: String,
@@ -9,3 +9,5 @@ data class Movie(
     val rating: Double,
     val popularity: Double
 )
+
+
