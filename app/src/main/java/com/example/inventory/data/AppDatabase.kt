@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.inventory.data.listmovies.ListMovies
 import com.example.inventory.data.listmovies.ListMoviesDao
 import com.example.inventory.data.listshows.ListShows
@@ -15,6 +16,9 @@ import com.example.inventory.data.show.Show
 import com.example.inventory.data.show.ShowDao
 import com.example.inventory.data.userlist.UserList
 import com.example.inventory.data.userlist.UserListDao
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Database(
     entities = [UserList::class, Movie::class, Show::class, ListMovies::class, ListShows::class],
@@ -44,6 +48,24 @@ abstract class AppDatabase : RoomDatabase(){
                      * attempts to perform a migration with no defined migration path.
                      */
                     .fallbackToDestructiveMigration()
+                    .addCallback(object: RoomDatabase.Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            // insert initial data into database using background thread
+                            CoroutineScope(Dispatchers.IO).launch {
+                                Instance?.let { database ->
+                                    // insert initial lists
+                                    database.userListDao().insert(
+                                        UserList("Completed")
+                                    )
+                                    database.userListDao().insert(
+                                        UserList("In-Progress")
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    )
                     .build()
                     .also { Instance = it }
             }
