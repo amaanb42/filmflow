@@ -4,12 +4,12 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.inventory.data.AppDatabase
-import com.example.inventory.data.UserListDao
+import com.example.inventory.data.userlist.UserListDao
 import kotlinx.coroutines.flow.first
 import org.junit.Before
 import org.junit.runner.RunWith
 import android.content.Context
-import com.example.inventory.data.UserList
+import com.example.inventory.data.userlist.UserList
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals

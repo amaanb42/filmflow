@@ -1,4 +1,4 @@
-package com.example.inventory.data
+package com.example.inventory.data.show
 
 import androidx.room.Dao
 import androidx.room.Delete

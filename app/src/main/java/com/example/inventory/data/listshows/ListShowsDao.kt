@@ -1,4 +1,4 @@
-package com.example.inventory.data
+package com.example.inventory.data.listshows
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.inventory.data.show.Show
 import kotlinx.coroutines.flow.Flow
 
 @Dao

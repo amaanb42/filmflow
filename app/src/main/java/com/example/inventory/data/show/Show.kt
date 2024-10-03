@@ -1,4 +1,4 @@
-package com.example.inventory.data
+package com.example.inventory.data.show
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -1,5 +1,10 @@
 package com.example.inventory.data
 
+import com.example.inventory.data.listmovies.ListMovies
+import com.example.inventory.data.listshows.ListShows
+import com.example.inventory.data.movie.Movie
+import com.example.inventory.data.show.Show
+import com.example.inventory.data.userlist.UserList
 import kotlinx.coroutines.flow.Flow
 /* UNSURE IF NECESSARY */
 interface UserListRepository {

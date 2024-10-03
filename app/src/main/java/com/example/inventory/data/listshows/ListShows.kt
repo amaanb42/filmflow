@@ -1,7 +1,9 @@
-package com.example.inventory.data
+package com.example.inventory.data.listshows
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import com.example.inventory.data.show.Show
+import com.example.inventory.data.userlist.UserList
 
 /* associative entity between Lists and Shows ; many-to-many relationship*/
 @Entity(tableName = "list_shows",

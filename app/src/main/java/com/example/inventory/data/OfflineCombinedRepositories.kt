@@ -1,5 +1,15 @@
 package com.example.inventory.data
 
+import com.example.inventory.data.listmovies.ListMovies
+import com.example.inventory.data.listmovies.ListMoviesDao
+import com.example.inventory.data.listshows.ListShows
+import com.example.inventory.data.listshows.ListShowsDao
+import com.example.inventory.data.movie.Movie
+import com.example.inventory.data.movie.MovieDao
+import com.example.inventory.data.show.Show
+import com.example.inventory.data.show.ShowDao
+import com.example.inventory.data.userlist.UserList
+import com.example.inventory.data.userlist.UserListDao
 import kotlinx.coroutines.flow.Flow
 /* PROBABLY WILL NEED */
 /* ANY NEW DAO FUNCTIONS WILL NEED TO BE OVERRIDDEN IN HERE */

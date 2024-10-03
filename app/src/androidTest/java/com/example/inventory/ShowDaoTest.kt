@@ -5,8 +5,8 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.inventory.data.AppDatabase
-import com.example.inventory.data.Show
-import com.example.inventory.data.ShowDao
+import com.example.inventory.data.show.Show
+import com.example.inventory.data.show.ShowDao
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After

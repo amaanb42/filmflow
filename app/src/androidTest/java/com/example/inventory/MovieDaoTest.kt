@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.first
 import org.junit.Before
 import org.junit.runner.RunWith
 import android.content.Context
-import com.example.inventory.data.Movie
-import com.example.inventory.data.MovieDao
+import com.example.inventory.data.movie.Movie
+import com.example.inventory.data.movie.MovieDao
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.After
