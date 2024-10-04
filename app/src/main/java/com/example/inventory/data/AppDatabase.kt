@@ -51,17 +51,16 @@ abstract class AppDatabase : RoomDatabase(){
                     .addCallback(object: RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
+                            val userListRepository = AppDataContainer(context).userListRepository
                             // insert initial data into database using background thread
                             CoroutineScope(Dispatchers.IO).launch {
-                                Instance?.let { database ->
                                     // insert initial lists
-                                    database.userListDao().insert(
+                                    userListRepository.insertList(
                                         UserList("Completed")
                                     )
-                                    database.userListDao().insert(
+                                    userListRepository.insertList(
                                         UserList("In-Progress")
                                     )
-                                }
                             }
                         }
                     }
