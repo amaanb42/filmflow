@@ -40,9 +40,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieSearchResult
@@ -64,8 +64,7 @@ object SearchDestination : NavigationDestination {
     "CoroutineCreationDuringComposition"
 )
 @Composable
-@Preview
-fun SearchScreen() {
+fun SearchScreen(navController: NavHostController) {
     var text by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     var tempMovieList by remember { mutableStateOf(mutableListOf<MovieSearchResult>()) }
@@ -149,7 +148,7 @@ fun SearchScreen() {
                 }
             ) {
                 if (text.isNotEmpty()) {
-                    SearchRows(tempMovieList)
+                    SearchRows(tempMovieList, navController)
                 } else {
                     tempMovieList.clear()
                 }
@@ -190,7 +189,7 @@ fun SearchScreen() {
                                 model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .clickable { }
+                                    .clickable {navController.navigate(DetailDestination.route)}
                                         .width(135.dp)
                                     .aspectRatio(0.6667f),
                                 contentScale = ContentScale.Crop
@@ -209,7 +208,7 @@ fun SearchScreen() {
 }
 
 @Composable
-fun SearchRows(movieList: List<MovieSearchResult>) {
+fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostController) {
     if (movieList.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -228,7 +227,7 @@ fun SearchRows(movieList: List<MovieSearchResult>) {
                             model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                             contentDescription = null,
                             modifier = Modifier
-                                .clickable { }
+                                .clickable {navController.navigate(DetailDestination.route)}
                                 .fillMaxWidth()
                                 .aspectRatio(0.6667f),
                             contentScale = ContentScale.Crop

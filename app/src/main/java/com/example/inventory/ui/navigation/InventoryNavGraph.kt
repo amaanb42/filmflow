@@ -5,6 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.inventory.ui.home.DetailDestination
+import com.example.inventory.ui.home.MovieDetailsScreen
 import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.SearchScreen
 
@@ -22,7 +24,11 @@ fun InventoryNavHost(
         modifier = modifier
     ) {
         composable(route = SearchDestination.route) {
-            SearchScreen()
+            SearchScreen(navController)
+            // Pass navController to SearchScreen
+        }
+        composable(route = DetailDestination.route) {
+            MovieDetailsScreen(navController)
         }
     }
 }
