@@ -48,21 +48,19 @@ object DetailDestination : NavigationDestination {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
-    val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    var isTopAppBarScrolled by remember { mutableStateOf(false) }
+    //val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     Scaffold(
-        modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
+        //modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
-                    if (isTopAppBarScrolled) {
-                        Text(
-                            text = "Yeah....I'm man", // Replace with actual movie title when available
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1
-                        )
-                    }
+
+                    Text(
+                        text = "Yeah....I'm man", // Replace with actual movie title when available
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
                 },
                 navigationIcon = {
                     IconButton(onClick = { /* Handle back navigation */ }) {
@@ -76,7 +74,7 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
                     containerColor = Color.Transparent,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
                 ),
-                scrollBehavior = topAppBarScrollBehavior
+                //scrollBehavior = topAppBarScrollBehavior
             )
         }
     ) { padding ->
@@ -99,7 +97,7 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
 
             // Title (replace with actual title from movie data)
             Text(
-                text = "Movie Title", // Replace with actual movie title when available
+                text = "Yeah....I'm Man", // Replace with actual movie title when available
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
