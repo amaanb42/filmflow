@@ -71,7 +71,6 @@ fun SearchScreen(navController: NavHostController) {
     var trendingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
     val coroutineScope = rememberCoroutineScope()
 
-
     val searchBarPadding by animateDpAsState(
         targetValue = if (active) 0.dp else 24.dp,
         label = "Search bar padding"
