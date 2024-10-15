@@ -126,7 +126,7 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                     Text(
-                        text = "2024",
+                        text = "May 4th, 2024",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
@@ -139,6 +139,10 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
                         text = "PG-13",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = "72% Audience",
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }
