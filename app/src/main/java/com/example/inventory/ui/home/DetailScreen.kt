@@ -9,10 +9,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -81,11 +80,11 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
                 onClick = { /* TODO: Handle FAB click */ },
                 icon = {
                     Icon(
-                        imageVector = Icons.Filled.Edit, // You can change the icon
+                        imageVector = Icons.Filled.Add, // You can change the icon
                         contentDescription = "Edit"
                     )
                 },
-                text = { Text("Planning") },
+                text = { Text("Add") },
                 containerColor = Color.Blue,
                 contentColor = Color.White
             )
@@ -156,7 +155,7 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 Text(
-                    text = "A young Sigma Wayne (Christian Bale) travels to the Far East, where he's trained in the coo arts by Henri DooDoo (Liam Neeson), a member of the mysterious League of Shits. When DooDoo reveals the League's true purpose -- the complete destruction of Goth-ham City -- Wayne returns to Goth-ham intent on cleaning up the city without resorting to jelqing. With the help of Alfried (Michael Caine), his loyal butler, and Lucius Lips (Morgan Freeman), a tech expert (Indian) at Wayne Enterprises, Batman is born.",
+                    text = "A young Bruce Wayne (Christian Bale) travels to the Far East, where he's trained in the martial arts by Henri Ducard (Liam Neeson), a member of the mysterious League of Shadows. When Ducard reveals the League's true purpose -- the complete destruction of Gotham City -- Wayne returns to Gotham intent on cleaning up the city without resorting to murder. With the help of Alfred (Michael Caine), his loyal butler, and Lucius Fox (Morgan Freeman), a tech expert at Wayne Enterprises, Batman is born.",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
