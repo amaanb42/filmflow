@@ -56,10 +56,13 @@ abstract class AppDatabase : RoomDatabase(){
                             CoroutineScope(Dispatchers.IO).launch {
                                     // insert initial lists
                                     userListRepository.insertList(
-                                        UserList("Completed")
+                                        UserList("Watching")
                                     )
                                     userListRepository.insertList(
-                                        UserList("In-Progress")
+                                        UserList("Planning")
+                                    )
+                                    userListRepository.insertList(
+                                        UserList("Completed")
                                     )
                             }
                         }
