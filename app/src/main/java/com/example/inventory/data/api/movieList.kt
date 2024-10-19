@@ -8,9 +8,8 @@ import org.json.JSONObject
 
 const val apiAccessToken = BuildConfig.API_ACCESS_TOKEN
 
-fun apiRequest(url: String) : JSONArray {
+fun apiRequest(url: String, jsonTitle: String) : JSONArray {
     val client = OkHttpClient()
-
     val request = Request.Builder()
         .url(url) // Added sort_by parameter
         .get()
@@ -20,7 +19,9 @@ fun apiRequest(url: String) : JSONArray {
 
     val response = client.newCall(request).execute()
     val responseBody = response.body?.string()
-    val results : JSONArray = JSONObject(responseBody).getJSONArray(("results"))
+    println("results")
+    val results : JSONArray = JSONObject(responseBody).getJSONArray((jsonTitle))
+
     return results
 }
 
@@ -28,7 +29,7 @@ fun getMovieQuery(name: String): MutableList<MovieSearchResult>{
     // Gets rid of trailing and leading space and replaces the middle spaces with "%20"
     val queryName = name.trim().replace(" ","%20")
 
-    val movieList = parseMovieList(apiRequest("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1"))
+    val movieList = parseMovieList(apiRequest("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1", "results"))
 
     // Sort the movieList by popularity in descending order
     movieList.sortByDescending { it.popularity }
@@ -37,7 +38,16 @@ fun getMovieQuery(name: String): MutableList<MovieSearchResult>{
 }
 
 fun getTrendingMovies(): List<MovieSearchResult>{
-    return parseMovieList(apiRequest("https://api.themoviedb.org/3/trending/movie/week?language=en-US"))
+    return parseMovieList(apiRequest("https://api.themoviedb.org/3/trending/movie/week?language=en-US", "results"))
+}
+
+fun getGenre(): MutableList<String> {
+    val genre = apiRequest("https://api.themoviedb.org/3/genre/movie/list?language=en", "genres")
+    val movieGenre: MutableList<String> = mutableListOf()
+    for(i in 0 until genre.length()){
+        movieGenre.add(genre.getJSONObject(i).get("name").toString()?:"")
+    }
+    return movieGenre
 }
 
 // Does it pull all this data for each movie in the search result?
