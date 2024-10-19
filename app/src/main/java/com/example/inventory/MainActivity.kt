@@ -38,6 +38,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.inventory.ui.navigation.InventoryNavHost
 import com.example.inventory.ui.home.SearchDestination
+import com.example.inventory.ui.home.ListDestination
 
 data class BottomNavigationItem(
     val title: String,
@@ -115,7 +116,7 @@ class MainActivity : ComponentActivity() {
                                                 try {
                                                     val currentRoute = navController.currentBackStackEntry?.destination?.route
                                                     when (index) {
-                                                        //0 -> if (currentRoute != ListDestination.route) navController.navigate(ListDestination.route)
+                                                        0 -> if (currentRoute != ListDestination.route) navController.navigate(ListDestination.route)
                                                         1 -> if (currentRoute != SearchDestination.route) navController.navigate(SearchDestination.route)
                                                         //2 -> if (currentRoute != SettingsDestination.route) navController.navigate(SettingsDestination.route)
 

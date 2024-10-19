@@ -8,7 +8,9 @@ import androidx.navigation.compose.composable
 import com.example.inventory.ui.home.DetailDestination
 import com.example.inventory.ui.home.MovieDetailsScreen
 import com.example.inventory.ui.home.SearchDestination
+import com.example.inventory.ui.home.ListDestination
 import com.example.inventory.ui.home.SearchScreen
+import com.example.inventory.ui.home.ListScreen
 
 /**
  * Provides Navigation graph for the application.
@@ -29,6 +31,10 @@ fun InventoryNavHost(
         }
         composable(route = DetailDestination.route) {
             MovieDetailsScreen(navController)
+        }
+
+        composable(route = ListDestination.route) {
+            ListScreen(navController)
         }
     }
 }

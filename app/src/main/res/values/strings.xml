@@ -3,6 +3,7 @@
     <string name="warning">Warning</string>
     <string name="search_title">Search Screen</string>
     <string name="movie_details">Detail Screen</string>
+    <string name="list_screen">List Screen</string>
     <string name="back_button">Back</string>
     <string name="delete">Delete</string>
     <string name="delete_question">Are you sure you want to remove this movie?</string>
