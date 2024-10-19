@@ -64,3 +64,18 @@ fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
     }
     return movieAttributes
 }
+
+
+fun getMovieDetails(movies: JSONArray): MovieDetails {
+    val movie = movies.getJSONObject(1)
+    val detailsToGet = MovieDetails(
+        movie.get("id") as Int,
+        movie.get("title") as String,
+        movie.get("overview") as String,
+        movie.get("poster_path").toString() ?: "",
+        movie.get("releaseDate") as String,
+        movie.get("runtime") as Int,
+        movie.get("rating") as Double
+    )
+    return detailsToGet
+}
