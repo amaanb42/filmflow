@@ -1,41 +1,38 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
-import com.example.inventory.MainActivity
+import androidx.navigation.compose.rememberNavController
 import com.example.inventory.R
 import com.example.inventory.ui.navigation.NavigationDestination
 
@@ -49,6 +46,7 @@ object ListDestination : NavigationDestination {
 
 @Composable
 fun ListScreen(navController: NavHostController){
+    val navController = rememberNavController()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -56,6 +54,22 @@ fun ListScreen(navController: NavHostController){
                     Text(
                         text = "Planning"
                     )
+                },
+
+                actions = {
+                    IconButton(onClick = { navController.navigate(SearchDestination.route) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Search"
+                        )
+                    }
+
+                    IconButton(onClick = {/* TODO: Some shit idk yet */}) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = "More Stuff"
+                        )
+                    }
                 }
             )
         },
@@ -64,16 +78,44 @@ fun ListScreen(navController: NavHostController){
                 onClick = { /* TODO: Handle FAB click */ },
                 icon = {
                     Icon(
-                        imageVector = Icons.Filled.Add, // You can change the icon
+                        imageVector = Icons.Filled.Create, // You can change the icon
                         contentDescription = "Edit"
                     )
                 },
                 text = { Text("Planning") },
-                containerColor = Color.Blue,
-                contentColor = Color.White
+                containerColor = MaterialTheme.colorScheme.background,
+                modifier = Modifier.offset(y = -100.dp)
             )
         }
     ) {
+        Column(modifier = Modifier.offset(y = 110.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = {/*TODO: Sorting*/},
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(0.dp),
 
+                ) {
+                    Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "Sorting")
+                    Text("Sort")
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Button(
+                    onClick = {/*TODO: View*/},
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent
+                    )
+                ) {
+                    Icon(imageVector = Icons.Filled.Info, contentDescription = "View")
+                }
+            }
+        }
     }
 }
