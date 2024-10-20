@@ -144,25 +144,25 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             text = it1.title,
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
-                    }
-                    movie?.let { it1 ->
-                        Text(
-                            text = it1.releaseDate,
-                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
                     Text(
-                        text = movie?.runtime?.toString() ?: "", // Convert to String or use empty string if null
+                        text = (movie?.runtime?.toString() ?: "") + " minutes", // Convert to String or use empty string if null
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
-                        text = movie?.rating?.toString() ?: "", // Convert to String or use empty string if null
-                        style = MaterialTheme.typography.bodyMedium
+                        text = (movie?.rating?.toString() ?: "") + "/10", // Convert to String or use empty string if null
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(bottom = 12.dp)
                     )
+                    movie?.let { it1 ->
+                        Text(
+                            text = "Released: ${movie?.releaseDate}",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
             }
 
