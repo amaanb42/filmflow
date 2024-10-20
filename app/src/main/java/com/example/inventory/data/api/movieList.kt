@@ -36,6 +36,11 @@ fun getMovieQuery(name: String): MutableList<MovieSearchResult>{
     return movieList
 }
 
+fun getDetailsFromID(id: Int): MovieDetails {
+    val movieID = id
+    return getMovieDetails("https://api.themoviedb.org/3/movie/${id}?language=en-US")
+}
+
 fun getTrendingMovies(): List<MovieSearchResult>{
     return parseMovieList(apiRequest("https://api.themoviedb.org/3/trending/movie/week?language=en-US"))
 }
