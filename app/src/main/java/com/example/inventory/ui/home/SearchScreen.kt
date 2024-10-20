@@ -152,6 +152,7 @@ fun SearchScreen(navController: NavHostController) {
                     tempMovieList.clear()
                 }
             }
+            // Randomize button
             Button(
                 onClick = {},
                 //enabled = itemUiState.isEntryValid,
@@ -208,6 +209,7 @@ fun SearchScreen(navController: NavHostController) {
     }
 }
 
+// Shows the search results as a vertical grid after entering query
 @Composable
 fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostController) {
     if (movieList.isNotEmpty()) {
@@ -236,6 +238,7 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
                             contentScale = ContentScale.Crop
                         )
                     }
+                    // Movie title
                     Text(
                         text = movie.title,
                         modifier = Modifier.padding(top = 8.dp), // Add some spacing between image and text
@@ -247,6 +250,7 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
     }
 }
 
+// function that handles navController and passes movieId to detail screen
 fun navigateToMovieDetails(navController: NavHostController, movieId: Int) {
     navController.navigate(DetailDestination.createRoute(movieId))
 }

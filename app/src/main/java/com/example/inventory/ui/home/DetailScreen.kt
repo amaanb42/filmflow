@@ -72,7 +72,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         topBar = {
             TopAppBar(
                 title = {
-
+                    // Movie title in top bar
                     movie?.let {
                         Text(
                             text = it.title, // Replace with actual movie title when available
@@ -81,6 +81,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         )
                     }
                 },
+                // Back icon
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(SearchDestination.route) }) {
                         Icon(
@@ -96,13 +97,14 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 //scrollBehavior = topAppBarScrollBehavior
             )
         },
+        // Add movie to list FAB
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { /* TODO: Handle FAB click */ },
                 icon = {
                     Icon(
                         imageVector = Icons.Filled.Add, // You can change the icon
-                        contentDescription = "Edit"
+                        contentDescription = "Add to list"
                     )
                 },
                 text = { Text("Add") },
@@ -119,10 +121,11 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically // Align items vertically in the center
             ) {
+                // Card with movie art image
                 Card(
                     modifier = Modifier
                         .padding(top = 120.dp)
-                        .padding(start = 20.dp)
+                        .padding(start = 30.dp)
                 ) {
                     AsyncImage(
                         model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
@@ -140,6 +143,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
 
                 Column {
                     movie?.let { it1 ->
+                        // Movie title
                         Text(
                             text = it1.title,
                             style = MaterialTheme.typography.bodyMedium,

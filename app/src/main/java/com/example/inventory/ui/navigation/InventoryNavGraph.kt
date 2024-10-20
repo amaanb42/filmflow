@@ -35,7 +35,7 @@ fun InventoryNavHost(
             route = DetailDestination.route,
             arguments = listOf(navArgument("movieId") { type = NavType.IntType }) // Define the argument type
         ) { backStackEntry ->
-            val movieId = backStackEntry.arguments?.getInt("movieId") ?: error("Missing movieID argument") // Get as Int
+            val movieId = backStackEntry.arguments?.getInt("movieId") ?: error("Missing movieID argument")
             MovieDetailsScreen(navController, movieId)
         }
 
