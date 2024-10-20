@@ -188,7 +188,9 @@ fun SearchScreen(navController: NavHostController) {
                                 model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .clickable {navController.navigate(DetailDestination.route)}
+                                    .clickable {
+                                        navigateToMovieDetails(navController, movie.id)
+                                    }
                                         .width(135.dp)
                                     .aspectRatio(0.6667f),
                                 contentScale = ContentScale.Crop
@@ -226,7 +228,9 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
                             model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                             contentDescription = null,
                             modifier = Modifier
-                                .clickable {navController.navigate(DetailDestination.route)}
+                                .clickable {
+                                    navigateToMovieDetails(navController, movie.id)
+                                }
                                 .fillMaxWidth()
                                 .aspectRatio(0.6667f),
                             contentScale = ContentScale.Crop
@@ -241,4 +245,8 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
             }
         }
     }
+}
+
+fun navigateToMovieDetails(navController: NavHostController, movieId: Int) {
+    navController.navigate(DetailDestination.createRoute(movieId))
 }
