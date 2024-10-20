@@ -68,30 +68,15 @@ fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
 
 fun parseMovieDetails(movie: JSONObject): MovieDetails {
     return MovieDetails(
-        movie.getInt("id"),
         movie.getString("title"),
         movie.getString("overview"),
         movie.getString("poster_path") ?: "",
-        movie.getString("release_date")
-        ?: "", // Get release_date
-    movie.getInt("runtime"),
-    movie.getDouble("vote_average") // Get vote_average for rating
+        movie.getString("release_date") ?: "",
+        movie.getInt("runtime"),
+        movie.getDouble("vote_average")
     )
 }
 
-//fun getMovieDetails(movies: JSONArray): MovieDetails {
-//    val movie = movies.getJSONObject(1)
-//    val detailsToGet = MovieDetails(
-//        movie.get("id") as Int,
-//        movie.get("title") as String,
-//        movie.get("overview") as String,
-//        movie.get("poster_path").toString() ?: "",
-//        movie.get("releaseDate") as String,
-//        movie.get("runtime") as Int,
-//        movie.get("rating") as Double
-//    )
-//    return detailsToGet
-//}
 
 fun getDetailsFromID(id: Int): MovieDetails {
     val movieJson = apiRequest("https://api.themoviedb.org/3/movie/${id}?language=en-US")
