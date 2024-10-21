@@ -84,7 +84,7 @@ fun ListScreen(navController: NavHostController){
             TopAppBar(
                 title = {
                     Text(
-                        text = "My Lists"
+                        text = selectedList?.listName ?: "Movie List"
                     )
                 },
 
