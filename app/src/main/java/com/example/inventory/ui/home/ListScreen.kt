@@ -1,7 +1,6 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
-import android.view.View.OnHoverListener
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,29 +9,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -48,23 +40,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.inventory.R
-import com.example.inventory.ui.navigation.NavigationDestination
-import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.inventory.InventoryApplication
-import com.example.inventory.data.AppDatabase
-import com.example.inventory.data.OfflineUserListRepository
-import com.example.inventory.data.UserListRepository
+import com.example.inventory.R
 import com.example.inventory.data.userlist.UserList
+import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.dark_pine
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 object ListDestination : NavigationDestination {
     override val route = "list"
@@ -200,7 +186,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                 .padding(10.dp),
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.List, // Or any other suitable icon
+                painter = painterResource(id = R.drawable.all_icon), // Or any other suitable icon
                 contentDescription = "All Lists"
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -225,14 +211,14 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
             ) {
                 // Choose icon based on singleList.listName
                 val icon = when (singleList.listName) {
-                    "Completed" -> Icons.Default.CheckCircle
-                    "Planning" -> Icons.Default.Search
-                    "Watching" -> Icons.Default.AccountCircle
-                    else -> Icons.Default.Star // Default icon
+                    "Completed" -> R.drawable.completed_icon
+                    "Planning" -> R.drawable.planning_icon
+                    "Watching" -> R.drawable.watching_icon
+                    else -> R.drawable.custom_list // Default icon
                 }
 
                 Icon(
-                    imageVector = icon,
+                    painter = painterResource(id = icon),
                     contentDescription = singleList.listName
                 )
                 Spacer(modifier = Modifier.width(8.dp))
