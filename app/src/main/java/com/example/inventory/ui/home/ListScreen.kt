@@ -43,6 +43,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -55,6 +57,8 @@ import com.example.inventory.data.AppDatabase
 import com.example.inventory.data.OfflineUserListRepository
 import com.example.inventory.data.UserListRepository
 import com.example.inventory.data.userlist.UserList
+import com.example.inventory.ui.theme.dark_pine
+import kotlinx.coroutines.flow.StateFlow
 
 object ListDestination : NavigationDestination {
     override val route = "list"
@@ -84,6 +88,7 @@ fun ListScreen(navController: NavHostController){
     val allLists by viewModel.allLists.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
     val listMovies by viewModel.allMovies.collectAsState()
+    val currList = selectedList?.listName // used for highlighting selection in bottom sheet
 
     Scaffold(
         topBar = {
@@ -125,7 +130,8 @@ fun ListScreen(navController: NavHostController){
                     )
                 },
                 text = { Text(selectedList?.listName ?: "All") },
-                containerColor = MaterialTheme.colorScheme.background,
+                containerColor = dark_pine,
+                contentColor = Color.White,
                 modifier = Modifier.offset(y = -100.dp)
             )
         }
@@ -167,13 +173,13 @@ fun ListScreen(navController: NavHostController){
             onDismissRequest = { showModal = false },
             sheetState = sheetState,
         ) {
-            ListSelectBottomSheet(allLists, viewModel) { showModal = false }
+            ListSelectBottomSheet(allLists, viewModel, currList) { showModal = false }
         }
     }
 }
 
 @Composable
-fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, onDismiss: () -> Unit) {
+fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: String?, onDismiss: () -> Unit) {
     Column(
         modifier = Modifier.padding(1.dp)
     ) { // first item in list is always All
@@ -187,9 +193,11 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
         ) {
             Text(
                 text = "All",
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier.padding(10.dp),
+                fontWeight = if (currList == null) FontWeight.Bold else FontWeight.Normal
             )
         }
+        // now display lists stored in the DB
         allLists.forEach() { singleList ->
             Box(
                 modifier = Modifier
@@ -201,7 +209,8 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
             ) {
                 Text(
                     text = singleList.listName,
-                    modifier = Modifier.padding(10.dp)
+                    modifier = Modifier.padding(10.dp),
+                    fontWeight = if (singleList.listName == currList) FontWeight.Bold else FontWeight.Normal
                 )
             }
 
