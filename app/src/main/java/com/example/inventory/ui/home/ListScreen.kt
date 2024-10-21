@@ -57,7 +57,7 @@ fun ListScreen(navController: NavHostController){
                 },
 
                 actions = {
-                    IconButton(onClick = { navController.navigate(SearchDestination.route) }) {
+                    IconButton(onClick = { /*Handle search*/ }) {
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = "Search"
