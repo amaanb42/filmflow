@@ -18,8 +18,10 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -65,6 +67,12 @@ class MainActivity : ComponentActivity() {
                         title = "Discover",
                         selectedIcon = Icons.Filled.Search,
                         unselectedIcon = Icons.Outlined.Search,
+                        hasNews = false
+                    ),
+                    BottomNavigationItem(
+                        title = "Stats",
+                        selectedIcon = Icons.Filled.Star,
+                        unselectedIcon = Icons.Outlined.Star,
                         hasNews = false
                     ),
                     BottomNavigationItem(
