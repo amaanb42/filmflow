@@ -17,8 +17,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -116,8 +114,18 @@ fun ListScreen(navController: NavHostController){
                     }
                 },
                 icon = {
+                    // Choose icon based on selectedList
+                    // As the code currently is, if a user makes a custom list, the FAB icon
+                    // will be the same as the All icon instead of the custom icon in the bottom sheet
+                    val icon = when (selectedList?.listName) {
+                        "Completed" -> painterResource(id = R.drawable.completed_icon)
+                        "Planning" -> painterResource(id = R.drawable.planning_icon)
+                        "Watching" -> painterResource(id = R.drawable.watching_icon)
+                        else -> painterResource(id = R.drawable.all_icon) // Default icon
+                    }
+
                     Icon(
-                        imageVector = Icons.Filled.Create, // You can change the icon
+                        painter = icon,
                         contentDescription = "Edit"
                     )
                 },
@@ -197,7 +205,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
             )
         }
         // now display lists stored in the DB
-        allLists.forEach() { singleList ->
+        allLists.forEach { singleList ->
             Box(
                 modifier = Modifier
                     .padding(start = 12.dp)
