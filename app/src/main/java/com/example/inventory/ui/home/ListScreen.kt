@@ -11,13 +11,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -182,35 +188,58 @@ fun ListScreen(navController: NavHostController){
 fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: String?, onDismiss: () -> Unit) {
     Column(
         modifier = Modifier.padding(1.dp)
-    ) { // first item in list is always All
+    ) { // first item in list is always All, but in settings screen add option to change default list displayed
         Box(
             modifier = Modifier
+                .padding(start = 12.dp)
                 .fillMaxWidth()
                 .clickable {
                     viewModel.selectList(null)
                     onDismiss()
                 }
+                .padding(10.dp),
         ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.List, // Or any other suitable icon
+                contentDescription = "All Lists"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "All",
-                modifier = Modifier.padding(10.dp),
-                fontWeight = if (currList == null) FontWeight.Bold else FontWeight.Normal
+                fontWeight = if (currList == null) FontWeight.Bold else FontWeight.Normal,
+                modifier = Modifier.padding(start = 36.dp)
             )
         }
         // now display lists stored in the DB
         allLists.forEach() { singleList ->
             Box(
                 modifier = Modifier
+                    .padding(start = 12.dp)
                     .fillMaxWidth()
                     .clickable {
                         viewModel.selectList(singleList)
                         onDismiss()
                     }
+                    .padding(10.dp),
+                //verticalAlignment = Alignment.CenterVertically
             ) {
+                // Choose icon based on singleList.listName
+                val icon = when (singleList.listName) {
+                    "Completed" -> Icons.Default.CheckCircle
+                    "Planning" -> Icons.Default.Search
+                    "Watching" -> Icons.Default.AccountCircle
+                    else -> Icons.Default.Star // Default icon
+                }
+
+                Icon(
+                    imageVector = icon,
+                    contentDescription = singleList.listName
+                )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = singleList.listName,
-                    modifier = Modifier.padding(10.dp),
-                    fontWeight = if (singleList.listName == currList) FontWeight.Bold else FontWeight.Normal
+                    fontWeight = if (singleList.listName == currList) FontWeight.Bold else FontWeight.Normal,
+                    modifier = Modifier.padding(start = 36.dp)
                 )
             }
 
