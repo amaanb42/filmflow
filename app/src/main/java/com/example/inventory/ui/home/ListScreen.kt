@@ -124,7 +124,7 @@ fun ListScreen(navController: NavHostController){
                 text = { Text(selectedList?.listName ?: "All") },
                 containerColor = dark_pine,
                 contentColor = Color.White,
-                modifier = Modifier.offset(y = -100.dp)
+                modifier = Modifier.offset(y = (-100).dp)
             )
         }
     ) {
@@ -214,7 +214,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     "Completed" -> R.drawable.completed_icon
                     "Planning" -> R.drawable.planning_icon
                     "Watching" -> R.drawable.watching_icon
-                    else -> R.drawable.custom_list // Default icon
+                    else -> R.drawable.custom_list // custom icon when user makes list
                 }
 
                 Icon(
@@ -228,7 +228,6 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     modifier = Modifier.padding(start = 36.dp)
                 )
             }
-
         }
 
     }
