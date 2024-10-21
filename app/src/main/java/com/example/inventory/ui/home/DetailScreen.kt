@@ -42,6 +42,7 @@ import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.ui.navigation.NavigationDestination
+import com.example.inventory.ui.theme.dark_pine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -108,7 +109,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     )
                 },
                 text = { Text("Add") },
-                containerColor = Color.Blue,
+                containerColor = dark_pine,
                 contentColor = Color.White
             )
         }
