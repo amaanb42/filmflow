@@ -10,11 +10,13 @@ import com.example.inventory.data.OfflineUserListRepository
 import com.example.inventory.data.UserListRepository
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class ListScreenViewModel(
     private val userListRepository: UserListRepository,
@@ -61,6 +63,22 @@ class ListScreenViewModel(
             )
         }
     }
+
+    // function to add new list to db
+    fun addNewList(listName: String) {
+        viewModelScope.launch {
+            userListRepository.insertList(UserList(listName=listName))
+        }
+    }
+
+    // function to delete list from db
+    fun deleteList(listName: String) {
+        viewModelScope.launch {
+            userListRepository.deleteListByName(listName=listName)
+        }
+    }
+
+    // TODO: function to edit list name in db
 }
 // pass the repository to ListScreenViewModel
 class ListScreenViewModelFactory(

@@ -2,6 +2,7 @@ package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
 import android.graphics.Paint.Align
+import android.hardware.biometrics.BiometricManager.Strings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -29,6 +31,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
@@ -48,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.inventory.InventoryApplication
@@ -201,7 +205,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.all_icon), // Or any other suitable icon
-                contentDescription = "All Lists"
+                contentDescription = "All"
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -242,61 +246,111 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
                     modifier = Modifier.weight(1f)
                 )
-                Box() {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options",
-                        modifier = Modifier
-                            .clickable {
-                                expanded = true
-                            }
-                    )
-                    // Dropdown menu for MoreVert icon
-                    DropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = {
-                            expanded = false
-                        }, // Close the menu when clicked outside
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(text = "Rename") },
-                            onClick = {
-                                expanded = false // Close the menu
-                                /* TODO: input field to change name should appear */
-                            }
+                if (singleList.listName !in listOf("Completed", "Planning", "Watching")) {
+                    Box() {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More options",
+                            modifier = Modifier
+                                .clickable {
+                                    expanded = true
+                                }
                         )
-                        DropdownMenuItem(
-                            text = { Text(text = "Delete", color = Color.Red) },
-                            onClick = {
-                                expanded = false // Close the menu
-                                /* TODO: call function to delete the current list */
-                            }
-                        )
+                        // Dropdown menu for MoreVert icon
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = {
+                                expanded = false
+                            }, // Close the menu when clicked outside
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(text = "Rename") },
+                                onClick = {
+                                    expanded = false // Close the menu
+                                    /* TODO: input field to change name should appear */
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(text = "Delete", color = Color.Red) },
+                                onClick = {
+                                    viewModel.deleteList(singleList.listName) // delete the list
+                                    viewModel.selectList(null) // reset back to default "All"
+                                    expanded = false // Close the menu
+                                }
+                            )
 
+                        }
                     }
                 }
             }
         }
         // button for creating a new list
-        Row(
-           modifier =  Modifier
-               .padding(start = 2.dp, end = 2.dp)
-               .fillMaxWidth()
-               .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        AddNewListButtonWithDialog(viewModel)
+    }
+}
+
+@Composable
+fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
+    var showAddDialog by remember { mutableStateOf(false) }
+    var listName by remember { mutableStateOf("") }
+
+    // the button
+    Row(
+        modifier =  Modifier
+            .padding(start = 2.dp, end = 2.dp)
+            .fillMaxWidth()
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.weight(1f)) //pushes button to center
+        SmallFloatingActionButton(
+            onClick = { showAddDialog = true },
+            containerColor = dark_pine,
+            contentColor = Color.White
         ) {
-            Spacer(modifier = Modifier.weight(1f)) //pushes button to center
-            SmallFloatingActionButton(
-                onClick = {},
-                containerColor = dark_pine,
-                contentColor = Color.White
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Create new list",
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Create new list",
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f)) //fills remaining space
+    }
+
+    if (showAddDialog) {
+        AlertDialog(
+            onDismissRequest = { showAddDialog = false },
+            title = { Text(text = "New List") },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = listName,
+                        onValueChange = { listName = it },
+                        label = { Text("Name") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Text(
+                    "Create",
+                    modifier = Modifier.clickable{
+                        viewModel.addNewList(listName) // insert list into db
+                        showAddDialog = false
+                        listName = ""
+                    }
+                        .padding(10.dp)
+                )
+            },
+            dismissButton = {
+                Text(
+                    "Cancel",
+                    modifier = Modifier.clickable{
+                        showAddDialog = false
+                        listName = ""
+                    }
+                        .padding(10.dp)
                 )
             }
-            Spacer(modifier = Modifier.weight(1f)) //fills remaining space
-        }
+        )
     }
 }
