@@ -1,29 +1,36 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import android.graphics.Paint.Align
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -39,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -56,10 +64,8 @@ object ListDestination : NavigationDestination {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-
 @Composable
 fun ListScreen(navController: NavHostController){
-    //val navController = rememberNavController()
 
     // for list selection sheet
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
@@ -179,17 +185,19 @@ fun ListScreen(navController: NavHostController){
 @Composable
 fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: String?, onDismiss: () -> Unit) {
     Column(
-        modifier = Modifier.padding(1.dp)
+        modifier = Modifier.padding(1.dp),
+
     ) { // first item in list is always All, but in settings screen add option to change default list displayed
-        Box(
+        Row(
             modifier = Modifier
-                .padding(start = 12.dp)
+                .padding(start = 2.dp, end = 2.dp)
                 .fillMaxWidth()
                 .clickable {
                     viewModel.selectList(null)
                     onDismiss()
                 }
                 .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.all_icon), // Or any other suitable icon
@@ -199,21 +207,22 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
             Text(
                 text = "All",
                 fontWeight = if (currList == null) FontWeight.Bold else FontWeight.Normal,
-                modifier = Modifier.padding(start = 36.dp)
+                modifier = Modifier.weight(1f)
             )
         }
         // now display lists stored in the DB
         allLists.forEach { singleList ->
-            Box(
+            var expanded by remember { mutableStateOf(false) } // State for dropdown menu
+            Row(
                 modifier = Modifier
-                    .padding(start = 12.dp)
+                    .padding(start = 2.dp, end = 2.dp)
                     .fillMaxWidth()
                     .clickable {
                         viewModel.selectList(singleList)
                         onDismiss()
                     }
                     .padding(10.dp),
-                //verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 // Choose icon based on singleList.listName
                 val icon = when (singleList.listName) {
@@ -225,16 +234,69 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
 
                 Icon(
                     painter = painterResource(id = icon),
-                    contentDescription = singleList.listName
+                    contentDescription = singleList.listName,
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = singleList.listName,
-                    fontWeight = if (singleList.listName == currList) FontWeight.Bold else FontWeight.Normal,
-                    modifier = Modifier.padding(start = 36.dp)
+                    fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                    modifier = Modifier.weight(1f)
                 )
+                Box() {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "More options",
+                        modifier = Modifier
+                            .clickable {
+                                expanded = true
+                            }
+                    )
+                    // Dropdown menu for MoreVert icon
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = {
+                            expanded = false
+                        }, // Close the menu when clicked outside
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(text = "Rename") },
+                            onClick = {
+                                expanded = false // Close the menu
+                                /* TODO: input field to change name should appear */
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(text = "Delete", color = Color.Red) },
+                            onClick = {
+                                expanded = false // Close the menu
+                                /* TODO: call function to delete the current list */
+                            }
+                        )
+
+                    }
+                }
             }
         }
-
+        // button for creating a new list
+        Row(
+           modifier =  Modifier
+               .padding(start = 2.dp, end = 2.dp)
+               .fillMaxWidth()
+               .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Spacer(modifier = Modifier.weight(1f)) //pushes button to center
+            SmallFloatingActionButton(
+                onClick = {},
+                containerColor = dark_pine,
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Create new list",
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f)) //fills remaining space
+        }
     }
 }
