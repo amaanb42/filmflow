@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -38,17 +37,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.example.inventory.data.api.getDetailsFromID
-import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
-import com.example.inventory.ui.navigation.NavigationDestination
+import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.ui.theme.dark_pine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 object DetailDestination {
-    const val route = "movieDetails/{movieId}"
+    const val ROUTE = "movieDetails/{movieId}"
 
     fun createRoute(movieId: Int): String {
         return "movieDetails/$movieId"
@@ -162,12 +159,11 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    movie?.let { it1 ->
-                        Text(
-                            text = "Released: ${movie?.releaseDate}",
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
+                    Text(
+                        //text = "Released: ${movie?.releaseDate}",
+                        text = (movie?.releaseDate ?: ""),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
 

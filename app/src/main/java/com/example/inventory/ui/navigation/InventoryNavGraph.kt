@@ -32,7 +32,7 @@ fun InventoryNavHost(
             // Pass navController to SearchScreen
         }
         composable(
-            route = DetailDestination.route,
+            route = DetailDestination.ROUTE,
             arguments = listOf(navArgument("movieId") { type = NavType.IntType }) // Define the argument type
         ) { backStackEntry ->
             val movieId = backStackEntry.arguments?.getInt("movieId") ?: error("Missing movieID argument")
