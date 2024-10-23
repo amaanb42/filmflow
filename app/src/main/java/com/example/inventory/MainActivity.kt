@@ -18,8 +18,10 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
@@ -68,6 +70,12 @@ class MainActivity : ComponentActivity() {
                         hasNews = false
                     ),
                     BottomNavigationItem(
+                        title = "Stats",
+                        selectedIcon = Icons.Filled.Star,
+                        unselectedIcon = Icons.Outlined.Star,
+                        hasNews = false
+                    ),
+                    BottomNavigationItem(
                         title = "Settings",
                         selectedIcon = Icons.Filled.Settings,
                         unselectedIcon = Icons.Outlined.Settings,
@@ -91,7 +99,7 @@ class MainActivity : ComponentActivity() {
                             // Show the NavigationBar only on specified screens
                             // Use AnimatedVisibility for the NavigationBar
                             AnimatedVisibility(
-                                visible = currentRoute in listOf(SearchDestination.route), //add ListDestination.route and SettingsDestination.route in comma separated list
+                                visible = currentRoute in listOf(SearchDestination.route, ListDestination.route), //add ListDestination.route and SettingsDestination.route in comma separated list
                                 enter = slideInVertically(
                                     // Start the slide from below the screen
                                     initialOffsetY = { fullHeight -> fullHeight },

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -23,6 +22,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,34 +37,49 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.example.inventory.R
-import com.example.inventory.ui.navigation.NavigationDestination
+import com.example.inventory.data.api.MovieDetails
+import com.example.inventory.data.api.getDetailsFromID
+import com.example.inventory.ui.theme.dark_pine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
-object DetailDestination : NavigationDestination {
-    override val route = "details"
-    override val titleRes = R.string.movie_details // Add a string resource for the title
+object DetailDestination {
+    const val ROUTE = "movieDetails/{movieId}"
+
+    fun createRoute(movieId: Int): String {
+        return "movieDetails/$movieId"
+    }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
-    //val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
+    var movie by remember { mutableStateOf<MovieDetails?>(null) }
+    val coroutineScope = rememberCoroutineScope()
 
+    LaunchedEffect(key1 = movieId) {
+        coroutineScope.launch(Dispatchers.IO) { // Launch in IO thread
+            movie = getDetailsFromID(movieId)
+        }
+    }
     Scaffold(
         //modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
-
-                    Text(
-                        text = "Yeah....I'm man", // Replace with actual movie title when available
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                    )
+                    // Movie title in top bar
+                    movie?.let {
+                        Text(
+                            text = it.title, // Replace with actual movie title when available
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1
+                        )
+                    }
                 },
+                // Back icon
                 navigationIcon = {
                     IconButton(onClick = { navController.navigate(SearchDestination.route) }) {
                         Icon(
@@ -75,17 +95,18 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
                 //scrollBehavior = topAppBarScrollBehavior
             )
         },
+        // Add movie to list FAB
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { /* TODO: Handle FAB click */ },
                 icon = {
                     Icon(
                         imageVector = Icons.Filled.Add, // You can change the icon
-                        contentDescription = "Edit"
+                        contentDescription = "Add to list"
                     )
                 },
                 text = { Text("Add") },
-                containerColor = Color.Blue,
+                containerColor = dark_pine,
                 contentColor = Color.White
             )
         }
@@ -98,13 +119,14 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically // Align items vertically in the center
             ) {
+                // Card with movie art image
                 Card(
                     modifier = Modifier
                         .padding(top = 120.dp)
-                        .padding(start = 20.dp)
+                        .padding(start = 30.dp)
                 ) {
                     AsyncImage(
-                        model = "https://preview.redd.it/thoughts-on-my-man-edit-v0-km5g7hq4fnbc1.jpeg?width=750&format=pjpg&auto=webp&s=d05a0ad74a914f35affb37c9e29b0e95850d7ac4",
+                        model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
                         contentDescription = null,
                         modifier = Modifier
                             .clickable { }
@@ -118,30 +140,29 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column {
+                    movie?.let { it1 ->
+                        // Movie title
+                        Text(
+                            text = it1.title,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                    }
                     Text(
-                        text = "Batman Begins I Guess",
+                        text = (movie?.runtime?.toString() ?: "") + " minutes", // Convert to String or use empty string if null
                         style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Text(
+                        text = (movie?.rating?.toString() ?: "") + "/10", // Convert to String or use empty string if null
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
                     Text(
-                        text = "May 4th, 2024",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Text(
-                        text = "1h30m",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Text(
-                        text = "PG-13",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Text(
-                        text = "72% Audience",
-                        style = MaterialTheme.typography.bodyMedium,
+                        //text = "Released: ${movie?.releaseDate}",
+                        text = (movie?.releaseDate ?: ""),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
@@ -154,10 +175,12 @@ fun MovieDetailsScreen(/*movieId: String?,*/ navController: NavHostController) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-                Text(
-                    text = "A young Bruce Wayne (Christian Bale) travels to the Far East, where he's trained in the martial arts by Henri Ducard (Liam Neeson), a member of the mysterious League of Shadows. When Ducard reveals the League's true purpose -- the complete destruction of Gotham City -- Wayne returns to Gotham intent on cleaning up the city without resorting to murder. With the help of Alfred (Michael Caine), his loyal butler, and Lucius Fox (Morgan Freeman), a tech expert at Wayne Enterprises, Batman is born.",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                movie?.let { it1 ->
+                    Text(
+                        text = it1.overview,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
 
 

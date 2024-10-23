@@ -1,7 +1,6 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -46,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,7 +53,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieSearchResult
-import com.example.inventory.data.api.apiRequest
+import com.example.inventory.data.api.displayRandomMovie
 import com.example.inventory.data.api.getGenre
 import com.example.inventory.data.api.getMovieQuery
 import com.example.inventory.data.api.getTrendingMovies
@@ -64,6 +62,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 object SearchDestination : NavigationDestination {
     override val route = "search"
@@ -80,9 +79,10 @@ fun SearchScreen(navController: NavHostController) {
     var active by remember { mutableStateOf(false) }
     var tempMovieList by remember { mutableStateOf(mutableListOf<MovieSearchResult>()) }
     var trendingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
+    val coroutineScope = rememberCoroutineScope()
     var genreList by remember { mutableStateOf(listOf<Pair<String, Int>>()) }
     var randomizeGenre by remember { mutableStateOf(Pair<String, Int>("",1))}
-    val coroutineScope = rememberCoroutineScope()
+
 
     val searchBarPadding by animateDpAsState(
         targetValue = if (active) 0.dp else 24.dp,
@@ -165,11 +165,13 @@ fun SearchScreen(navController: NavHostController) {
                     tempMovieList.clear()
                 }
             }
+
             val sheetState = rememberModalBottomSheetState()
             var isSheetOpen by rememberSaveable {
                 mutableStateOf(false)
             }
-            Button(//Code for the Randomize Button. Lets comment pls took me 15 minutes to find this shit
+            // Randomize button
+            Button(
                 onClick = {
                     isSheetOpen = true
                 },
@@ -182,6 +184,7 @@ fun SearchScreen(navController: NavHostController) {
             ) {
                 Text(text = stringResource(R.string.random_button))
             }
+
             if(isSheetOpen){
                 ModalBottomSheet(
                     sheetState = sheetState,
@@ -201,7 +204,6 @@ fun SearchScreen(navController: NavHostController) {
                             )
                         }
                     ) {
-                        println("genreArray")
                         coroutineScope.launch(Dispatchers.IO) {
                             val result = async {
                                 genreList = getGenre()
@@ -210,21 +212,31 @@ fun SearchScreen(navController: NavHostController) {
                         LazyColumn (
                             modifier = Modifier.padding(it)
                         ) {
-                            println(genreList)
+                            var movie_id = 0
                             items(genreList.size){
-                                genre ->
+                                    genre ->
                                 ListItem(
                                     modifier = Modifier.combinedClickable (
                                         onClick = {
 //                                            isSheetOpen = false
 //                                            randomizeGenre = genreList[genre]
 //                                            println("Chosen: $randomizeGenre")
+
                                         },
                                     ).clickable {
                                         isSheetOpen = false
                                         randomizeGenre = genreList[genre]
                                         println("Chosen: $randomizeGenre")
-                                        navController.navigate(DetailDestination.route)
+                                        coroutineScope.launch(Dispatchers.IO) {
+                                            val result = async {
+                                                movie_id = displayRandomMovie(randomizeGenre)
+                                            }.await()
+                                            withContext(Dispatchers.Main){
+                                                navigateToMovieDetails(navController, movie_id)
+                                            }
+                                        }
+
+
                                     },
                                     headlineContent = {
 //                                        println(genre)
@@ -237,6 +249,9 @@ fun SearchScreen(navController: NavHostController) {
 
                 }
             }
+
+
+
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.padding(top = 15.dp, start = 20.dp, end = 20.dp)
@@ -262,7 +277,9 @@ fun SearchScreen(navController: NavHostController) {
                                 model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .clickable {navController.navigate(DetailDestination.route)}
+                                    .clickable {
+                                        navigateToMovieDetails(navController, movie.id)
+                                    }
                                         .width(135.dp)
                                     .aspectRatio(0.6667f),
                                 contentScale = ContentScale.Crop
@@ -280,6 +297,7 @@ fun SearchScreen(navController: NavHostController) {
     }
 }
 
+// Shows the search results as a vertical grid after entering query
 @Composable
 fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostController) {
     if (movieList.isNotEmpty()) {
@@ -300,12 +318,15 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
                             model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                             contentDescription = null,
                             modifier = Modifier
-                                .clickable {navController.navigate(DetailDestination.route)}
+                                .clickable {
+                                    navigateToMovieDetails(navController, movie.id)
+                                }
                                 .fillMaxWidth()
                                 .aspectRatio(0.6667f),
                             contentScale = ContentScale.Crop
                         )
                     }
+                    // Movie title
                     Text(
                         text = movie.title,
                         modifier = Modifier.padding(top = 8.dp), // Add some spacing between image and text
@@ -315,4 +336,9 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
             }
         }
     }
+}
+
+// function that handles navController and passes movieId to detail screen
+fun navigateToMovieDetails(navController: NavHostController, movieId: Int) {
+    navController.navigate(DetailDestination.createRoute(movieId))
 }

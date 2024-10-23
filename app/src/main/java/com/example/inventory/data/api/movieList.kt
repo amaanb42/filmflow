@@ -9,37 +9,37 @@ import kotlin.random.Random
 
 const val apiAccessToken = BuildConfig.API_ACCESS_TOKEN
 
-fun apiRequest(url: String, jsonTitle: String) : JSONArray {
+fun apiRequest(url: String): JSONObject { // Changed return type to JSONObject
     val client = OkHttpClient()
     val request = Request.Builder()
-        .url(url) // Added sort_by parameter
+        .url(url)
         .get()
         .addHeader("accept", "application/json")
         .addHeader("Authorization", "Bearer $apiAccessToken")
-        .build()
+    .build()
 
     val response = client.newCall(request).execute()
     val responseBody = response.body?.string()
-    println("results")
-    val results : JSONArray = JSONObject(responseBody).getJSONArray((jsonTitle))
-
-    return results
+    return JSONObject(responseBody) // Return the whole JSON object
 }
 
-fun getMovieQuery(name: String): MutableList<MovieSearchResult>{
+fun getMovieQuery(name: String): MutableList<MovieSearchResult> {
     // Gets rid of trailing and leading space and replaces the middle spaces with "%20"
-    val queryName = name.trim().replace(" ","%20")
+    val queryName = name.trim().replace(" ", "%20")
 
-    val movieList = parseMovieList(apiRequest("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1", "results"))
+    val movieJson = apiRequest("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1")
+    val resultsArray = movieJson.getJSONArray("results") // Extract the "results" array
 
+    val movieList = parseMovieList(resultsArray)
     // Sort the movieList by popularity in descending order
     movieList.sortByDescending { it.popularity }
 
     return movieList
 }
 
-fun getTrendingMovies(): List<MovieSearchResult>{
-    return parseMovieList(apiRequest("https://api.themoviedb.org/3/trending/movie/week?language=en-US", "results"))
+fun getTrendingMovies(): List<MovieSearchResult> {
+    val trendingMoviesJson = apiRequest("https://api.themoviedb.org/3/trending/movie/week?language=en-US")
+    return parseMovieList(trendingMoviesJson.getJSONArray("results"))
 }
 
 // Does it pull all this data for each movie in the search result?
@@ -67,19 +67,38 @@ fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
     return movieAttributes
 }
 
-//Gets list of all genres available in TMDB
+fun parseMovieDetails(movie: JSONObject): MovieDetails {
+    return MovieDetails(
+        movie.getString("title"),
+        movie.getString("overview"),
+        movie.getString("poster_path") ?: "",
+        movie.getString("release_date") ?: "",
+        movie.getInt("runtime"),
+        movie.getDouble("vote_average")
+    )
+}
+
+
+fun getDetailsFromID(id: Int): MovieDetails {
+    val movieJson = apiRequest("https://api.themoviedb.org/3/movie/${id}?language=en-US")
+    println(movieJson)
+    return parseMovieDetails(movieJson) // Parse the JSON object here
+}
+
 fun getGenre(): MutableList<Pair<String, Int>> {
-    val genre = apiRequest("https://api.themoviedb.org/3/genre/movie/list?language=en", "genres")
+    val genre = apiRequest("https://api.themoviedb.org/3/genre/movie/list?language=en").getJSONArray("genres")
     val movieGenre: MutableList<Pair<String, Int>> = mutableListOf()
     for(i in 0 until genre.length()){
-        movieGenre.add(genre.getJSONObject(i).get("name").toString() to (genre.getJSONObject(i).get("id")) as Int)
+        movieGenre.add(genre.getJSONObject(i).get("name").toString() to (genre.getJSONObject(
+            i
+        ).get("id")) as Int)
     }
     return movieGenre
 }
 
 fun displayRandomMovie(movie: Pair<String, Int>):Int{
-    val queryMovie = apiRequest("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en&page=1&sort_by=popularity.desc&with_genres=${movie.second.toString()}", "results")
-    val movie = queryMovie[Random.nextInt(queryMovie.length())]
-
-    return 1
+    val queryMovie = apiRequest("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en&page=1&sort_by=popularity.desc&with_genres=${movie.second.toString()}").getJSONArray("results")
+    val movie = queryMovie.getJSONObject(Random.nextInt(queryMovie.length())).get("id")
+    println(movie)
+    return movie as Int
 }

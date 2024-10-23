@@ -10,7 +10,12 @@ interface NavigationDestination {
     val route: String
 
     /**
-     * String resource id to that contains title to be displayed for the screen.
+     * String resource id that contains the title to be displayed for the screen.
      */
     val titleRes: Int
+
+    /**
+     * Optional function to create a full route (useful for routes with arguments)
+     */
 }
+
