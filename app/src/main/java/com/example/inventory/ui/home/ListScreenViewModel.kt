@@ -78,7 +78,12 @@ class ListScreenViewModel(
         }
     }
 
-    // TODO: function to edit list name in db
+    // function to edit list name in db
+    fun renameList(oldName: String, newName: String) {
+        viewModelScope.launch {
+            userListRepository.updateListByName(oldName=oldName, newName=newName)
+        }
+    }
 }
 // pass the repository to ListScreenViewModel
 class ListScreenViewModelFactory(

@@ -59,6 +59,7 @@ import com.example.inventory.R
 import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.dark_pine
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 object ListDestination : NavigationDestination {
@@ -188,6 +189,10 @@ fun ListScreen(navController: NavHostController){
 
 @Composable
 fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: String?, onDismiss: () -> Unit) {
+    // these are used for the rename list dialog
+    var showRenameDialog by remember { mutableStateOf(false) }
+    var oldListName by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier.padding(1.dp),
 
@@ -214,6 +219,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                 modifier = Modifier.weight(1f)
             )
         }
+        // TODO: separate default lists and user-created lists, so that all user-created lists appear after defaults
         // now display lists stored in the DB
         allLists.forEach { singleList ->
             var expanded by remember { mutableStateOf(false) } // State for dropdown menu
@@ -266,8 +272,9 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                             DropdownMenuItem(
                                 text = { Text(text = "Rename") },
                                 onClick = {
+                                    showRenameDialog = true // show the rename list dialog
+                                    oldListName = singleList.listName
                                     expanded = false // Close the menu
-                                    /* TODO: input field to change name should appear */
                                 }
                             )
                             DropdownMenuItem(
@@ -287,11 +294,51 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
         // button for creating a new list
         AddNewListButtonWithDialog(viewModel)
     }
+    // dialog for renaming a list
+    if (showRenameDialog) {
+        var newListName by remember { mutableStateOf(oldListName) }
+
+        AlertDialog(
+            onDismissRequest = { showRenameDialog = false},
+            title = { Text(text = "Rename") },
+            text = {
+                Column {
+                    Text(text = "Give your list a new name:")
+                    Spacer(modifier = Modifier.height(15.dp))
+                    OutlinedTextField(
+                        value = newListName,
+                        onValueChange = { newListName = it },
+                        label = { Text("Name") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Text(
+                    "Rename",
+                    modifier = Modifier.clickable{
+                        viewModel.renameList(oldListName, newListName)
+                        showRenameDialog = false
+                    }
+                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                )
+            },
+            dismissButton = {
+                Text(
+                    "Cancel",
+                    modifier = Modifier.clickable{
+                        showRenameDialog = false
+                    }
+                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                )
+            }
+        )
+    }
 }
 
 @Composable
 fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
-    var showAddDialog by remember { mutableStateOf(false) }
+    var showCreateDialog by remember { mutableStateOf(false) }
     var listName by remember { mutableStateOf("") }
 
     // the button
@@ -304,7 +351,7 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
     ) {
         Spacer(modifier = Modifier.weight(1f)) //pushes button to center
         SmallFloatingActionButton(
-            onClick = { showAddDialog = true },
+            onClick = { showCreateDialog = true },
             containerColor = dark_pine,
             contentColor = Color.White
         ) {
@@ -315,13 +362,15 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
         }
         Spacer(modifier = Modifier.weight(1f)) //fills remaining space
     }
-
-    if (showAddDialog) {
+    // the dialog
+    if (showCreateDialog) {
         AlertDialog(
-            onDismissRequest = { showAddDialog = false },
-            title = { Text(text = "New List") },
+            onDismissRequest = { showCreateDialog = false },
+            title = { Text(text = "Create") },
             text = {
                 Column {
+                    Text(text = "Enter a name for your new list:")
+                    Spacer(modifier = Modifier.height(15.dp))
                     OutlinedTextField(
                         value = listName,
                         onValueChange = { listName = it },
@@ -335,20 +384,20 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
                     "Create",
                     modifier = Modifier.clickable{
                         viewModel.addNewList(listName) // insert list into db
-                        showAddDialog = false
+                        showCreateDialog = false
                         listName = ""
                     }
-                        .padding(10.dp)
+                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
                 )
             },
             dismissButton = {
                 Text(
                     "Cancel",
                     modifier = Modifier.clickable{
-                        showAddDialog = false
+                        showCreateDialog = false
                         listName = ""
                     }
-                        .padding(10.dp)
+                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
                 )
             }
         )
