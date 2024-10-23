@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,6 +28,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
@@ -185,72 +185,48 @@ fun SearchScreen(navController: NavHostController) {
                 Text(text = stringResource(R.string.random_button))
             }
 
-            if(isSheetOpen){
+            if (isSheetOpen) {
                 ModalBottomSheet(
+                    containerColor = MaterialTheme.colorScheme.surface,
                     sheetState = sheetState,
-                    onDismissRequest = {
-                        isSheetOpen = false
-                    }
+                    onDismissRequest = { isSheetOpen = false },
                 ) {
-                    Scaffold(
-                        topBar = {
-                            Text(
-                                text="Genre",
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 16.dp),
-                                textAlign = TextAlign.Center,
-                                fontSize = 25.sp
+                    coroutineScope.launch(Dispatchers.IO) {
+                        async { genreList = getGenre() }.await()
+                    }
+                    LazyVerticalGrid( // Use LazyVerticalGrid
+                        columns = GridCells.Fixed(2), // Set two columns
+                        //contentPadding = innerPadding, // Apply innerPadding here
+                        verticalArrangement = Arrangement.spacedBy(0.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        modifier = Modifier.padding(horizontal = 24.dp)
+                    ) {
+                        var randMovieID = 0
+                        items(genreList.size) { genre ->
+                            ListItem(
+                                modifier = Modifier.combinedClickable(
+                                    onClick = { },
+                                ).clickable {
+                                    isSheetOpen = false
+                                    randomizeGenre = genreList[genre]
+                                    println("Chosen: $randomizeGenre")
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        async {
+                                            randMovieID = displayRandomMovie(randomizeGenre)
+                                        }.await()
+                                        withContext(Dispatchers.Main) {
+                                            navigateToMovieDetails(navController, randMovieID)
+                                        }
+                                    }
+                                },
+                                headlineContent = {
+                                    Text(text = genreList[genre].first)
+                                }
                             )
                         }
-                    ) {
-                        coroutineScope.launch(Dispatchers.IO) {
-                            async {
-                                genreList = getGenre()
-                            }.await()
-                        }
-                        LazyColumn (
-                            modifier = Modifier.padding(it)
-                        ) {
-                            var randMovieID = 0
-                            items(genreList.size){
-                                    genre ->
-                                ListItem(
-                                    modifier = Modifier.combinedClickable (
-                                        onClick = {
-//                                            isSheetOpen = false
-//                                            randomizeGenre = genreList[genre]
-//                                            println("Chosen: $randomizeGenre")
-
-                                        },
-                                    ).clickable {
-                                        isSheetOpen = false
-                                        randomizeGenre = genreList[genre]
-                                        println("Chosen: $randomizeGenre")
-                                        coroutineScope.launch(Dispatchers.IO) {
-                                            async {
-                                                randMovieID = displayRandomMovie(randomizeGenre)
-                                            }.await()
-                                            withContext(Dispatchers.Main){
-                                                navigateToMovieDetails(navController, randMovieID)
-                                            }
-                                        }
-
-
-                                    },
-                                    headlineContent = {
-//                                        println(genre)
-                                        Text(text=genreList[genre].first)
-                                    }
-                                )
-                            }
-                        }
                     }
-
                 }
             }
-
-
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
