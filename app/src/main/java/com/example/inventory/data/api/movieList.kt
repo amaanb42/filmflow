@@ -28,6 +28,7 @@ fun getMovieQuery(name: String): MutableList<MovieSearchResult> {
     val queryName = name.trim().replace(" ", "%20")
 
     val movieJson = apiRequest("https://api.themoviedb.org/3/search/movie?query=${queryName}&include_adult=false&language=en-US&page=1")
+
     val resultsArray = movieJson.getJSONArray("results") // Extract the "results" array
 
     val movieList = parseMovieList(resultsArray)
@@ -48,6 +49,8 @@ fun getTrendingMovies(): List<MovieSearchResult> {
 // maybe have a MovieSearchResult class and a MovieDetailed class
 fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
     val movieAttributes: MutableList<MovieSearchResult> = mutableListOf()
+    val excludedKeywordId = 155477 // The ID for "softcore"
+
     for ( i in 0 until movies.length()){
         val movie = movies.getJSONObject(i)
         val movieToAdd = MovieSearchResult(
@@ -94,7 +97,7 @@ fun getGenre(): MutableList<Pair<String, Int>> {
 }
 
 fun displayRandomMovie(movie: Pair<String, Int>):Int{
-    val queryMovie = apiRequest("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en&page=1&sort_by=popularity.desc&with_genres=${movie.second.toString()}").getJSONArray("results")
+    val queryMovie = apiRequest("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en&page=1&sort_by=popularity.desc&with_genres=${movie.second}").getJSONArray("results")
     val movie = queryMovie.getJSONObject(Random.nextInt(queryMovie.length())).get("id")
     return movie as Int
 }
