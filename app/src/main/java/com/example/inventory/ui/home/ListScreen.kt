@@ -7,23 +7,32 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -56,10 +65,8 @@ object ListDestination : NavigationDestination {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-
 @Composable
 fun ListScreen(navController: NavHostController){
-    //val navController = rememberNavController()
 
     // for list selection sheet
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
@@ -178,45 +185,57 @@ fun ListScreen(navController: NavHostController){
 
 @Composable
 fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: String?, onDismiss: () -> Unit) {
+    // these are used for the rename list dialog
+    var showRenameDialog by remember { mutableStateOf(false) }
+    var oldListName by remember { mutableStateOf("") }
+
     Column(
-        modifier = Modifier.padding(1.dp)
-    ) { // first item in list is always All, but in settings screen add option to change default list displayed
-        Box(
+        modifier = Modifier.padding(1.dp),
+
+    ) {
+//        HorizontalDivider(
+//            modifier = Modifier.padding(start=20.dp, end=20.dp, top=5.dp, bottom=5.dp)
+//        )
+        // first item in list is always All, but in settings screen add option to change default list displayed
+        Row(
             modifier = Modifier
-                .padding(start = 12.dp)
+                .padding(start = 2.dp, end = 2.dp)
                 .fillMaxWidth()
                 .clickable {
                     viewModel.selectList(null)
                     onDismiss()
                 }
                 .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.all_icon), // Or any other suitable icon
-                contentDescription = "All Lists"
+                contentDescription = "All",
+                modifier = Modifier.padding(start=8.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "All",
                 fontWeight = if (currList == null) FontWeight.Bold else FontWeight.Normal,
-                modifier = Modifier.padding(start = 36.dp)
+                modifier = Modifier.weight(1f)
             )
         }
-        // now display lists stored in the DB
-        allLists.forEach { singleList ->
-            Box(
+        // separate default lists and user-created lists, so that all user-created lists appear after defaults
+        // display default lists first
+        viewModel.defaultLists.forEach { defaultList ->
+            Row(
                 modifier = Modifier
-                    .padding(start = 12.dp)
+                    .padding(start = 2.dp, end = 2.dp)
                     .fillMaxWidth()
                     .clickable {
-                        viewModel.selectList(singleList)
+                        viewModel.selectList(defaultList)
                         onDismiss()
                     }
                     .padding(10.dp),
-                //verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 // Choose icon based on singleList.listName
-                val icon = when (singleList.listName) {
+                val icon = when (defaultList.listName) {
                     "Completed" -> R.drawable.completed_icon
                     "Planning" -> R.drawable.planning_icon
                     "Watching" -> R.drawable.watching_icon
@@ -225,16 +244,204 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
 
                 Icon(
                     painter = painterResource(id = icon),
-                    contentDescription = singleList.listName
+                    contentDescription = defaultList.listName,
+                    modifier = Modifier.padding(start=8.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = singleList.listName,
-                    fontWeight = if (singleList.listName == currList) FontWeight.Bold else FontWeight.Normal,
-                    modifier = Modifier.padding(start = 36.dp)
+                    text = defaultList.listName,
+                    fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
+        HorizontalDivider(
+            modifier = Modifier.padding(start=20.dp, end=20.dp, top=5.dp, bottom=5.dp)
+        )
+        // now display lists stored in the DB
+        allLists.forEach { singleList ->
+            if (singleList.listName !in listOf("Completed", "Planning", "Watching")) {
+                var expanded by remember { mutableStateOf(false) } // State for dropdown menu
+                Row(
+                    modifier = Modifier
+                        .padding(start = 2.dp, end = 2.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.selectList(singleList)
+                            onDismiss()
+                        }
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.custom_list), // custom icon when user makes list
+                        contentDescription = singleList.listName,
+                        modifier = Modifier.padding(start=8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = singleList.listName,
+                        fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Box {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More options",
+                            modifier = Modifier
+                                .clickable {
+                                    expanded = true
+                                }
+                        )
+                        // Dropdown menu for MoreVert icon
+                        DropdownMenu(
+                            shape = RoundedCornerShape(18.dp),
+                            expanded = expanded,
+                            onDismissRequest = {
+                                expanded = false
+                            }, // Close the menu when clicked outside
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(text = "Rename") },
+                                onClick = {
+                                    showRenameDialog = true // show the rename list dialog
+                                    oldListName = singleList.listName
+                                    expanded = false // Close the menu
+                                }
+                            )
+                            DropdownMenuItem(
+                                text = { Text(text = "Delete", color = Color.Red) },
+                                onClick = {
+                                    viewModel.deleteList(singleList.listName) // delete the list
+                                    viewModel.selectList(null) // reset back to default "All"
+                                    expanded = false // Close the menu
+                                }
+                            )
 
+                        }
+                    }
+                }
+            }
+        }
+        // button for creating a new list
+        AddNewListButtonWithDialog(viewModel)
+    }
+    // dialog for renaming a list
+    if (showRenameDialog) {
+        var newListName by remember { mutableStateOf(oldListName) }
+
+        AlertDialog(
+            onDismissRequest = { showRenameDialog = false},
+            title = { Text(text = "Rename") },
+            text = {
+                Column {
+                    Text(text = "Give your list a new name:")
+                    Spacer(modifier = Modifier.height(15.dp))
+                    OutlinedTextField(
+                        shape = RoundedCornerShape(18.dp),
+                        value = newListName,
+                        onValueChange = { newListName = it },
+                        label = { Text(
+                            "New Name",
+                            color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
+                        ) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Text(
+                    "Rename",
+                    modifier = Modifier.clickable{
+                        viewModel.renameList(oldListName, newListName)
+                        showRenameDialog = false
+                    }
+                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                )
+            },
+            dismissButton = {
+                Text(
+                    "Cancel",
+                    modifier = Modifier.clickable{
+                        showRenameDialog = false
+                    }
+                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                )
+            }
+        )
+    }
+}
+
+@Composable
+fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
+    var showCreateDialog by remember { mutableStateOf(false) }
+    var listName by remember { mutableStateOf("") }
+
+    // the button
+    Row(
+        modifier =  Modifier
+            .padding(start = 2.dp, end = 2.dp)
+            .fillMaxWidth()
+            .padding(10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.weight(1f)) //pushes button to center
+        SmallFloatingActionButton(
+            onClick = { showCreateDialog = true },
+            containerColor = dark_pine,
+            contentColor = Color.White
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Create new list",
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f)) //fills remaining space
+    }
+    // the dialog for creating a new custom list
+    if (showCreateDialog) {
+        AlertDialog(
+            onDismissRequest = { showCreateDialog = false },
+            title = { Text(text = "Create a List") },
+            text = {
+                Column {
+                    Text(text = "Enter a name for your new list:")
+                    Spacer(modifier = Modifier.height(15.dp))
+                    OutlinedTextField(
+                        shape = RoundedCornerShape(18.dp),
+                        value = listName,
+                        onValueChange = { listName = it },
+                        label = {
+                            Text(
+                                "Name",
+                                color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            },
+            confirmButton = {
+                Text(
+                    "Create",
+                    modifier = Modifier.clickable{
+                        viewModel.addNewList(listName) // insert list into db
+                        showCreateDialog = false
+                        listName = ""
+                    }
+                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                )
+            },
+            dismissButton = {
+                Text(
+                    "Cancel",
+                    modifier = Modifier.clickable{
+                        showCreateDialog = false
+                        listName = ""
+                    }
+                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                )
+            }
+        )
     }
 }
