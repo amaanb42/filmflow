@@ -1,8 +1,6 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
-import android.graphics.Paint.Align
-import android.hardware.biometrics.BiometricManager.Strings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +18,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -51,9 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.inventory.InventoryApplication
@@ -61,7 +56,6 @@ import com.example.inventory.R
 import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.dark_pine
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 object ListDestination : NavigationDestination {
@@ -199,9 +193,9 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
         modifier = Modifier.padding(1.dp),
 
     ) {
-        HorizontalDivider(
-            modifier = Modifier.padding(start=20.dp, end=20.dp, top=5.dp, bottom=5.dp)
-        )
+//        HorizontalDivider(
+//            modifier = Modifier.padding(start=20.dp, end=20.dp, top=5.dp, bottom=5.dp)
+//        )
         // first item in list is always All, but in settings screen add option to change default list displayed
         Row(
             modifier = Modifier
@@ -290,7 +284,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
                         modifier = Modifier.weight(1f)
                     )
-                    Box() {
+                    Box {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
                             contentDescription = "More options",
