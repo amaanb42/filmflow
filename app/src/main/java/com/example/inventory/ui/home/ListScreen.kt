@@ -31,6 +31,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -300,6 +301,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         )
                         // Dropdown menu for MoreVert icon
                         DropdownMenu(
+                            shape = RoundedCornerShape(18.dp),
                             expanded = expanded,
                             onDismissRequest = {
                                 expanded = false
@@ -342,9 +344,13 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     Text(text = "Give your list a new name:")
                     Spacer(modifier = Modifier.height(15.dp))
                     OutlinedTextField(
+                        shape = RoundedCornerShape(18.dp),
                         value = newListName,
                         onValueChange = { newListName = it },
-                        label = { Text("Name") },
+                        label = { Text(
+                            "New Name",
+                            color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
+                        ) },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -398,19 +404,25 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
         }
         Spacer(modifier = Modifier.weight(1f)) //fills remaining space
     }
-    // the dialog
+    // the dialog for creating a new custom list
     if (showCreateDialog) {
         AlertDialog(
             onDismissRequest = { showCreateDialog = false },
-            title = { Text(text = "Create") },
+            title = { Text(text = "Add a List") },
             text = {
                 Column {
                     Text(text = "Enter a name for your new list:")
                     Spacer(modifier = Modifier.height(15.dp))
                     OutlinedTextField(
+                        shape = RoundedCornerShape(18.dp),
                         value = listName,
                         onValueChange = { listName = it },
-                        label = { Text("Name") },
+                        label = {
+                            Text(
+                                "Name",
+                                color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
