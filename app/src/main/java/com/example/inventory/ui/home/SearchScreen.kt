@@ -80,7 +80,8 @@ fun SearchScreen(navController: NavHostController) {
     var active by remember { mutableStateOf(false) }
     var tempMovieList by remember { mutableStateOf(mutableListOf<MovieSearchResult>()) }
     var trendingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
-    var genreList by remember { mutableStateOf(listOf<String>()) }
+    var genreList by remember { mutableStateOf(listOf<Pair<String, Int>>()) }
+    var randomizeGenre by remember { mutableStateOf(Pair<String, Int>("",1))}
     val coroutineScope = rememberCoroutineScope()
 
     val searchBarPadding by animateDpAsState(
@@ -215,12 +216,19 @@ fun SearchScreen(navController: NavHostController) {
                                 ListItem(
                                     modifier = Modifier.combinedClickable (
                                         onClick = {
-                                            //sd
+//                                            isSheetOpen = false
+//                                            randomizeGenre = genreList[genre]
+//                                            println("Chosen: $randomizeGenre")
                                         },
-                                    ),
+                                    ).clickable {
+                                        isSheetOpen = false
+                                        randomizeGenre = genreList[genre]
+                                        println("Chosen: $randomizeGenre")
+                                        navController.navigate(DetailDestination.route)
+                                    },
                                     headlineContent = {
 //                                        println(genre)
-                                        Text(text=genreList[genre])
+                                        Text(text=genreList[genre].first)
                                     }
                                 )
                             }

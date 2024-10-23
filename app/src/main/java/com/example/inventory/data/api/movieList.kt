@@ -5,6 +5,7 @@ import okhttp3.Request
 import  com.example.inventory.BuildConfig
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.random.Random
 
 const val apiAccessToken = BuildConfig.API_ACCESS_TOKEN
 
@@ -41,15 +42,6 @@ fun getTrendingMovies(): List<MovieSearchResult>{
     return parseMovieList(apiRequest("https://api.themoviedb.org/3/trending/movie/week?language=en-US", "results"))
 }
 
-fun getGenre(): MutableList<String> {
-    val genre = apiRequest("https://api.themoviedb.org/3/genre/movie/list?language=en", "genres")
-    val movieGenre: MutableList<String> = mutableListOf()
-    for(i in 0 until genre.length()){
-        movieGenre.add(genre.getJSONObject(i).get("name").toString()?:"")
-    }
-    return movieGenre
-}
-
 // Does it pull all this data for each movie in the search result?
 // If so, we should only pull the id, title, poster, and popularity for the results.
 // Then get all of the extensive data for a movie once the user has selected it
@@ -73,4 +65,21 @@ fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
 //        println("${movieToAdd}")
     }
     return movieAttributes
+}
+
+//Gets list of all genres available in TMDB
+fun getGenre(): MutableList<Pair<String, Int>> {
+    val genre = apiRequest("https://api.themoviedb.org/3/genre/movie/list?language=en", "genres")
+    val movieGenre: MutableList<Pair<String, Int>> = mutableListOf()
+    for(i in 0 until genre.length()){
+        movieGenre.add(genre.getJSONObject(i).get("name").toString() to (genre.getJSONObject(i).get("id")) as Int)
+    }
+    return movieGenre
+}
+
+fun displayRandomMovie(movie: Pair<String, Int>):Int{
+    val queryMovie = apiRequest("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en&page=1&sort_by=popularity.desc&with_genres=${movie.second.toString()}", "results")
+    val movie = queryMovie[Random.nextInt(queryMovie.length())]
+
+    return 1
 }
