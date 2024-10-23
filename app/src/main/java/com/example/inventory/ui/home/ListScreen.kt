@@ -28,6 +28,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
@@ -210,7 +211,8 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.all_icon), // Or any other suitable icon
-                contentDescription = "All"
+                contentDescription = "All",
+                modifier = Modifier.padding(start=8.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
@@ -219,23 +221,22 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                 modifier = Modifier.weight(1f)
             )
         }
-        // TODO: separate default lists and user-created lists, so that all user-created lists appear after defaults
-        // now display lists stored in the DB
-        allLists.forEach { singleList ->
-            var expanded by remember { mutableStateOf(false) } // State for dropdown menu
+        // separate default lists and user-created lists, so that all user-created lists appear after defaults
+        // display default lists first
+        viewModel.defaultLists.forEach { defaultList ->
             Row(
                 modifier = Modifier
                     .padding(start = 2.dp, end = 2.dp)
                     .fillMaxWidth()
                     .clickable {
-                        viewModel.selectList(singleList)
+                        viewModel.selectList(defaultList)
                         onDismiss()
                     }
                     .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Choose icon based on singleList.listName
-                val icon = when (singleList.listName) {
+                val icon = when (defaultList.listName) {
                     "Completed" -> R.drawable.completed_icon
                     "Planning" -> R.drawable.planning_icon
                     "Watching" -> R.drawable.watching_icon
@@ -244,15 +245,46 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
 
                 Icon(
                     painter = painterResource(id = icon),
-                    contentDescription = singleList.listName,
+                    contentDescription = defaultList.listName,
+                    modifier = Modifier.padding(start=8.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = singleList.listName,
-                    fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                    text = defaultList.listName,
+                    fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
                     modifier = Modifier.weight(1f)
                 )
-                if (singleList.listName !in listOf("Completed", "Planning", "Watching")) {
+            }
+        }
+        HorizontalDivider(
+            modifier = Modifier.padding(start=20.dp, end=20.dp, top=5.dp, bottom=5.dp)
+        )
+        // now display lists stored in the DB
+        allLists.forEach { singleList ->
+            if (singleList.listName !in listOf("Completed", "Planning", "Watching")) {
+                var expanded by remember { mutableStateOf(false) } // State for dropdown menu
+                Row(
+                    modifier = Modifier
+                        .padding(start = 2.dp, end = 2.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.selectList(singleList)
+                            onDismiss()
+                        }
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.custom_list), // custom icon when user makes list
+                        contentDescription = singleList.listName,
+                        modifier = Modifier.padding(start=8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = singleList.listName,
+                        fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                        modifier = Modifier.weight(1f)
+                    )
                     Box() {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
