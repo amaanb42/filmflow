@@ -204,7 +204,6 @@ fun SearchScreen(navController: NavHostController) {
                                 ).clickable {
                                     isSheetOpen = false
                                     randomizeGenre = genreList[genre]
-                                    println("Chosen: $randomizeGenre")
                                     coroutineScope.launch(Dispatchers.IO) {
                                         async {
                                             randMovieID = displayRandomMovie(randomizeGenre)

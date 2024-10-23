@@ -61,8 +61,6 @@ fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
         if((movie.get("poster_path").toString()?:"") != "null"){
             movieAttributes.add(movieToAdd)
         }
-
-//        println("${movieToAdd}")
     }
     return movieAttributes
 }
@@ -81,7 +79,6 @@ fun parseMovieDetails(movie: JSONObject): MovieDetails {
 
 fun getDetailsFromID(id: Int): MovieDetails {
     val movieJson = apiRequest("https://api.themoviedb.org/3/movie/${id}?language=en-US")
-    println(movieJson)
     return parseMovieDetails(movieJson) // Parse the JSON object here
 }
 
@@ -99,6 +96,5 @@ fun getGenre(): MutableList<Pair<String, Int>> {
 fun displayRandomMovie(movie: Pair<String, Int>):Int{
     val queryMovie = apiRequest("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en&page=1&sort_by=popularity.desc&with_genres=${movie.second.toString()}").getJSONArray("results")
     val movie = queryMovie.getJSONObject(Random.nextInt(queryMovie.length())).get("id")
-    println(movie)
     return movie as Int
 }
