@@ -194,13 +194,8 @@ fun SearchScreen(navController: NavHostController) {
                     coroutineScope.launch(Dispatchers.IO) {
                         async { genreList = getGenre() }.await()
                     }
-                    LazyVerticalGrid( // Use LazyVerticalGrid
-                        columns = GridCells.Fixed(2), // Set two columns
-                        //contentPadding = innerPadding, // Apply innerPadding here
-                        verticalArrangement = Arrangement.spacedBy(0.dp),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.padding(horizontal = 24.dp)
-                    ) {
+                    LazyVerticalGrid(columns = GridCells.Fixed(2))
+                    {
                         var randMovieID = 0
                         items(genreList.size) { genre ->
                             ListItem(
@@ -220,7 +215,11 @@ fun SearchScreen(navController: NavHostController) {
                                     }
                                 },
                                 headlineContent = {
-                                    Text(text = genreList[genre].first)
+                                    Text(
+                                        text = genreList[genre].first,
+                                        textAlign = TextAlign.Center, // Center the text
+                                        modifier = Modifier.fillMaxWidth() // Make text fill the width
+                                    )
                                 }
                             )
                         }
