@@ -197,7 +197,11 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
     Column(
         modifier = Modifier.padding(1.dp),
 
-    ) { // first item in list is always All, but in settings screen add option to change default list displayed
+    ) {
+        HorizontalDivider(
+            modifier = Modifier.padding(start=20.dp, end=20.dp, top=5.dp, bottom=5.dp)
+        )
+        // first item in list is always All, but in settings screen add option to change default list displayed
         Row(
             modifier = Modifier
                 .padding(start = 2.dp, end = 2.dp)
