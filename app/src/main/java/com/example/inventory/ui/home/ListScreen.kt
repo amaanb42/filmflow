@@ -408,7 +408,7 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
     if (showCreateDialog) {
         AlertDialog(
             onDismissRequest = { showCreateDialog = false },
-            title = { Text(text = "Add a List") },
+            title = { Text(text = "Create a List") },
             text = {
                 Column {
                     Text(text = "Enter a name for your new list:")
