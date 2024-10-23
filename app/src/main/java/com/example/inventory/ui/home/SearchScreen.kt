@@ -81,7 +81,7 @@ fun SearchScreen(navController: NavHostController) {
     var trendingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
     val coroutineScope = rememberCoroutineScope()
     var genreList by remember { mutableStateOf(listOf<Pair<String, Int>>()) }
-    var randomizeGenre by remember { mutableStateOf(Pair<String, Int>("",1))}
+    var randomizeGenre by remember { mutableStateOf(Pair("",1))}
 
 
     val searchBarPadding by animateDpAsState(
@@ -98,7 +98,7 @@ fun SearchScreen(navController: NavHostController) {
 
     //Need Coroutine to do any API searches
     coroutineScope.launch(Dispatchers.IO) {
-        val result = async {
+        async {
             trendingMovies = getTrendingMovies()
         }.await()
     }
@@ -123,7 +123,7 @@ fun SearchScreen(navController: NavHostController) {
 
                     coroutineScope.launch(Dispatchers.IO) {
                         delay(200)
-                        val result = async {
+                        async {
                             tempMovieList = getMovieQuery(text)
                         }.await()
                     }
@@ -205,14 +205,14 @@ fun SearchScreen(navController: NavHostController) {
                         }
                     ) {
                         coroutineScope.launch(Dispatchers.IO) {
-                            val result = async {
+                            async {
                                 genreList = getGenre()
                             }.await()
                         }
                         LazyColumn (
                             modifier = Modifier.padding(it)
                         ) {
-                            var movie_id = 0
+                            var randMovieID = 0
                             items(genreList.size){
                                     genre ->
                                 ListItem(
@@ -228,11 +228,11 @@ fun SearchScreen(navController: NavHostController) {
                                         randomizeGenre = genreList[genre]
                                         println("Chosen: $randomizeGenre")
                                         coroutineScope.launch(Dispatchers.IO) {
-                                            val result = async {
-                                                movie_id = displayRandomMovie(randomizeGenre)
+                                            async {
+                                                randMovieID = displayRandomMovie(randomizeGenre)
                                             }.await()
                                             withContext(Dispatchers.Main){
-                                                navigateToMovieDetails(navController, movie_id)
+                                                navigateToMovieDetails(navController, randMovieID)
                                             }
                                         }
 
