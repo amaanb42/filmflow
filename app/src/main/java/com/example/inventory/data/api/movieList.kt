@@ -54,7 +54,7 @@ fun getNowPlayingMovies(): List<MovieSearchResult>{
 // maybe have a MovieSearchResult class and a MovieDetailed class
 fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
     val movieAttributes: MutableList<MovieSearchResult> = mutableListOf()
-    val excludedKeywordId = 155477 // The ID for "softcore"
+    // val excludedKeywordId = 155477 // The ID for "softcore"
 
     for ( i in 0 until movies.length()){
         val movie = movies.getJSONObject(i)

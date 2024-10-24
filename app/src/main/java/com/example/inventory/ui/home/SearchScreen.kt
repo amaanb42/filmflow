@@ -8,6 +8,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -232,110 +232,94 @@ fun SearchScreen(navController: NavHostController) {
                 }
             }
 
-            Text(
-                text = "Trending",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp), // Add some top padding for spacing
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp
-            )
-            HorizontalMultiBrowseCarousel(
-                state = rememberCarouselState { trendingMovies.size },
-                modifier = Modifier.width(412.dp).height(221.dp),
-                preferredItemWidth = 186.dp,
-                itemSpacing = 8.dp,
-                contentPadding = PaddingValues(horizontal = 16.dp)
+
+
+            // Below code for trending and theater carousels on search screen
+            Column (
+                modifier = Modifier.padding(top = 32.dp)
             ) {
-                movie ->
-                AsyncImage(
-                    model = "https://image.tmdb.org/t/p/w500${trendingMovies[movie].posterPath}",
-                    contentDescription = null,
+                Text(
+                    text = "Trending",
                     modifier = Modifier
-                        .clickable {
-                            navigateToMovieDetails(navController, trendingMovies[movie].id)
-                        }
-                        .width(135.dp)
-                        .aspectRatio(0.6667f),
-                    contentScale = ContentScale.Crop
+                        .fillMaxWidth()
+                        .padding(top = 16.dp).padding(bottom = 8.dp), // Add some top padding for spacing
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp
                 )
+
+                Row (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                    //.padding(padding)
+                ) {
+                    HorizontalMultiBrowseCarousel(
+                        state = rememberCarouselState { trendingMovies.size },
+                        // mess with this some more
+                        modifier = Modifier.fillMaxWidth().height(221.dp),
+                        preferredItemWidth = 160.dp,
+                        itemSpacing = 8.dp,
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                            movie ->
+                        Card {
+                            AsyncImage(
+                                model = "https://image.tmdb.org/t/p/w500${trendingMovies[movie].posterPath}",
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .clickable {
+                                        navigateToMovieDetails(navController, trendingMovies[movie].id)
+                                    }
+                                    .width(135.dp)
+                                    .aspectRatio(0.6667f),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                }
+
+
+                Text(
+                    text = "In Theaters",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp).padding(bottom = 8.dp), // Add some top/bottom padding for spacing
+                    textAlign = TextAlign.Center,
+                    fontSize = 20.sp
+                )
+
+                Row (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                    //.padding(padding)
+                ) {
+                    HorizontalMultiBrowseCarousel(
+                        state = rememberCarouselState { nowPlayingMovies.size },
+                        modifier = Modifier.width(412.dp).height(221.dp),
+                        preferredItemWidth = 160.dp,
+                        itemSpacing = 8.dp,
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                            movie ->
+                        Card {
+                            AsyncImage(
+                                model = "https://image.tmdb.org/t/p/w500${nowPlayingMovies[movie].posterPath}",
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .clickable {
+                                        navigateToMovieDetails(
+                                            navController,
+                                            nowPlayingMovies[movie].id
+                                        )
+                                    }
+                                    .width(135.dp)
+                                    .aspectRatio(0.6667f),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                }
             }
 
-            Text(
-                text = "Now Playing",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp), // Add some top padding for spacing
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp
-            )
-
-            HorizontalMultiBrowseCarousel(
-                state = rememberCarouselState { nowPlayingMovies.size },
-                modifier = Modifier.width(412.dp).height(221.dp),
-                preferredItemWidth = 186.dp,
-                itemSpacing = 8.dp,
-                contentPadding = PaddingValues(horizontal = 16.dp)
-            ) {
-                    movie ->
-                println("Size of now: " + nowPlayingMovies.size)
-                AsyncImage(
-                    model = "https://image.tmdb.org/t/p/w500${nowPlayingMovies[movie].posterPath}",
-                    contentDescription = null,
-                    modifier = Modifier
-                        .clickable {
-                            navigateToMovieDetails(navController, nowPlayingMovies[movie].id)
-                        }
-                        .width(135.dp)
-                        .aspectRatio(0.6667f),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
-
-
-//            LazyVerticalGrid(
-//                columns = GridCells.Fixed(2),
-//                modifier = Modifier.padding(top = 15.dp, start = 20.dp, end = 20.dp)
-//            )
-//            {
-//                // Add the "Trending" text as the first item
-//                item(span = { GridItemSpan(2) }) { // Make it span both columns
-//                    Text(
-//                        text = "Trending",
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .padding(top = 16.dp), // Add some top padding for spacing
-//                        textAlign = TextAlign.Center,
-//                        fontSize = 20.sp
-//                    )
-//                }
-//                items(trendingMovies.take(4)){ movie ->
-//                    Column (
-//                        modifier = Modifier.padding(15.dp),
-//                        horizontalAlignment = Alignment.CenterHorizontally
-//                    ) {
-//                        Card{
-//                            AsyncImage(
-//                                model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
-//                                contentDescription = null,
-//                                modifier = Modifier
-//                                    .clickable {
-//                                        navigateToMovieDetails(navController, movie.id)
-//                                    }
-//                                        .width(135.dp)
-//                                    .aspectRatio(0.6667f),
-//                                contentScale = ContentScale.Crop
-//                            )
-//                        }
-//                        Text(
-//                            text = movie.title,
-//                            modifier = Modifier.padding(top = 8.dp), // Add some spacing between image and text
-//                            textAlign = TextAlign.Center // Center the text within its container
-//                        )
-//                    }
-//                }
-//            }
         }
     }
 }
