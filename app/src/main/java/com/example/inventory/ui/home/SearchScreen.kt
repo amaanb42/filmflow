@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,9 +17,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -242,32 +245,25 @@ fun SearchScreen(navController: NavHostController) {
                     text = "Trending",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp).padding(bottom = 8.dp), // Add some top padding for spacing
-                    textAlign = TextAlign.Center,
+                        .padding(top = 16.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
+                    textAlign = TextAlign.Left,
                     fontSize = 20.sp
                 )
 
-                Row (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                    //.padding(padding)
+                LazyRow (
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    HorizontalMultiBrowseCarousel(
-                        state = rememberCarouselState { trendingMovies.size },
-                        // mess with this some more
-                        modifier = Modifier.fillMaxWidth().height(221.dp),
-                        preferredItemWidth = 160.dp,
-                        itemSpacing = 8.dp,
-                        contentPadding = PaddingValues(horizontal = 16.dp)
-                    ) {
-                            movie ->
+                    items(trendingMovies)
+                     { movie ->
                         Card {
                             AsyncImage(
-                                model = "https://image.tmdb.org/t/p/w500${trendingMovies[movie].posterPath}",
+                                model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
                                     .clickable {
-                                        navigateToMovieDetails(navController, trendingMovies[movie].id)
+                                        navigateToMovieDetails(navController, movie.id)
                                     }
                                     .width(135.dp)
                                     .aspectRatio(0.6667f),
@@ -277,39 +273,31 @@ fun SearchScreen(navController: NavHostController) {
                     }
                 }
 
+                Spacer(modifier = Modifier.height(24.dp)) // Add vertical spacing
 
                 Text(
                     text = "In Theaters",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 16.dp).padding(bottom = 8.dp), // Add some top/bottom padding for spacing
-                    textAlign = TextAlign.Center,
+                        .padding(top = 16.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
+                    textAlign = TextAlign.Left,
                     fontSize = 20.sp
                 )
 
-                Row (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                    //.padding(padding)
+                LazyRow (
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    HorizontalMultiBrowseCarousel(
-                        state = rememberCarouselState { nowPlayingMovies.size },
-                        modifier = Modifier.width(412.dp).height(221.dp),
-                        preferredItemWidth = 160.dp,
-                        itemSpacing = 8.dp,
-                        contentPadding = PaddingValues(horizontal = 16.dp)
-                    ) {
-                            movie ->
+                    items(nowPlayingMovies)
+                    { movie ->
                         Card {
                             AsyncImage(
-                                model = "https://image.tmdb.org/t/p/w500${nowPlayingMovies[movie].posterPath}",
+                                model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
                                     .clickable {
-                                        navigateToMovieDetails(
-                                            navController,
-                                            nowPlayingMovies[movie].id
-                                        )
+                                        navigateToMovieDetails(navController, movie.id)
                                     }
                                     .width(135.dp)
                                     .aspectRatio(0.6667f),
@@ -319,7 +307,6 @@ fun SearchScreen(navController: NavHostController) {
                     }
                 }
             }
-
         }
     }
 }
