@@ -8,9 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -46,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -84,7 +88,7 @@ fun ListScreen(navController: NavHostController){
     val allLists by viewModel.allLists.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
     val listMovies by viewModel.allMovies.collectAsState()
-    val currList = selectedList?.listName // used for highlighting selection in bottom sheet
+    //val currList = selectedList?.listName // used for highlighting selection in bottom sheet
 
     Scaffold(
         topBar = {
@@ -178,153 +182,167 @@ fun ListScreen(navController: NavHostController){
             onDismissRequest = { showModal = false },
             sheetState = sheetState,
         ) {
-            ListSelectBottomSheet(allLists, viewModel, currList) { showModal = false }
+            ListSelectBottomSheet(allLists, viewModel, selectedList) { showModal = false }
         }
     }
 }
 
 @Composable
-fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: String?, onDismiss: () -> Unit) {
+fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: UserList?, onDismiss: () -> Unit) {
     // these are used for the rename list dialog
     var showRenameDialog by remember { mutableStateOf(false) }
     var oldListName by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier.padding(1.dp),
-
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(max = (LocalConfiguration.current.screenHeightDp * 0.5f).dp) // Set the height to half the screen
     ) {
-//        HorizontalDivider(
-//            modifier = Modifier.padding(start=20.dp, end=20.dp, top=5.dp, bottom=5.dp)
-//        )
-        // first item in list is always All, but in settings screen add option to change default list displayed
-        Row(
+        LazyColumn(
             modifier = Modifier
-                .padding(start = 2.dp, end = 2.dp)
                 .fillMaxWidth()
-                .clickable {
-                    viewModel.selectList(null)
-                    onDismiss()
-                }
-                .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(start = 2.dp, end = 2.dp, bottom = 100.dp)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.all_icon), // Or any other suitable icon
-                contentDescription = "All",
-                modifier = Modifier.padding(start=8.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "All",
-                fontWeight = if (currList == null) FontWeight.Bold else FontWeight.Normal,
-                modifier = Modifier.weight(1f)
-            )
-        }
-        // separate default lists and user-created lists, so that all user-created lists appear after defaults
-        // display default lists first
-        viewModel.defaultLists.forEach { defaultList ->
-            Row(
-                modifier = Modifier
-                    .padding(start = 2.dp, end = 2.dp)
-                    .fillMaxWidth()
-                    .clickable {
-                        viewModel.selectList(defaultList)
-                        onDismiss()
-                    }
-                    .padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Choose icon based on singleList.listName
-                val icon = when (defaultList.listName) {
-                    "Completed" -> R.drawable.completed_icon
-                    "Planning" -> R.drawable.planning_icon
-                    "Watching" -> R.drawable.watching_icon
-                    else -> R.drawable.custom_list // custom icon when user makes list
-                }
-
-                Icon(
-                    painter = painterResource(id = icon),
-                    contentDescription = defaultList.listName,
-                    modifier = Modifier.padding(start=8.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = defaultList.listName,
-                    fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
-        HorizontalDivider(
-            modifier = Modifier.padding(start=20.dp, end=20.dp, top=5.dp, bottom=5.dp)
-        )
-        // now display lists stored in the DB
-        allLists.forEach { singleList ->
-            if (singleList.listName !in listOf("Completed", "Planning", "Watching")) {
-                var expanded by remember { mutableStateOf(false) } // State for dropdown menu
+            // first item in list is always All, but in settings screen add option to change default list displayed
+            item {
                 Row(
                     modifier = Modifier
                         .padding(start = 2.dp, end = 2.dp)
                         .fillMaxWidth()
                         .clickable {
-                            viewModel.selectList(singleList)
+                            viewModel.selectList(null)
                             onDismiss()
                         }
                         .padding(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.custom_list), // custom icon when user makes list
-                        contentDescription = singleList.listName,
-                        modifier = Modifier.padding(start=8.dp)
+                        painter = painterResource(id = R.drawable.all_icon), // Or any other suitable icon
+                        contentDescription = "All",
+                        modifier = Modifier.padding(start = 8.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = singleList.listName,
-                        fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                        text = "All",
+                        fontWeight = if (currList == null) FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.weight(1f)
                     )
-                    Box {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More options",
-                            modifier = Modifier
-                                .clickable {
-                                    expanded = true
-                                }
-                        )
-                        // Dropdown menu for MoreVert icon
-                        DropdownMenu(
-                            shape = RoundedCornerShape(18.dp),
-                            expanded = expanded,
-                            onDismissRequest = {
-                                expanded = false
-                            }, // Close the menu when clicked outside
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(text = "Rename") },
-                                onClick = {
-                                    showRenameDialog = true // show the rename list dialog
-                                    oldListName = singleList.listName
-                                    expanded = false // Close the menu
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(text = "Delete", color = Color.Red) },
-                                onClick = {
-                                    viewModel.deleteList(singleList.listName) // delete the list
-                                    viewModel.selectList(null) // reset back to default "All"
-                                    expanded = false // Close the menu
-                                }
-                            )
+                }
+            }
+            // separate default lists and user-created lists, so that all user-created lists appear after defaults
+            // display default lists first
+            items(viewModel.defaultLists) { defaultList ->
+                Row(
+                    modifier = Modifier
+                        .padding(start = 2.dp, end = 2.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.selectList(defaultList)
+                            onDismiss()
+                        }
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Choose icon based on singleList.listName
+                    val icon = when (defaultList.listName) {
+                        "Completed" -> R.drawable.completed_icon
+                        "Planning" -> R.drawable.planning_icon
+                        "Watching" -> R.drawable.watching_icon
+                        else -> R.drawable.custom_list // custom icon when user makes list
+                    }
 
+                    Icon(
+                        painter = painterResource(id = icon),
+                        contentDescription = defaultList.listName,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = defaultList.listName,
+                        fontWeight = if (defaultList.listName == currList?.listName) FontWeight.ExtraBold else FontWeight.Normal,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+            item {
+                HorizontalDivider(modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp))
+            }
+            // now display lists stored in the DB
+            items(allLists) { singleList ->
+                if (singleList.listName !in listOf("Completed", "Planning", "Watching")) {
+                    var expanded by remember { mutableStateOf(false) } // State for dropdown menu
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 2.dp, end = 2.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.selectList(singleList)
+                                onDismiss()
+                            }
+                            .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.custom_list), // custom icon when user makes list
+                            contentDescription = singleList.listName,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = singleList.listName,
+                            fontWeight = if (singleList.listName == currList?.listName) FontWeight.ExtraBold else FontWeight.Normal,
+                            modifier = Modifier.weight(1f)
+                        )
+                        Box {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options",
+                                modifier = Modifier
+                                    .clickable {
+                                        expanded = true
+                                    }
+                            )
+                            // Dropdown menu for MoreVert icon
+                            DropdownMenu(
+                                shape = RoundedCornerShape(18.dp),
+                                expanded = expanded,
+                                onDismissRequest = {
+                                    expanded = false
+                                }, // Close the menu when clicked outside
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(text = "Rename") },
+                                    onClick = {
+                                        showRenameDialog =
+                                            true // show the rename list dialog
+                                        oldListName = singleList.listName
+                                        expanded = false // Close the menu
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = "Delete", color = Color.Red) },
+                                    onClick = {
+                                        viewModel.deleteList(singleList.listName) // delete the list
+                                        viewModel.selectList(null) // reset back to default "All"
+                                        expanded = false // Close the menu
+                                    }
+                                )
+
+                            }
                         }
                     }
                 }
             }
         }
-        // button for creating a new list
-        AddNewListButtonWithDialog(viewModel)
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(10.dp)
+                .padding(bottom = 30.dp)
+        ) {
+            // button for creating a new list
+            AddNewListButtonWithDialog(viewModel)
+        }
     }
     // dialog for renaming a list
     if (showRenameDialog) {
@@ -352,20 +370,27 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
             confirmButton = {
                 Text(
                     "Rename",
-                    modifier = Modifier.clickable{
-                        viewModel.renameList(oldListName, newListName)
-                        showRenameDialog = false
-                    }
-                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                    modifier = Modifier
+                        .clickable {
+                            // TODO: fix crash when trying to rename current list to another list that already exists
+                            viewModel.renameList(oldListName, newListName)
+                            // need to select list again
+                            if (currList?.listName == oldListName) {
+                                viewModel.selectList(UserList(newListName))
+                            }
+                            showRenameDialog = false
+                        }
+                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
                 )
             },
             dismissButton = {
                 Text(
                     "Cancel",
-                    modifier = Modifier.clickable{
-                        showRenameDialog = false
-                    }
-                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                    modifier = Modifier
+                        .clickable {
+                            showRenameDialog = false
+                        }
+                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
                 )
             }
         )
@@ -379,11 +404,11 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
 
     // the button
     Row(
-        modifier =  Modifier
+        modifier = Modifier
             .padding(start = 2.dp, end = 2.dp)
             .fillMaxWidth()
             .padding(10.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.weight(1f)) //pushes button to center
         SmallFloatingActionButton(
@@ -424,22 +449,24 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
             confirmButton = {
                 Text(
                     "Create",
-                    modifier = Modifier.clickable{
-                        viewModel.addNewList(listName) // insert list into db
-                        showCreateDialog = false
-                        listName = ""
-                    }
-                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                    modifier = Modifier
+                        .clickable {
+                            viewModel.addNewList(listName) // insert list into db
+                            showCreateDialog = false
+                            listName = ""
+                        }
+                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
                 )
             },
             dismissButton = {
                 Text(
                     "Cancel",
-                    modifier = Modifier.clickable{
-                        showCreateDialog = false
-                        listName = ""
-                    }
-                        .padding(top=5.dp, bottom=5.dp, start=10.dp, end=10.dp)
+                    modifier = Modifier
+                        .clickable {
+                            showCreateDialog = false
+                            listName = ""
+                        }
+                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
                 )
             }
         )
