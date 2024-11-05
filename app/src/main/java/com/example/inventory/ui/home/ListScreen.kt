@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -13,17 +16,19 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,18 +54,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.R
+import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.dark_pine
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 object ListDestination : NavigationDestination {
     override val route = "list"
@@ -88,7 +102,12 @@ fun ListScreen(navController: NavHostController){
     val allLists by viewModel.allLists.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
     val listMovies by viewModel.allMovies.collectAsState()
-    //val currList = selectedList?.listName // used for highlighting selection in bottom sheet
+
+    // icons for changing list views
+    val gridIcon = painterResource(id = R.drawable.grid_view)
+    val horizontalIcon = painterResource(id = R.drawable.horizontal_view_icon)
+    var listViewIcon by remember { mutableStateOf(horizontalIcon) } // either gonna be gridIcon or horizontalIcon (default)
+    var showGridView by remember { mutableStateOf(true) } // need bool for switching icon
 
     Scaffold(
         topBar = {
@@ -112,14 +131,16 @@ fun ListScreen(navController: NavHostController){
                             contentDescription = "More Stuff"
                         )
                     }
-                }
+                },
+
+
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
+            ExtendedFloatingActionButton( // opens up the bottom sheet for list selection and editing
                 onClick = {
                     coroutineScope.launch {
-                        showModal = true
+                        showModal = true // open the bottom sheet
                     }
                 },
                 icon = {
@@ -138,42 +159,60 @@ fun ListScreen(navController: NavHostController){
                         contentDescription = "Edit"
                     )
                 },
-                text = { Text(selectedList?.listName ?: "All") },
+                text = { Text(selectedList?.listName ?: "All") }, // default
                 containerColor = dark_pine,
                 contentColor = Color.White,
                 modifier = Modifier.offset(y = (-100).dp)
             )
         }
     ) {
-        Column(modifier = Modifier.offset(y = 110.dp)) {
-            Row(
+        Column(modifier = Modifier.offset(y = 85.dp)) { // contains sorting and view selection buttons, and movie lists
+            Row( // contains sorting and view selection buttons
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    onClick = {/*TODO: Sorting*/},
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent
-                    ),
-                    shape = RoundedCornerShape(0.dp),
-
+                    onClick = {
+                        /*TODO: Sorting*/
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    shape = RoundedCornerShape(30.dp),
+                    modifier = Modifier
+                        .padding(top = 2.dp, start = 2.dp)
                 ) {
-                    Icon(imageVector = Icons.Filled.KeyboardArrowDown, contentDescription = "Sorting")
-                    Text("Sort")
+                    Icon(
+                        painter = painterResource(id = R.drawable.sort_icon),
+                        contentDescription = "Sorting",
+                        modifier = Modifier.padding(end = 5.dp)
+                    )
+                    Text(
+                        text = "Sort"
+                    )
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button(
-                    onClick = {/*TODO: View*/},
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent
-                    )
+                    onClick = {
+                        coroutineScope.launch {
+                            showGridView = !showGridView // helps switch the view
+                            listViewIcon = if (showGridView) horizontalIcon else gridIcon // changes icon
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                    modifier = Modifier
+                        .padding(top = 2.dp, end = 2.dp)
                 ) {
-                    Icon(imageVector = Icons.Filled.Info, contentDescription = "View")
+                    Icon(painter = listViewIcon, contentDescription = "View")
                 }
             }
-            // TODO: put stuff for displaying the movies here
+            // display movies based on view selection (default grid view)
+            if (showGridView)
+                ListGridView(listMovies)
+            else
+                ListHorizontalView(listMovies)
         }
     }
     // bottom sheet displays after clicking FAB
@@ -183,6 +222,127 @@ fun ListScreen(navController: NavHostController){
             sheetState = sheetState,
         ) {
             ListSelectBottomSheet(allLists, viewModel, selectedList) { showModal = false }
+        }
+    }
+}
+
+@Composable
+fun ListGridView(listMovies: List<Movie>) {
+    // grid layout for movies, showing only poster and title
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 185.dp),
+        contentPadding = PaddingValues(horizontal = 15.dp, vertical = 10.dp)
+    ) { // display the movies
+        items(listMovies) { movie ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxWidth()
+            ) {
+                Card { // display the poster
+                    AsyncImage(
+                        model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+                        contentDescription = null,
+                        modifier = Modifier
+                            .clickable {
+                                //navigateToMovieDetails(navController, movie.id)
+                            }
+                            .width(135.dp)
+                            .aspectRatio(0.6667f),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Spacer(modifier = Modifier.padding(2.dp)) // some space between poster and title
+                Text(
+                    text = movie.title,
+                    fontSize = 14.sp,
+                    lineHeight = 1.5.em,
+                    modifier = Modifier.width(135.dp),
+                    textAlign = TextAlign.Center,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis
+                ) // display the title
+            }
+        }
+        item { // empty row to prevent FAB from covering last item in list
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+                    .height(85.dp)
+            ) {}
+        }
+    }
+}
+
+@Composable
+fun ListHorizontalView(listMovies: List<Movie>) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 185.dp)
+    ) {
+        items(listMovies) { movie ->
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(5.dp)
+                    .clickable {
+                        //navigateToMovieDetails(navController, movie.id)
+                    }
+            ) {
+                Card(
+                    modifier = Modifier
+                        .padding(start = 5.dp)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    AsyncImage(
+                        model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+                        contentDescription = null,
+                        modifier = Modifier
+                            .width(100.dp)
+                            .aspectRatio(0.6667f),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp, top = 2.dp, bottom = 2.dp),
+                ) {
+                    Row {
+                        Text(text = movie.title, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                    }
+                    Row {
+                        val originalDate = LocalDate.parse(movie.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                        val formattedDate = originalDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"))
+                        Text(text = "Released: $formattedDate", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+                    }
+                    Row {
+                        Text(text = "Runtime: ${movie.runtime} mins", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+                    }
+                    Row {
+                        Text(text = "Director: ${movie.director}", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+                    }
+                    Row {
+                        Text(text = "Synopsis: ${movie.overview}", fontSize = 12.sp, maxLines = 3, overflow = TextOverflow.Ellipsis, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.padding(5.dp))
+        }
+        item { // empty row to prevent FAB from covering last item in list
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+                    .height(85.dp)
+            ) {
+
+            }
         }
     }
 }
@@ -211,6 +371,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         .fillMaxWidth()
                         .clickable {
                             viewModel.selectList(null)
+                            viewModel.updateListMovies(null)
                             onDismiss()
                         }
                         .padding(10.dp),
@@ -238,6 +399,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         .fillMaxWidth()
                         .clickable {
                             viewModel.selectList(defaultList)
+                            viewModel.updateListMovies(defaultList)
                             onDismiss()
                         }
                         .padding(10.dp),
@@ -277,6 +439,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                             .fillMaxWidth()
                             .clickable {
                                 viewModel.selectList(singleList)
+                                viewModel.updateListMovies(singleList)
                                 onDismiss()
                             }
                             .padding(10.dp),
@@ -324,6 +487,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                                     onClick = {
                                         viewModel.deleteList(singleList.listName) // delete the list
                                         viewModel.selectList(null) // reset back to default "All"
+                                        viewModel.updateListMovies(null)
                                         expanded = false // Close the menu
                                     }
                                 )
@@ -377,6 +541,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                             // need to select list again
                             if (currList?.listName == oldListName) {
                                 viewModel.selectList(UserList(newListName))
+                                viewModel.updateListMovies(UserList(newListName))
                             }
                             showRenameDialog = false
                         }
