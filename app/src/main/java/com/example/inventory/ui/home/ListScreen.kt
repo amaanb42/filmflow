@@ -538,7 +538,8 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                                 color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
                             )
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
                     )
                     Text(text = listExistsError, color = Color.Red, modifier = Modifier.padding(start = 10.dp))
 
@@ -549,7 +550,6 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     "Rename",
                     modifier = Modifier
                         .clickable {
-                            // TODO: fix crash when trying to rename current list to another list that already exists
                             viewModel.newListNameExists(oldListName, newListName.trim())
                             if (!viewModel.isInList && newListName.isNotBlank()) { // if new name doesn't already exist
                                 viewModel.renameList(oldListName, newListName.trim())
@@ -635,6 +635,7 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
                     )
                     Text(text = listExistsError, color = Color.Red, modifier = Modifier.padding(start = 10.dp, top = 5.dp))
                 }
