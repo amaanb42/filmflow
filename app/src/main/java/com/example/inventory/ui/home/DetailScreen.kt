@@ -46,6 +46,7 @@ import com.example.inventory.InventoryApplication
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.getDetailsFromID
+import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.theme.dark_pine
 import kotlinx.coroutines.Dispatchers
@@ -82,9 +83,23 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     val selectedList by viewModel.selectedList.collectAsState()
     val currList = selectedList?.listName // used for highlighting selection in bottom sheet
 
+    var movie_to_add by remember { mutableStateOf<Movie?>(null) } // Make this a state
+
     LaunchedEffect(key1 = movieId) {
         coroutineScope.launch(Dispatchers.IO) { // Launch in IO thread
             movie = getDetailsFromID(movieId)
+            // Update movie_to_add after movie is loaded
+            movie_to_add = Movie(
+                movieId,
+                movie?.title ?: "", // Provide an empty string if title is null
+                movie?.overview,
+                "", // Provide an empty string for director since it's missing
+                movie?.posterPath ?: "", // Provide an empty string if posterPath is null
+                movie?.releaseDate,
+                movie?.runtime,
+                movie?.rating?.toFloat(), // Convert Double? to Float?
+                emptyList() // Provide an empty list for genres
+            )
         }
     }
     Scaffold(
@@ -110,11 +125,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         )
                     }
                 },
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = Color.Transparent,
-//                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
-//                ),
-                //scrollBehavior = topAppBarScrollBehavior
             )
         },
         // Add movie to list FAB
@@ -232,13 +242,13 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             onDismissRequest = { showModal = false },
             sheetState = sheetState,
         ) {
-            DetailBottomSheet(allLists, viewModel, currList) { showModal = false }
+            DetailBottomSheet(allLists, viewModel, currList, movie_to_add) { showModal = false }
         }
     }
 }
 
 @Composable
-fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, currList: String?, onDismiss: () -> Unit) {
+fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, currList: String?, movie: Movie?, onDismiss: () -> Unit) {
     Column(modifier = Modifier.padding(1.dp)) {
         viewModel.defaultLists.forEach { defaultList ->
             // Only display "Completed", "Planning", and "Watching"
@@ -248,7 +258,9 @@ fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, curr
                         .padding(start = 2.dp, end = 2.dp)
                         .fillMaxWidth()
                         .clickable {
-                            viewModel.selectList(defaultList)
+                            movie?.let {
+                                viewModel.addMovieToList(defaultList.listName, it)
+                            }
                             onDismiss()
                         }
                         .padding(10.dp),

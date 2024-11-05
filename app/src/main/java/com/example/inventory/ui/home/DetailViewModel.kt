@@ -6,18 +6,28 @@ import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ListMoviesRepository
 import com.example.inventory.data.MovieRepository
 import com.example.inventory.data.UserListRepository
+import com.example.inventory.data.listmovies.ListMovies
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class DetailViewModel(
     private val userListRepository: UserListRepository,
     private val listMoviesRepository: ListMoviesRepository,
     private val movieRepository: MovieRepository
 ) : ViewModel() {
+
+    // adding a movie to a list
+    fun addMovieToList(listName: String, movie: Movie) {
+        viewModelScope.launch {
+            movieRepository.insertMovie(movie) //have to add to Movie table first
+            listMoviesRepository.insertListMovieRelation(ListMovies(listName, movie.movieID)) //add to ListMovies relation table
+        }
+    }
 
     // used for displaying in modal bottom sheet, no need to pull from db
     val defaultLists: List<UserList> = listOf(UserList("Completed"), UserList("Planning"), UserList("Watching"))
