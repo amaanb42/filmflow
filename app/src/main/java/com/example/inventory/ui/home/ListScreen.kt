@@ -511,6 +511,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
     // dialog for renaming a list
     if (showRenameDialog) {
         var newListName by remember { mutableStateOf(oldListName) }
+        var listExistsError by remember { mutableStateOf("") }
 
         AlertDialog(
             onDismissRequest = { showRenameDialog = false},
@@ -520,15 +521,27 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     Text(text = "Give your list a new name:")
                     Spacer(modifier = Modifier.height(15.dp))
                     OutlinedTextField(
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(10.dp),
                         value = newListName,
-                        onValueChange = { newListName = it },
-                        label = { Text(
-                            "New Name",
-                            color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
-                        ) },
+                        onValueChange = {
+                            newListName = it
+                            viewModel.newListNameExists(oldListName, newListName.trim())
+                            listExistsError = if (viewModel.isInList) { // if new name already exists, display error message
+                                "A list of that name already exists!"
+                            } else {
+                                ""
+                            }
+                        },
+                        label = {
+                            Text(
+                                "New Name",
+                                color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
+                            )
+                        },
                         modifier = Modifier.fillMaxWidth()
                     )
+                    Text(text = listExistsError, color = Color.Red, modifier = Modifier.padding(start = 10.dp))
+
                 }
             },
             confirmButton = {
@@ -537,13 +550,18 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     modifier = Modifier
                         .clickable {
                             // TODO: fix crash when trying to rename current list to another list that already exists
-                            viewModel.renameList(oldListName, newListName)
-                            // need to select list again
-                            if (currList?.listName == oldListName) {
-                                viewModel.selectList(UserList(newListName))
-                                viewModel.updateListMovies(UserList(newListName))
+                            viewModel.newListNameExists(oldListName, newListName.trim())
+                            if (!viewModel.isInList && newListName.isNotBlank()) { // if new name doesn't already exist
+                                viewModel.renameList(oldListName, newListName.trim())
+                                // need to select list again
+                                if (currList?.listName == oldListName) {
+                                    viewModel.selectList(UserList(newListName.trim()))
+                                    viewModel.updateListMovies(UserList(newListName.trim()))
+                                }
+                                showRenameDialog = false
+                            } else if (newListName.isBlank()) { // display message if whitespace is entered
+                                listExistsError = "List name can't be blank!"
                             }
-                            showRenameDialog = false
                         }
                         .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
                 )
@@ -566,6 +584,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
 fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
     var showCreateDialog by remember { mutableStateOf(false) }
     var listName by remember { mutableStateOf("") }
+    var listExistsError by remember { mutableStateOf("") }
 
     // the button
     Row(
@@ -598,17 +617,26 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
                     Text(text = "Enter a name for your new list:")
                     Spacer(modifier = Modifier.height(15.dp))
                     OutlinedTextField(
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(10.dp),
                         value = listName,
-                        onValueChange = { listName = it },
+                        onValueChange = {
+                            listName = it
+                            viewModel.newListNameExists(null, listName.trim())
+                            listExistsError = if (viewModel.isInList) { // if name already exists, display error message
+                                "A list of that name already exists!"
+                            } else {
+                                ""
+                            }
+                        },
                         label = {
                             Text(
                                 "Name",
                                 color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
                             )
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
+                    Text(text = listExistsError, color = Color.Red, modifier = Modifier.padding(start = 10.dp, top = 5.dp))
                 }
             },
             confirmButton = {
@@ -616,9 +644,14 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
                     "Create",
                     modifier = Modifier
                         .clickable {
-                            viewModel.addNewList(listName) // insert list into db
-                            showCreateDialog = false
-                            listName = ""
+                            viewModel.newListNameExists(null, listName.trim())
+                            if (!viewModel.isInList && listName.isNotBlank()) { // if list doesn't already exist
+                                viewModel.addNewList(listName.trim()) // insert list into db, trimming leading and trailing whitespace
+                                showCreateDialog = false
+                                listName = "" // reset list name
+                            } else if (listName.isBlank()) { // display error if attempting to submit whitespace
+                                listExistsError = "List name can't be blank!"
+                            }
                         }
                         .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
                 )
@@ -630,6 +663,7 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
                         .clickable {
                             showCreateDialog = false
                             listName = ""
+                            listExistsError = ""
                         }
                         .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
                 )

@@ -1,5 +1,6 @@
 package com.example.inventory.ui.home
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,11 +9,15 @@ import com.example.inventory.data.MovieRepository
 import com.example.inventory.data.UserListRepository
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.launch
+import java.util.stream.Collectors.toSet
 
 class ListScreenViewModel(
     private val userListRepository: UserListRepository,
@@ -83,6 +88,16 @@ class ListScreenViewModel(
             userListRepository.updateListByName(oldName=oldName, newName=newName)
         }
     }
+
+    var isInList = false
+    // function to check if new list name exists
+    fun newListNameExists(oldName: String?, newName: String) {
+        viewModelScope.launch {
+            val updatedList = allLists.value.filterNot {it.listName == oldName}
+            isInList = updatedList.any {it.listName == newName}
+        }
+    }
+
 }
 // pass the repository to ListScreenViewModel
 class ListScreenViewModelFactory(
