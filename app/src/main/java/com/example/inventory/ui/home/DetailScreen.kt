@@ -69,7 +69,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
     val listMoviesRepository = InventoryApplication().container.listMoviesRepository
     val movieRepository = InventoryApplication().container.movieRepository
-    val viewModel: ListScreenViewModel = viewModel(factory = ListScreenViewModelFactory(userListRepository,
+    val viewModel: DetailViewModel = viewModel(factory = DetailViewModelFactory(userListRepository,
         listMoviesRepository,
         movieRepository)
     )
@@ -80,7 +80,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     // collect data from ListScreenViewModel
     val allLists by viewModel.allLists.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
-    val listMovies by viewModel.allMovies.collectAsState()
     val currList = selectedList?.listName // used for highlighting selection in bottom sheet
 
     LaunchedEffect(key1 = movieId) {
@@ -233,81 +232,48 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             onDismissRequest = { showModal = false },
             sheetState = sheetState,
         ) {
-            ListSelectBottomSheet(allLists, viewModel, currList) { showModal = false }
+            DetailBottomSheet(allLists, viewModel, currList) { showModal = false }
         }
     }
 }
 
 @Composable
-fun DetailBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: String?, onDismiss: () -> Unit) {
-    // these are used for the rename list dialog
-    var showRenameDialog by remember { mutableStateOf(false) }
-    var oldListName by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier.padding(1.dp),
-
-        ) {
-//        HorizontalDivider(
-//            modifier = Modifier.padding(start=20.dp, end=20.dp, top=5.dp, bottom=5.dp)
-//        )
-        // first item in list is always All, but in settings screen add option to change default list displayed
-        Row(
-            modifier = Modifier
-                .padding(start = 2.dp, end = 2.dp)
-                .fillMaxWidth()
-                .clickable {
-                    viewModel.selectList(null)
-                    onDismiss()
-                }
-                .padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.all_icon), // Or any other suitable icon
-                contentDescription = "All",
-                modifier = Modifier.padding(start=8.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "All",
-                fontWeight = if (currList == null) FontWeight.Bold else FontWeight.Normal,
-                modifier = Modifier.weight(1f)
-            )
-        }
-        // separate default lists and user-created lists, so that all user-created lists appear after defaults
-        // display default lists first
+fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, currList: String?, onDismiss: () -> Unit) {
+    Column(modifier = Modifier.padding(1.dp)) {
         viewModel.defaultLists.forEach { defaultList ->
-            Row(
-                modifier = Modifier
-                    .padding(start = 2.dp, end = 2.dp)
-                    .fillMaxWidth()
-                    .clickable {
-                        viewModel.selectList(defaultList)
-                        onDismiss()
+            // Only display "Completed", "Planning", and "Watching"
+            if (defaultList.listName in listOf("Completed", "Planning", "Watching")) {
+                Row(
+                    modifier = Modifier
+                        .padding(start = 2.dp, end = 2.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            viewModel.selectList(defaultList)
+                            onDismiss()
+                        }
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Choose icon based on singleList.listName
+                    val icon = when (defaultList.listName) {
+                        "Completed" -> R.drawable.completed_icon
+                        "Planning" -> R.drawable.planning_icon
+                        "Watching" -> R.drawable.watching_icon
+                        else -> R.drawable.custom_list // custom icon when user makes list
                     }
-                    .padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Choose icon based on singleList.listName
-                val icon = when (defaultList.listName) {
-                    "Completed" -> R.drawable.completed_icon
-                    "Planning" -> R.drawable.planning_icon
-                    "Watching" -> R.drawable.watching_icon
-                    else -> R.drawable.custom_list // custom icon when user makes list
-                }
 
-                Icon(
-                    painter = painterResource(id = icon),
-                    contentDescription = defaultList.listName,
-                    modifier = Modifier.padding(start=8.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = defaultList.listName,
-                    fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
-                    modifier = Modifier.weight(1f)
-                )
+                    Icon(
+                        painter = painterResource(id = icon),
+                        contentDescription = defaultList.listName,
+                        modifier = Modifier.padding(start=8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = defaultList.listName,
+                        fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }

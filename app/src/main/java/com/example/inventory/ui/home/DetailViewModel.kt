@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class DetailViewModel(
     private val userListRepository: UserListRepository,
@@ -60,27 +59,6 @@ class DetailViewModel(
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = emptyList()
             )
-        }
-    }
-
-    // function to add new list to db
-    fun addNewList(listName: String) {
-        viewModelScope.launch {
-            userListRepository.insertList(UserList(listName=listName))
-        }
-    }
-
-    // function to delete list from db
-    fun deleteList(listName: String) {
-        viewModelScope.launch {
-            userListRepository.deleteListByName(listName=listName)
-        }
-    }
-
-    // function to edit list name in db
-    fun renameList(oldName: String, newName: String) {
-        viewModelScope.launch {
-            userListRepository.updateListByName(oldName=oldName, newName=newName)
         }
     }
 }
