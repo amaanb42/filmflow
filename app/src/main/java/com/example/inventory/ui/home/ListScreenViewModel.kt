@@ -5,16 +5,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ListMoviesRepository
 import com.example.inventory.data.MovieRepository
-import com.example.inventory.data.OfflineListMoviesRepository
-import com.example.inventory.data.OfflineUserListRepository
 import com.example.inventory.data.UserListRepository
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
