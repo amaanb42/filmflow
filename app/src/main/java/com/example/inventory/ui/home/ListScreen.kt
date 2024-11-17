@@ -106,8 +106,10 @@ fun ListScreen(navController: NavHostController){
     // icons for changing list views
     val gridIcon = painterResource(id = R.drawable.grid_view)
     val horizontalIcon = painterResource(id = R.drawable.horizontal_view_icon)
-    var listViewIcon by remember { mutableStateOf(horizontalIcon) } // either gonna be gridIcon or horizontalIcon (default)
-    var showGridView by remember { mutableStateOf(true) } // need bool for switching icon
+
+    // Initialize listViewIcon based on showGridView
+    var showGridView by remember { mutableStateOf(true) }
+    var listViewIcon by remember { mutableStateOf(if (showGridView) gridIcon else horizontalIcon) }
 
     Scaffold(
         topBar = {
@@ -197,8 +199,8 @@ fun ListScreen(navController: NavHostController){
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            showGridView = !showGridView // helps switch the view
-                            listViewIcon = if (showGridView) horizontalIcon else gridIcon // changes icon
+                            showGridView = !showGridView
+                            listViewIcon = if (showGridView) gridIcon else horizontalIcon // Swap the icons here
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
