@@ -16,7 +16,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -66,7 +65,7 @@ object DetailDestination {
 
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
 fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     var movie by remember { mutableStateOf<MovieDetails?>(null) }
@@ -206,7 +205,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         )
                         Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                         Text(
-                            text = (movie?.rating?.toString() ?: "") + "/10",
+                            text = String.format("%.1f/10", movie?.rating ?: 0.0), // Format with one decimal place
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Spacer(modifier = Modifier.height(8.dp)) // Increased spacing

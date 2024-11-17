@@ -319,17 +319,17 @@ fun ListHorizontalView(listMovies: List<Movie>) {
                     Row {
                         val originalDate = LocalDate.parse(movie.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                         val formattedDate = originalDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"))
-                        Text(text = "Released: $formattedDate", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+                        Text(text = "Release: $formattedDate", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
                     }
                     Row {
                         Text(text = "Runtime: ${movie.runtime} mins", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
                     }
-                    Row {
-                        Text(text = "Director: ${movie.director}", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
-                    }
-                    Row {
-                        Text(text = "Synopsis: ${movie.overview}", fontSize = 12.sp, maxLines = 3, overflow = TextOverflow.Ellipsis, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
-                    }
+//                    Row {
+//                        Text(text = "Director: ${movie.director}", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+//                    }
+//                    Row {
+//                        Text(text = "Synopsis: ${movie.overview}", fontSize = 12.sp, maxLines = 3, overflow = TextOverflow.Ellipsis, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+//                    }
                 }
             }
             Spacer(modifier = Modifier.padding(5.dp))
