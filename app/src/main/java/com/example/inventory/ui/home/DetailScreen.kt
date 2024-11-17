@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -22,6 +24,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -159,73 +162,83 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     ) {
         Column{
             // Image and text in a Row
-            Row(
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically // Align items vertically in the center
+                    .padding(16.dp).padding(top = 26.dp)
+                    .padding(top = TopAppBarDefaults.TopAppBarExpandedHeight)
             ) {
-                // Card with movie art image
-                Card(
+                Row(
                     modifier = Modifier
-                        .padding(top = 120.dp)
-                        .padding(start = 30.dp)
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.Top // Align to the top of the row
                 ) {
-                    AsyncImage(
-                        model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clickable { }
-                            .width(170.dp) // Adjust the width as needed
-                            .aspectRatio(0.6667f),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-
-                // Add some horizontal spacing between the image and text
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Column {
-                    movie?.let { it1 ->
-                        // Movie title
-                        Text(
-                            text = it1.title,
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                    Card { // Card for the image
+                        AsyncImage(
+                            model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clickable { }
+                                .width(170.dp)
+                                .aspectRatio(0.6667f),
+                            contentScale = ContentScale.Crop
                         )
                     }
-                    Text(
-                        text = (movie?.runtime?.toString() ?: "") + " minutes", // Convert to String or use empty string if null
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Text(
-                        text = (movie?.rating?.toString() ?: "") + "/10", // Convert to String or use empty string if null
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    Text(
-                        //text = "Released: ${movie?.releaseDate}",
-                        text = (movie?.releaseDate ?: ""),
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column {
+                        movie?.let { it1 ->
+                            Text(
+                                text = it1.title,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
+                        Text(
+                            text = (movie?.runtime?.toString() ?: "") + " minutes",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
+                        Text(
+                            text = (movie?.rating?.toString() ?: "") + "/10",
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
+                        Text(
+                            text = (movie?.releaseDate ?: ""),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
 
-
-            Column(modifier = Modifier.padding(all = 15.dp)) {
-                Text(
-                    text = "Synopsis",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-                movie?.let { it1 ->
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(all = 15.dp)) {
                     Text(
-                        text = it1.overview,
+                        text = "Synopsis",
                         style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
+                    movie?.let { it1 ->
+                        Text(
+                            text = it1.overview,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
                 }
             }
 
