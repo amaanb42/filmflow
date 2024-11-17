@@ -55,7 +55,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-object DetailDestination {
+object LocalDetailDestination {
     const val ROUTE = "movieDetails/{movieId}"
 
     fun createRoute(movieId: Int): String {
@@ -67,7 +67,7 @@ object DetailDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
-fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
+fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
     var movie by remember { mutableStateOf<MovieDetails?>(null) }
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
     val listMoviesRepository = InventoryApplication().container.listMoviesRepository
@@ -87,7 +87,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
 
     var movie_to_add by remember { mutableStateOf<Movie?>(null) } // Make this a state
 
-    //Alter code below to fetch from local database instead of using the TMDB function
     LaunchedEffect(key1 = movieId) {
         coroutineScope.launch(Dispatchers.IO) { // Launch in IO thread
             movie = getDetailsFromID(movieId)
@@ -261,7 +260,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
 }
 
 @Composable
-fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, currList: String?, movie: Movie?, onDismiss: () -> Unit) {
+fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, currList: String?, movie: Movie?, onDismiss: () -> Unit) {
     Column(modifier = Modifier.padding(1.dp)) {
         viewModel.defaultLists.forEach { defaultList ->
             // Only display "Completed", "Planning", and "Watching"
