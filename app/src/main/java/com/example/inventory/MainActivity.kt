@@ -1,5 +1,6 @@
 package com.example.inventory
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -50,7 +51,9 @@ data class BottomNavigationItem(
     val badgeCount: Int? = null
 )
 
+@Suppress("NAME_SHADOWING")
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)

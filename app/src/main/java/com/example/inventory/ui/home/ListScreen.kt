@@ -212,9 +212,9 @@ fun ListScreen(navController: NavHostController){
             }
             // display movies based on view selection (default grid view)
             if (showGridView)
-                ListGridView(listMovies)
+                ListGridView(navController, listMovies)
             else
-                ListHorizontalView(listMovies)
+                ListHorizontalView(navController ,listMovies)
         }
     }
     // bottom sheet displays after clicking FAB
@@ -229,7 +229,7 @@ fun ListScreen(navController: NavHostController){
 }
 
 @Composable
-fun ListGridView(listMovies: List<Movie>) {
+fun ListGridView(navController: NavHostController, listMovies: List<Movie>) {
     // grid layout for movies, showing only poster and title
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -251,7 +251,7 @@ fun ListGridView(listMovies: List<Movie>) {
                         contentDescription = null,
                         modifier = Modifier
                             .clickable {
-                                //navigateToMovieDetails(navController, movie.id)
+                                navigateToLocalDetails(navController, movie.movieID)
                             }
                             .width(135.dp)
                             .aspectRatio(0.6667f),
@@ -282,7 +282,7 @@ fun ListGridView(listMovies: List<Movie>) {
 }
 
 @Composable
-fun ListHorizontalView(listMovies: List<Movie>) {
+fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -299,6 +299,9 @@ fun ListHorizontalView(listMovies: List<Movie>) {
             ) {
                 Card(
                     modifier = Modifier
+                        .clickable {
+                            navigateToLocalDetails(navController, movie.movieID)
+                        }
                         .padding(start = 5.dp)
                         .align(Alignment.CenterVertically)
                 ) {
@@ -673,4 +676,9 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
             }
         )
     }
+}
+
+// function that handles navController and passes movieId to detail screen
+fun navigateToLocalDetails(navController: NavHostController, movieId: Int) {
+    navController.navigate(LocalDetailDestination.createRoute(movieId))
 }

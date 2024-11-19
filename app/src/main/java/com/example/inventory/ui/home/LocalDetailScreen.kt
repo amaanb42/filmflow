@@ -19,12 +19,10 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,20 +44,16 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.R
-import com.example.inventory.data.api.MovieDetails
-import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
-import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.theme.dark_pine
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 object LocalDetailDestination {
-    const val ROUTE = "movieDetails/{movieId}"
+    const val ROUTE = "localMovieDetails/{movieId}"
 
     fun createRoute(movieId: Int): String {
-        return "movieDetails/$movieId"
+        return "localMovieDetails/$movieId"
     }
 }
 
@@ -68,7 +62,8 @@ object LocalDetailDestination {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
 fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
-    var movie by remember { mutableStateOf<MovieDetails?>(null) }
+    //var movie by remember { mutableStateOf<MovieDetails?>(null) }
+    var movie by remember { mutableStateOf<Movie?>(null) }
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
     val listMoviesRepository = InventoryApplication().container.listMoviesRepository
     val movieRepository = InventoryApplication().container.movieRepository
@@ -76,32 +71,20 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
         listMoviesRepository,
         movieRepository)
     )
-    val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
     var showModal by remember { mutableStateOf(false) }
 
     // collect data from ListScreenViewModel
-    val allLists by viewModel.allLists.collectAsState()
+    //val allLists by viewModel.allLists.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
-    val currList = selectedList?.listName // used for highlighting selection in bottom sheet
+    //val currList = selectedList?.listName // used for highlighting selection in bottom sheet
 
-    var movie_to_add by remember { mutableStateOf<Movie?>(null) } // Make this a state
+//    var movie_to_add by remember { mutableStateOf<Movie?>(null) } // Make this a state
 
+// Fetch movie details from the local database using movieId
     LaunchedEffect(key1 = movieId) {
-        coroutineScope.launch(Dispatchers.IO) { // Launch in IO thread
-            movie = getDetailsFromID(movieId)
-            // Update movie_to_add after movie is loaded
-            movie_to_add = Movie(
-                movieId,
-                movie?.title ?: "", // Provide an empty string if title is null
-                movie?.overview,
-                "", // Provide an empty string for director since it's missing
-                movie?.posterPath ?: "", // Provide an empty string if posterPath is null
-                movie?.releaseDate,
-                movie?.runtime,
-                movie?.rating?.toFloat(), // Convert Double? to Float?
-                emptyList() // Provide an empty list for genres
-            )
+        movieRepository.getMovieStream(movieId).collect {
+            movie = it
         }
     }
     Scaffold(
@@ -120,7 +103,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 },
                 // Back icon
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(SearchDestination.route) }) {
+                    IconButton(onClick = { navController.navigate(ListDestination.route) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -205,7 +188,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         )
                         Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                         Text(
-                            text = String.format("%.1f/10", movie?.rating ?: 0.0), // Format with one decimal place
+                            text = String.format("%.1f/10", movie?.userRating ?: 0.0), // Format with one decimal place
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
@@ -234,7 +217,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     )
                     movie?.let { it1 ->
                         Text(
-                            text = it1.overview,
+                            text = it1.overview ?: "", // Provide a default value if overview is null
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
@@ -242,63 +225,8 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
             }
 
 
-
-
-
             // You can add more details like runtime, release date, rating, synopsis, etc. here
             // ...
-        }
-    }
-    if (showModal) {
-        ModalBottomSheet(
-            onDismissRequest = { showModal = false },
-            sheetState = sheetState,
-        ) {
-            DetailBottomSheet(allLists, viewModel, currList, movie_to_add) { showModal = false }
-        }
-    }
-}
-
-@Composable
-fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, currList: String?, movie: Movie?, onDismiss: () -> Unit) {
-    Column(modifier = Modifier.padding(1.dp)) {
-        viewModel.defaultLists.forEach { defaultList ->
-            // Only display "Completed", "Planning", and "Watching"
-            if (defaultList.listName in listOf("Completed", "Planning", "Watching")) {
-                Row(
-                    modifier = Modifier
-                        .padding(start = 2.dp, end = 2.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            movie?.let {
-                                viewModel.addMovieToList(defaultList.listName, it)
-                            }
-                            onDismiss()
-                        }
-                        .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Choose icon based on singleList.listName
-                    val icon = when (defaultList.listName) {
-                        "Completed" -> R.drawable.completed_icon
-                        "Planning" -> R.drawable.planning_icon
-                        "Watching" -> R.drawable.watching_icon
-                        else -> R.drawable.custom_list // custom icon when user makes list
-                    }
-
-                    Icon(
-                        painter = painterResource(id = icon),
-                        contentDescription = defaultList.listName,
-                        modifier = Modifier.padding(start=8.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = defaultList.listName,
-                        fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
         }
     }
 }

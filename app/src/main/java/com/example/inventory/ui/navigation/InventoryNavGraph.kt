@@ -13,6 +13,8 @@ import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.ListDestination
 import com.example.inventory.ui.home.SearchScreen
 import com.example.inventory.ui.home.ListScreen
+import com.example.inventory.ui.home.LocalDetailDestination
+import com.example.inventory.ui.home.LocalMovieDetailsScreen
 
 /**
  * Provides Navigation graph for the application.
@@ -37,6 +39,15 @@ fun InventoryNavHost(
         ) { backStackEntry ->
             val movieId = backStackEntry.arguments?.getInt("movieId") ?: error("Missing movieID argument")
             MovieDetailsScreen(navController, movieId)
+        }
+
+        composable(
+            route = LocalDetailDestination.ROUTE, // New route for LocalDetailScreen
+            arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val movieId = backStackEntry.arguments?.getInt("movieId")
+                ?: error("Missing movieID argument")
+            LocalMovieDetailsScreen(navController, movieId)
         }
 
         composable(route = ListDestination.route) {
