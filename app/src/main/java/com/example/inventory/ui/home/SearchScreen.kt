@@ -61,7 +61,6 @@ import coil.compose.AsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieSearchResult
 import com.example.inventory.data.api.displayRandomMovie
-import com.example.inventory.data.api.getGenre
 import com.example.inventory.data.api.getGenreHardCode
 import com.example.inventory.data.api.getMovieQuery
 import com.example.inventory.data.api.getNowPlayingMovies
