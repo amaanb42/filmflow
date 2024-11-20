@@ -15,7 +15,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,17 +24,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -43,10 +38,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.InventoryApplication
-import com.example.inventory.R
 import com.example.inventory.data.movie.Movie
-import com.example.inventory.ui.theme.dark_pine
-import kotlinx.coroutines.launch
 
 
 object LocalDetailDestination {
@@ -71,12 +63,9 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
         listMoviesRepository,
         movieRepository)
     )
-    val coroutineScope = rememberCoroutineScope()
-    var showModal by remember { mutableStateOf(false) }
 
     // collect data from ListScreenViewModel
     //val allLists by viewModel.allLists.collectAsState()
-    val selectedList by viewModel.selectedList.collectAsState()
     //val currList = selectedList?.listName // used for highlighting selection in bottom sheet
 
 //    var movie_to_add by remember { mutableStateOf<Movie?>(null) } // Make this a state
@@ -95,7 +84,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     // Movie title in top bar
                     movie?.let {
                         Text(
-                            text = it.title, // Replace with actual movie title when available
+                            text = it.title,
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1
                         )
@@ -110,35 +99,6 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         )
                     }
                 },
-            )
-        },
-        // Add movie to list FAB
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    coroutineScope.launch {
-                        showModal = true
-                    }
-                },
-                icon = {
-                    // Choose icon based on selectedList
-                    // As the code currently is, if a user makes a custom list, the FAB icon
-                    // will be the same as the All icon instead of the custom icon in the bottom sheet
-                    val icon = when (selectedList?.listName) {
-                        "Completed" -> painterResource(id = R.drawable.completed_icon)
-                        "Planning" -> painterResource(id = R.drawable.planning_icon)
-                        "Watching" -> painterResource(id = R.drawable.watching_icon)
-                        else -> painterResource(id = R.drawable.add_icon) // Default icon
-                    }
-
-                    Icon(
-                        painter = icon,
-                        contentDescription = "Add movie to list"
-                    )
-                },
-                text = { Text(selectedList?.listName ?: "Add") },
-                containerColor = dark_pine,
-                contentColor = Color.White
             )
         }
     ) {
@@ -223,10 +183,6 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     }
                 }
             }
-
-
-            // You can add more details like runtime, release date, rating, synopsis, etc. here
-            // ...
         }
     }
 }
