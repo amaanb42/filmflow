@@ -56,11 +56,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.Coil
 import coil.compose.AsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieSearchResult
 import com.example.inventory.data.api.displayRandomMovie
 import com.example.inventory.data.api.getGenre
+import com.example.inventory.data.api.getGenreHardCode
 import com.example.inventory.data.api.getMovieQuery
 import com.example.inventory.data.api.getNowPlayingMovies
 import com.example.inventory.data.api.getTrendingMovies
@@ -87,7 +89,6 @@ fun SearchScreen(navController: NavHostController) {
     var tempMovieList by remember { mutableStateOf(mutableListOf<MovieSearchResult>()) }
     var trendingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
     val coroutineScope = rememberCoroutineScope()
-    var genreList by remember { mutableStateOf(listOf<Pair<String, Int>>()) }
     var randomizeGenre by remember { mutableStateOf(Pair("",1))}
     var nowPlayingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
 
@@ -200,9 +201,10 @@ fun SearchScreen(navController: NavHostController) {
                     sheetState = sheetState,
                     onDismissRequest = { isSheetOpen = false },
                 ) {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        async { genreList = getGenre() }.await()
-                    }
+//                    coroutineScope.launch(Dispatchers.IO) {
+//                        async { genreList = getGenreHardCode() }.await()
+//                    }
+                    val genreList = getGenreHardCode()
                     LazyVerticalGrid(columns = GridCells.Fixed(2))
                     {
                         var randMovieID = 0

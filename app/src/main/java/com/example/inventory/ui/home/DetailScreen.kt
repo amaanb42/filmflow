@@ -1,6 +1,6 @@
 package com.example.inventory.ui.home
 
-import android.annotation.SuppressLint
+import  android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

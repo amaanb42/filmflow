@@ -90,16 +90,42 @@ fun getDetailsFromID(id: Int): MovieDetails {
     return parseMovieDetails(movieJson) // Parse the JSON object here
 }
 
-fun getGenre(): MutableList<Pair<String, Int>> {
-    val genre = apiRequest("https://api.themoviedb.org/3/genre/movie/list?language=en").getJSONArray("genres")
-    val movieGenre: MutableList<Pair<String, Int>> = mutableListOf()
-    for(i in 0 until genre.length()){
-        movieGenre.add(genre.getJSONObject(i).get("name").toString() to (genre.getJSONObject(
-            i
-        ).get("id")) as Int)
-    }
+fun getGenreHardCode(): List<Pair<String, Int>> {
+    val movieGenre: List<Pair<String, Int>> = listOf(
+        "Action" to 28,
+        "Adventure" to 12,
+        "Animation" to 16,
+        "Comedy" to 35,
+        "Crime" to 80,
+        "Documentary" to 99,
+        "Drama" to 18,
+        "Family" to 10751,
+        "Fantasy" to 14,
+        "History" to 36,
+        "Horror" to 27,
+        "Music" to 10402,
+        "Mystery" to 9648,
+        "Romance" to 10749,
+        "Science Fiction" to 878,
+        "TV Movie" to 10770,
+        "Thriller" to 53,
+        "War" to 10752,
+        "Western" to 37
+    )
     return movieGenre
 }
+
+//In case we ever need to go back to this
+//fun getGenre(): MutableList<Pair<String, Int>> {
+//    val genre = apiRequest("https://api.themoviedb.org/3/genre/movie/list?language=en").getJSONArray("genres")
+//    val movieGenre: MutableList<Pair<String, Int>> = mutableListOf()
+//    for(i in 0 until genre.length()){
+//        movieGenre.add(genre.getJSONObject(i).get("name").toString() to (genre.getJSONObject(
+//            i
+//        ).get("id")) as Int)
+//    }
+//    return movieGenre
+//}
 
 fun displayRandomMovie(movie: Pair<String, Int>):Int{
     val queryMovie = apiRequest("https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en&page=1&sort_by=popularity.desc&with_genres=${movie.second}").getJSONArray("results")
