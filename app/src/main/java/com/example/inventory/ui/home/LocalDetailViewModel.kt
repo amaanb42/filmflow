@@ -3,6 +3,7 @@ package com.example.inventory.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.data.ListMoviesRepository
 import com.example.inventory.data.MovieRepository
 import com.example.inventory.data.UserListRepository
@@ -39,38 +40,14 @@ class LocalDetailViewModel(
         initialValue = emptyList()
     )
 
-    // StateFlow to hold the currently selected list
-    private val _selectedList = MutableStateFlow<UserList?>(null)
-    val selectedList: StateFlow<UserList?> = _selectedList
-
-    // Function to update the selected list
-    fun selectList(singleList: UserList?) {
-        _selectedList.value = singleList
-    }
-
-    // StateFlow for displaying all movies on List Screen, default on app start
-    var allMovies: StateFlow<List<Movie>> = movieRepository.getAllMoviesStream().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-
-    // Function to filter movies based on list selection
-    fun updateListMovies(singleList: UserList?) {
-        allMovies = if (singleList == null) { // "All" is selected
-            movieRepository.getAllMoviesStream().stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
-        } else { // any other list is selected
-            listMoviesRepository.getMoviesForListStream(singleList.listName).stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
+    // update rating of locally stored movie
+    fun changeMovieRating(movieID: Int, newRating: Float) {
+        viewModelScope.launch {
+            movieRepository.updateUserRating(movieID, newRating)
         }
     }
+
+    // TODO: put movie deletion/moving functions below here
 }
 // pass the repository to DetailViewModel
 class LocalDetailViewModelFactory(
@@ -79,10 +56,10 @@ class LocalDetailViewModelFactory(
     private val movieRepository: MovieRepository
 ) : ViewModelProvider.Factory {
     override fun <T: ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(DetailViewModel::class.java)) {
-            return DetailViewModel(userListRepository, listMoviesRepository, movieRepository) as T
+        if (modelClass.isAssignableFrom(LocalDetailViewModel::class.java)) {
+            return LocalDetailViewModel(userListRepository, listMoviesRepository, movieRepository) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class ListScreenViewModel")
+        throw IllegalArgumentException("Unknown ViewModel class LocalDetailViewModel")
     }
 }
 
