@@ -8,6 +8,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -47,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -108,7 +110,6 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
         }
     }
     Scaffold(
-        //modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
                 title = {
@@ -164,7 +165,12 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
             }
         }
     ) {
-        Column{
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+        val topPadding = screenHeight * 0.05f // 12% of screen height
+        Column(
+            modifier = Modifier
+                .padding(top = topPadding)
+        ) {
             // Image and text in a Row
             Card(
                 colors = CardDefaults.cardColors(
