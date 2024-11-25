@@ -53,6 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -419,7 +420,7 @@ fun CircularProgressBar(
             )
         }
         Text(
-            text = String.format("%.1f", userRating), // Display userRating with one decimal place
+            text = String.format(java.util.Locale.ENGLISH, "%.1f", userRating), // Display userRating with one decimal place
             color = Color.White,
             fontSize = fontSize,
             fontWeight = FontWeight.Bold
