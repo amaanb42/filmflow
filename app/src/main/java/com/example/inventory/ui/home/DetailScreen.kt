@@ -74,7 +74,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     val movieRepository = InventoryApplication().container.movieRepository
     val viewModel: DetailViewModel = viewModel(factory = DetailViewModelFactory(userListRepository,
         listMoviesRepository,
-        movieRepository)
+        movieRepository,
+        movieId)
     )
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
@@ -263,17 +264,29 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
 
 @Composable
 fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, currList: String?, movie: Movie?, onDismiss: () -> Unit) {
+    val listsForMovie by viewModel.listsForMovie.collectAsState()
+    var alreadyExistsInList: String? = null
+    for (list in viewModel.defaultLists) {
+        if (list.listName in listsForMovie) {
+            alreadyExistsInList = list.listName
+            break
+        }
+    }
     Column(modifier = Modifier.padding(1.dp)) {
         viewModel.defaultLists.forEach { defaultList ->
             // Only display "Completed", "Planning", and "Watching"
-            if (defaultList.listName in listOf("Completed", "Planning", "Watching")) {
+            if (defaultList.listName in listOf("Completed", "Planning", "Watching") && defaultList.listName != alreadyExistsInList) {
                 Row(
                     modifier = Modifier
                         .padding(start = 2.dp, end = 2.dp)
                         .fillMaxWidth()
                         .clickable {
                             movie?.let {
-                                viewModel.addMovieToList(defaultList.listName, it)
+                                if (alreadyExistsInList != null) { // if the movie is already in a default list, move it
+                                    viewModel.moveMovieToList(alreadyExistsInList, defaultList.listName, it)
+                                } else { // otherwise, add it to the selected default list
+                                    viewModel.addMovieToList(defaultList.listName, it)
+                                }
                             }
                             onDismiss()
                         }
@@ -297,6 +310,44 @@ fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, curr
                     Text(
                         text = defaultList.listName,
                         fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+        allLists.forEach { list ->
+            // Only display "Completed", "Planning", and "Watching"
+            if (list.listName !in listOf("Completed", "Planning", "Watching")) {
+                Row(
+                    modifier = Modifier
+                        .padding(start = 2.dp, end = 2.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            movie?.let {
+                                viewModel.addMovieToList(list.listName, it)
+                            }
+                            onDismiss()
+                        }
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Choose icon based on singleList.listName
+                    val icon = when (list.listName) {
+                        "Completed" -> R.drawable.completed_icon
+                        "Planning" -> R.drawable.planning_icon
+                        "Watching" -> R.drawable.watching_icon
+                        else -> R.drawable.custom_list // custom icon when user makes list
+                    }
+
+                    Icon(
+                        painter = painterResource(id = icon),
+                        contentDescription = list.listName,
+                        modifier = Modifier.padding(start=8.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = list.listName,
+                        fontWeight = if (list.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
                         modifier = Modifier.weight(1f)
                     )
                 }
