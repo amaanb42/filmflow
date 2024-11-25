@@ -64,6 +64,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.data.movie.Movie
+import com.example.inventory.ui.theme.dark_highlight_med
 import com.example.inventory.ui.theme.material_green
 import com.example.inventory.ui.theme.material_red
 import com.example.inventory.ui.theme.material_yellow
@@ -298,7 +299,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             textAlign = TextAlign.Center
                         ),
                         colors = OutlinedTextFieldDefaults.colors( // make border color appear if input is clicked (focused)
-                            unfocusedBorderColor = Color.Transparent,
+                            unfocusedBorderColor = dark_highlight_med,
                             focusedBorderColor = Color.Unspecified,
                         ),
 
