@@ -100,7 +100,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 movie?.posterPath ?: "", // Provide an empty string if posterPath is null
                 movie?.releaseDate,
                 movie?.runtime,
-                movie?.rating?.toFloat(), // Convert Double? to Float?
+                //movie?.rating?.toFloat(), // Convert Double? to Float?
+                0.0.toFloat(), // Sends 0.0 to localDB instead of TMDB rating
                 emptyList() // Provide an empty list for genres
             )
         }
