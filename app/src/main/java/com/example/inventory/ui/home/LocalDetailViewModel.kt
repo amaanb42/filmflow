@@ -22,14 +22,6 @@ class LocalDetailViewModel(
     private val movieRepository: MovieRepository
 ) : ViewModel() {
 
-    // adding a movie to a list
-    fun addMovieToList(listName: String, movie: Movie) {
-        viewModelScope.launch {
-            movieRepository.insertMovie(movie) //have to add to Movie table first
-            listMoviesRepository.insertListMovieRelation(ListMovies(listName, movie.movieID)) //add to ListMovies relation table
-        }
-    }
-
     // used for displaying in modal bottom sheet, no need to pull from db
     val defaultLists: List<UserList> = listOf(UserList("Completed"), UserList("Planning"), UserList("Watching"))
 
@@ -48,6 +40,20 @@ class LocalDetailViewModel(
     }
 
     // TODO: put movie deletion/moving functions below here
+    // used on local detail screen to copy over movie to another user-created list
+    fun addMovieToList(listName: String, movie: Movie) {
+        viewModelScope.launch {
+            listMoviesRepository.insertListMovieRelation(ListMovies(listName, movie.movieID)) //add to ListMovies relation table
+        }
+    }
+    // use for changing status of movie between default lists
+    fun moveMovieToList(oldListName: String, newListName: String, movie: Movie) {
+        viewModelScope.launch {
+            // remove the other relation first and then insert new one
+            listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, movie.movieID))
+            listMoviesRepository.insertListMovieRelation(ListMovies(newListName, movie.movieID))
+        }
+    }
 }
 // pass the repository to DetailViewModel
 class LocalDetailViewModelFactory(
