@@ -1,6 +1,7 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -374,7 +375,7 @@ fun CircularProgressBar(
     userRating: Float, // Now takes userRating directly
     fontSize: TextUnit = 28.sp,
     radius: Dp = 50.dp,
-    color: Color = MaterialTheme.colorScheme.outline,
+    // color: Color = MaterialTheme.colorScheme.outline,
     strokeWidth: Dp = 8.dp,
     animDuration: Int = 1000,
     animDelay: Int = 100
@@ -393,6 +394,19 @@ fun CircularProgressBar(
         )
     )
     LaunchedEffect(key1 = true) { animationPlayed = true }
+
+    // Determine the color based on userRating
+    // Use animateColorAsState for smooth color transitions
+    val color = animateColorAsState(
+        targetValue = when (userRating) {
+            in 0.0f..3.9f -> Color.Red
+            in 4.0f..6.9f -> Color.Yellow
+            in 7.0f..9.9f -> MaterialTheme.colorScheme.outline
+            10.0f -> Color.Green
+            else -> MaterialTheme.colorScheme.outline // Default color
+        },
+        label = "Color Animation" // Add a label for debugging
+    ).value
 
     Box(
         contentAlignment = Alignment.Center,
