@@ -51,12 +51,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.ui.theme.light_gold
+import kotlinx.coroutines.launch
 
 
 object LocalDetailDestination {
@@ -135,7 +137,10 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     text = { Text("Confirm movie deletion.") },
                     confirmButton = {
                         TextButton(onClick = {
-                            // TODO: Delete the movie here
+                            navController.navigate(ListDestination.route)
+                            viewModel.viewModelScope.launch {
+                                movieRepository.deleteMovieByID(movieId)
+                            }
                             showDeleteDialog = false
                         }) {
                             Text("Delete")
