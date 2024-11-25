@@ -66,6 +66,7 @@ import com.example.inventory.InventoryApplication
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.ui.theme.dark_highlight_med
 import com.example.inventory.ui.theme.material_green
+import com.example.inventory.ui.theme.material_orange
 import com.example.inventory.ui.theme.material_red
 import com.example.inventory.ui.theme.material_yellow
 import kotlinx.coroutines.launch
@@ -385,10 +386,11 @@ fun CircularProgressBar(
     // Use animateColorAsState for smooth color transitions
     val color = animateColorAsState(
         targetValue = when (userRating) {
-            in 0.0f..3.9f -> material_red
-            in 4.0f..6.9f -> material_yellow
-            in 7.0f..8.9f -> MaterialTheme.colorScheme.outline
-            in 9.0f .. 10.0f -> material_green
+            in 0.0f..2.9f -> material_red        // 0 - 2.9: Red
+            in 3.0f..4.9f -> material_orange     // 3 - 4.9: Orange
+            in 5.0f..6.9f -> material_yellow     // 5 - 6.9: Yellow
+            in 7.0f..8.9f -> material_green      // 7 - 8.9: Green
+            in 9.0f..10.0f -> MaterialTheme.colorScheme.outline // 9 - 10: Blue
             else -> MaterialTheme.colorScheme.outline // Default color
         },
         label = "Color Animation" // Add a label for debugging
