@@ -1,9 +1,7 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,51 +12,41 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -68,7 +56,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.data.movie.Movie
-import com.example.inventory.ui.theme.dark_gold
 import com.example.inventory.ui.theme.light_gold
 
 
@@ -90,6 +77,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
     val listMoviesRepository = InventoryApplication().container.listMoviesRepository
     val movieRepository = InventoryApplication().container.movieRepository
+    var showDeleteDialog by remember { mutableStateOf(false) }
     val viewModel: LocalDetailViewModel = viewModel(factory = LocalDetailViewModelFactory(userListRepository,
         listMoviesRepository,
         movieRepository)
@@ -132,7 +120,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /*Handle delete*/ }) {
+                    IconButton(onClick = { showDeleteDialog = true }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
                             contentDescription = "Delete movie"
@@ -140,6 +128,26 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     }
                 }
             )
+            if (showDeleteDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteDialog = false },
+                    title = { Text("Deletion") },
+                    text = { Text("Confirm movie deletion.") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            // TODO: Delete the movie here
+                            showDeleteDialog = false
+                        }) {
+                            Text("Delete")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDeleteDialog = false }) {
+                            Text("Cancel")
+                        }
+                    }
+                )
+            }
         }
     ) {
         Column{
@@ -344,4 +352,3 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
         )
     }
 }
-
