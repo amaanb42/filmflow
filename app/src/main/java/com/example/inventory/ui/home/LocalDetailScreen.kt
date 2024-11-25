@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -49,7 +48,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -65,6 +63,10 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.data.movie.Movie
+import com.example.inventory.ui.theme.light_gold
+import com.example.inventory.ui.theme.material_green
+import com.example.inventory.ui.theme.material_red
+import com.example.inventory.ui.theme.material_yellow
 import kotlinx.coroutines.launch
 
 
@@ -399,10 +401,10 @@ fun CircularProgressBar(
     // Use animateColorAsState for smooth color transitions
     val color = animateColorAsState(
         targetValue = when (userRating) {
-            in 0.0f..3.9f -> Color.Red
-            in 4.0f..6.9f -> Color.Yellow
-            in 7.0f..9.9f -> MaterialTheme.colorScheme.outline
-            10.0f -> Color.Green
+            in 0.0f..3.9f -> material_red
+            in 4.0f..6.9f -> material_yellow
+            in 7.0f..8.9f -> MaterialTheme.colorScheme.outline
+            in 9.0f .. 10.0f -> material_green
             else -> MaterialTheme.colorScheme.outline // Default color
         },
         label = "Color Animation" // Add a label for debugging

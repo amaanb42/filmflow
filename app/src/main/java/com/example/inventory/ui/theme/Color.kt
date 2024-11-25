@@ -29,3 +29,9 @@ val light_love = Color(0xffeb6f92)
 val light_surface = Color(0xfffffaf3)
 val light_overlay = Color(0xfff2e9e1)
 val light_base = Color(0xfffaf4ed)
+
+
+// extra colors
+val material_yellow = Color(0xffffeb3b)
+val material_green = Color(0xff4caf50)
+val material_red = Color(0xfff44336)
