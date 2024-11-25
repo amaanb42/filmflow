@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,7 +58,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -171,8 +169,13 @@ fun ListScreen(navController: NavHostController){
             )
         }
     ) {
-        Column(modifier = Modifier.offset(y = 85.dp)) { // contains sorting and view selection buttons, and movie lists
-            Row( // contains sorting and view selection buttons
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+        val topPadding = screenHeight * 0.12f // 12% of screen height
+        Column(
+            modifier = Modifier
+                .padding(top = topPadding)
+        ) {
+        Row( // contains sorting and view selection buttons
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp),
