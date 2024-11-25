@@ -294,14 +294,11 @@ fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>
                     .fillMaxSize()
                     .padding(5.dp)
                     .clickable {
-                        //navigateToMovieDetails(navController, movie.id)
+                        navigateToLocalDetails(navController, movie.movieID)
                     }
             ) {
                 Card(
                     modifier = Modifier
-                        .clickable {
-                            navigateToLocalDetails(navController, movie.movieID)
-                        }
                         .padding(start = 5.dp)
                         .align(Alignment.CenterVertically)
                 ) {
