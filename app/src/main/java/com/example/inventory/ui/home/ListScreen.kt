@@ -107,9 +107,9 @@ fun ListScreen(navController: NavHostController){
     val gridIcon = painterResource(id = R.drawable.grid_view)
     val horizontalIcon = painterResource(id = R.drawable.horizontal_view_icon)
 
-    // Initialize listViewIcon based on showGridView
-    var showGridView by remember { mutableStateOf(true) }
-    var listViewIcon by remember { mutableStateOf(if (showGridView) gridIcon else horizontalIcon) }
+    var listViewIcon by remember { mutableStateOf(horizontalIcon) } // either gonna be gridIcon or horizontalIcon (default)
+    var showGridView by remember { mutableStateOf(true) } // need bool for switching icon
+
 
     Scaffold(
         topBar = {
@@ -199,8 +199,8 @@ fun ListScreen(navController: NavHostController){
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            showGridView = !showGridView
-                            listViewIcon = if (showGridView) gridIcon else horizontalIcon // Swap the icons here
+                            showGridView = !showGridView // helps switch the view
+                            listViewIcon = if (showGridView) horizontalIcon else gridIcon // changes icon
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
@@ -324,16 +324,42 @@ fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>
                     Row {
                         val originalDate = LocalDate.parse(movie.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                         val formattedDate = originalDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"))
-                        Text(text = "Release: $formattedDate", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+                        Text(
+                            text = "Release: $formattedDate",
+                            fontSize = 12.sp,
+                            lineHeight = 1.5.em,
+                            modifier = Modifier.padding(top = 5.dp))
                     }
                     Row {
-                        Text(text = "Runtime: ${movie.runtime} mins", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+                        Text(
+                            text = "Runtime: ${movie.runtime} mins",
+                            fontSize = 12.sp,
+                            lineHeight = 1.5.em,
+                            modifier = Modifier.padding(top = 5.dp))
+                    }
+                    Row {
+                        Text(
+                            text = "Your Rating: %.1f / 10".format(movie.userRating),
+                            fontSize = 12.sp,
+                            lineHeight = 1.5.em,
+                            modifier = Modifier.padding(top = 5.dp)
+                        )
                     }
 //                    Row {
-//                        Text(text = "Director: ${movie.director}", fontSize = 12.sp, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+//                        Text(
+    //                        text = "Director: ${movie.director}",
+    //                        fontSize = 12.sp,
+    //                        lineHeight = 1.5.em,
+    //                        modifier = Modifier.padding(top = 5.dp))
 //                    }
 //                    Row {
-//                        Text(text = "Synopsis: ${movie.overview}", fontSize = 12.sp, maxLines = 3, overflow = TextOverflow.Ellipsis, lineHeight = 1.5.em, modifier = Modifier.padding(top = 5.dp))
+//                        Text(
+    //                        text = "Synopsis: ${movie.overview}",
+    //                        fontSize = 12.sp,
+    //                        maxLines = 3,
+    //                        overflow = TextOverflow.Ellipsis,
+    //                        lineHeight = 1.5.em,
+    //                        modifier = Modifier.padding(top = 5.dp))
 //                    }
                 }
             }
@@ -591,7 +617,7 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
     var listName by remember { mutableStateOf("") }
     var listExistsError by remember { mutableStateOf("") }
 
-    // the button
+    // "add custom list" button
     Row(
         modifier = Modifier
             .padding(start = 2.dp, end = 2.dp)
