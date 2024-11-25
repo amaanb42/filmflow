@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -57,6 +59,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -116,7 +119,7 @@ fun ListScreen(navController: NavHostController){
             TopAppBar(
                 title = {
                     // "Movie List" by default but changes depending on list selected
-                    Text(text = selectedList?.listName ?: "Movie List")
+                    Text(text = selectedList?.listName ?: "Movie List", maxLines = 1, overflow = TextOverflow.Ellipsis)
                 },
 
                 actions = {
@@ -161,10 +164,10 @@ fun ListScreen(navController: NavHostController){
                         contentDescription = "Edit"
                     )
                 },
-                text = { Text(selectedList?.listName ?: "All") }, // default
+                text = { Text(text = selectedList?.listName ?: "All", maxLines = 1, overflow = TextOverflow.Ellipsis) }, // default
                 containerColor = dark_pine,
                 contentColor = Color.White,
-                modifier = Modifier.offset(y = (-100).dp)
+                modifier = Modifier.offset(y = (-100).dp).sizeIn(maxWidth = 150.dp)
             )
         }
     ) {
@@ -316,45 +319,57 @@ fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>
                         .padding(start = 10.dp, end = 10.dp, top = 2.dp, bottom = 2.dp),
                 ) {
                     Row {
-                        Text(text = movie.title, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                        Text(text = movie.title,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = false,
+                            fontSize = 20.sp)
                     }
                     Row {
                         val originalDate = LocalDate.parse(movie.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                        val formattedDate = originalDate.format(DateTimeFormatter.ofPattern("MMMM d, yyyy"))
+                        val formattedDate = originalDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
                         Text(
-                            text = "Release: $formattedDate",
-                            fontSize = 12.sp,
+                            text = "Release: ",
+                            fontSize = 13.sp,
                             lineHeight = 1.5.em,
-                            modifier = Modifier.padding(top = 5.dp))
+                            modifier = Modifier.padding(top = 5.dp)
+                        )
+                        Text(
+                            text = formattedDate,
+                            fontSize = 13.sp,
+                            lineHeight = 1.5.em,
+                            modifier = Modifier.padding(top = 5.dp),
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
                     Row {
                         Text(
-                            text = "Runtime: ${movie.runtime} mins",
-                            fontSize = 12.sp,
+                            text = "Runtime: ",
+                            fontSize = 13.sp,
                             lineHeight = 1.5.em,
-                            modifier = Modifier.padding(top = 5.dp))
+                            modifier = Modifier.padding(top = 5.dp)
+                        )
+                        Text(
+                            text = "${movie.runtime} mins",
+                            fontSize = 13.sp,
+                            lineHeight = 1.5.em,
+                            modifier = Modifier.padding(top = 5.dp),
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
                     Row {
                         Text(
                             text = "Your Rating: %.1f / 10".format(movie.userRating),
-                            fontSize = 12.sp,
+                            fontSize = 13.sp,
                             lineHeight = 1.5.em,
                             modifier = Modifier.padding(top = 5.dp)
                         )
                     }
 //                    Row {
 //                        Text(
-    //                        text = "Director: ${movie.director}",
+    //                        text = "Directed by: ${movie.director}",
     //                        fontSize = 12.sp,
-    //                        lineHeight = 1.5.em,
-    //                        modifier = Modifier.padding(top = 5.dp))
-//                    }
-//                    Row {
-//                        Text(
-    //                        text = "Synopsis: ${movie.overview}",
-    //                        fontSize = 12.sp,
-    //                        maxLines = 3,
-    //                        overflow = TextOverflow.Ellipsis,
     //                        lineHeight = 1.5.em,
     //                        modifier = Modifier.padding(top = 5.dp))
 //                    }
