@@ -1,11 +1,16 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,15 +21,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -43,12 +45,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalMapOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
@@ -57,7 +64,6 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.data.movie.Movie
-import com.example.inventory.ui.theme.light_gold
 import kotlinx.coroutines.launch
 
 
@@ -212,26 +218,31 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 .fillMaxWidth()
                         ) {
                             Spacer(modifier = Modifier.width(10.dp))
-                            Icon(
-                                imageVector = Icons.Filled.Star,
-                                contentDescription = "Star Icon",
-                                modifier = Modifier.size(40.dp),
-                                tint = light_gold
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text(
-                                text = String.format("%.1f", movie?.userRating ?: 0.0), // Format with one decimal place
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontSize = 20.sp,
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
-                            Text(
-                                text = " / 10",
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontSize = 16.sp,
-                                modifier = Modifier.align(Alignment.CenterVertically).padding(top = 2.dp),
-                                color = Color.Gray
-                            )
+//                            Icon(
+//                                imageVector = Icons.Filled.Star,
+//                                contentDescription = "Star Icon",
+//                                modifier = Modifier.size(40.dp),
+//                                tint = light_gold
+//                            )
+//                            Spacer(modifier = Modifier.width(10.dp))
+//                            Text(
+//                                text = String.format("%.1f", movie?.userRating ?: 0.0), // Format with one decimal place
+//                                style = MaterialTheme.typography.bodyMedium,
+//                                fontSize = 20.sp,
+//                                modifier = Modifier.align(Alignment.CenterVertically)
+//                            )
+//                            Text(
+//                                text = " / 10",
+//                                style = MaterialTheme.typography.bodyMedium,
+//                                fontSize = 16.sp,
+//                                modifier = Modifier.align(Alignment.CenterVertically).padding(top = 2.dp),
+//                                color = Color.Gray
+//                            )
+                            Box(
+                                Modifier.align(Alignment.CenterVertically).padding(top = 24.dp, start = 12.dp)
+                            ) {
+                                CircularProgressBar(userRating = movie?.userRating ?: 0.0f)
+                            }
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }
@@ -354,6 +365,61 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
                 )
             }
+        )
+    }
+}
+
+@Composable
+fun CircularProgressBar(
+    userRating: Float, // Now takes userRating directly
+    fontSize: TextUnit = 28.sp,
+    radius: Dp = 50.dp,
+    color: Color = MaterialTheme.colorScheme.outline,
+    strokeWidth: Dp = 8.dp,
+    animDuration: Int = 1000,
+    animDelay: Int = 100
+) {
+    var animationPlayed by remember { mutableStateOf(false) }
+
+    // Calculate percentage based on userRating (0 to 10 scale)
+    val percentage = userRating / 10f
+
+    val curPercentage = animateFloatAsState(
+        targetValue = if (animationPlayed) percentage else 0f,
+        label = "Rating Animation",
+        animationSpec = tween(
+            durationMillis = animDuration,
+            delayMillis = animDelay
+        )
+    )
+    LaunchedEffect(key1 = true) { animationPlayed = true }
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.size(radius * 2f)
+    ) {
+        Canvas(modifier = Modifier.size(radius * 2f)) {
+            // Draw the white circle first
+            drawCircle(
+                color = Color.White,
+                radius = radius.toPx(), // Adjust radius for the stroke width
+                style = Stroke(1.dp.toPx()) // Thin stroke width
+            )
+
+            // Draw arc on top
+            drawArc(
+                color = color,
+                -90f,
+                360 * curPercentage.value,
+                useCenter = false,
+                style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
+            )
+        }
+        Text(
+            text = String.format("%.1f", userRating), // Display userRating with one decimal place
+            color = Color.White,
+            fontSize = fontSize,
+            fontWeight = FontWeight.Bold
         )
     }
 }
