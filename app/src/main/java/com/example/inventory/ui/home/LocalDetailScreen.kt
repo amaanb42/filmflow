@@ -318,7 +318,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                                 .align(Alignment.CenterHorizontally)
                         )
                     }
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(25.dp))
                     // Slider for changing rating value from 0.0 to 10.0
                     LineSlider(
                         value = if (newRating.toFloatOrNull() != null && newRating.toFloat() in 0.0..10.0) newRating.toFloat() else 0.0f,
