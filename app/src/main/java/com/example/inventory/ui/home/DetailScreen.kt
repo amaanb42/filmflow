@@ -321,43 +321,5 @@ fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, curr
                 }
             }
         }
-        allLists.forEach { list ->
-            // Only display "Completed", "Planning", and "Watching"
-            if (list.listName !in listOf("Completed", "Planning", "Watching")) {
-                Row(
-                    modifier = Modifier
-                        .padding(start = 2.dp, end = 2.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            movie?.let {
-                                viewModel.addMovieToList(list.listName, it)
-                            }
-                            onDismiss()
-                        }
-                        .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Choose icon based on singleList.listName
-                    val icon = when (list.listName) {
-                        "Completed" -> R.drawable.completed_icon
-                        "Planning" -> R.drawable.planning_icon
-                        "Watching" -> R.drawable.watching_icon
-                        else -> R.drawable.custom_list // custom icon when user makes list
-                    }
-
-                    Icon(
-                        painter = painterResource(id = icon),
-                        contentDescription = list.listName,
-                        modifier = Modifier.padding(start=8.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = list.listName,
-                        fontWeight = if (list.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        }
     }
 }

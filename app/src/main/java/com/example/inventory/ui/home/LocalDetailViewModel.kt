@@ -19,7 +19,8 @@ import kotlinx.coroutines.launch
 class LocalDetailViewModel(
     private val userListRepository: UserListRepository,
     private val listMoviesRepository: ListMoviesRepository,
-    private val movieRepository: MovieRepository
+    private val movieRepository: MovieRepository,
+    private val currMovieID: Int
 ) : ViewModel() {
 
     // used for displaying in modal bottom sheet, no need to pull from db
@@ -27,6 +28,13 @@ class LocalDetailViewModel(
 
     // StateFlow for displaying all lists in the bottom screen sheet
     val allLists: StateFlow<List<UserList>> = userListRepository.getAllListsStream().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    // used to determine the lists the current movie is in
+    val listsForMovie: StateFlow<List<String>> = listMoviesRepository.getListsForMovieStream(currMovieID).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
@@ -41,17 +49,17 @@ class LocalDetailViewModel(
 
     // TODO: put movie deletion/moving functions below here
     // used on local detail screen to copy over movie to another user-created list
-    fun addMovieToList(listName: String, movie: Movie) {
+    fun addMovieToList(listName: String) {
         viewModelScope.launch {
-            listMoviesRepository.insertListMovieRelation(ListMovies(listName, movie.movieID)) //add to ListMovies relation table
+            listMoviesRepository.insertListMovieRelation(ListMovies(listName, currMovieID)) //add to ListMovies relation table
         }
     }
     // use for changing status of movie between default lists
-    fun moveMovieToList(oldListName: String, newListName: String, movie: Movie) {
+    fun moveMovieToList(oldListName: String, newListName: String) {
         viewModelScope.launch {
             // remove the other relation first and then insert new one
-            listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, movie.movieID))
-            listMoviesRepository.insertListMovieRelation(ListMovies(newListName, movie.movieID))
+            listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, currMovieID))
+            listMoviesRepository.insertListMovieRelation(ListMovies(newListName, currMovieID))
         }
     }
 }
@@ -59,11 +67,12 @@ class LocalDetailViewModel(
 class LocalDetailViewModelFactory(
     private val userListRepository: UserListRepository,
     private val listMoviesRepository: ListMoviesRepository,
-    private val movieRepository: MovieRepository
+    private val movieRepository: MovieRepository,
+    private val currMovieID: Int
 ) : ViewModelProvider.Factory {
     override fun <T: ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LocalDetailViewModel::class.java)) {
-            return LocalDetailViewModel(userListRepository, listMoviesRepository, movieRepository) as T
+            return LocalDetailViewModel(userListRepository, listMoviesRepository, movieRepository, currMovieID) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class LocalDetailViewModel")
     }
