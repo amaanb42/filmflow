@@ -8,7 +8,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -274,9 +273,9 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
             title = { Text(text = "Your Rating") },
             text = {
                 Column {
-                    // Editable text field, border is invisible on focus and shows up when user clicks on it
+                    // Editable text field, border is dark blue unfocused and becomes brighter when user clicks on it
                     OutlinedTextField(
-                        shape = RoundedCornerShape(30.dp),
+                        shape = RoundedCornerShape(36.dp),
                         value = newRating,
                         onValueChange = {
                             if (it.length <= 4) { // longest string that can be inputted is 10.0
