@@ -25,9 +25,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -35,11 +37,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +53,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -62,8 +68,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.inventory.InventoryApplication
+import com.example.inventory.R
 import com.example.inventory.data.movie.Movie
+import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.theme.dark_highlight_med
+import com.example.inventory.ui.theme.dark_pine
 import com.example.inventory.ui.theme.material_green
 import com.example.inventory.ui.theme.material_orange
 import com.example.inventory.ui.theme.material_red
@@ -83,7 +92,7 @@ object LocalDetailDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
-fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, currListName: String) {
+fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, currList: String) {
     //var movie by remember { mutableStateOf<MovieDetails?>(null) }
     var movie by remember { mutableStateOf<Movie?>(null) }
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
@@ -92,15 +101,19 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
     var showDeleteDialog by remember { mutableStateOf(false) }
     val viewModel: LocalDetailViewModel = viewModel(factory = LocalDetailViewModelFactory(userListRepository,
         listMoviesRepository,
-        movieRepository)
+        movieRepository,
+        movieId)
     )
     var showChangeRatingDialog by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val coroutineScope = rememberCoroutineScope()
+    var showModal by remember { mutableStateOf(false) } // for popping up bottom sheet
+    var fabClicked by remember { mutableStateOf(true) } // if copy icon clicked, this is false
 
-    // collect data from ListScreenViewModel
-    //val allLists by viewModel.allLists.collectAsState()
-    //val currList = selectedList?.listName // used for highlighting selection in bottom sheet
+    val allLists by viewModel.allLists.collectAsState()
+    val movie_to_add by remember { mutableStateOf<Movie?>(null) } // Make this a state
 
-//    var movie_to_add by remember { mutableStateOf<Movie?>(null) } // Make this a state
+
 
 // Fetch movie details from the local database using movieId
     LaunchedEffect(key1 = movieId) {
@@ -162,6 +175,32 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                     }
                 )
             }
+        },
+        // Change movie status FAB
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    coroutineScope.launch {
+                        showModal = true // bottom sheet will popup
+                        fabClicked = true // indicate the FAB was clicked, not the copy icon
+                    }
+                },
+                icon = {
+                    val icon = when (currList) {
+                        "Completed" -> painterResource(id = R.drawable.completed_icon)
+                        "Planning" -> painterResource(id = R.drawable.planning_icon)
+                        "Watching" -> painterResource(id = R.drawable.watching_icon)
+                        else -> painterResource(id = R.drawable.add_icon) // TODO: change to edit icon or something idk
+                    }
+                    Icon(
+                        painter = icon,
+                        contentDescription = "Change movie status"
+                    )
+                },
+                text = { Text(if (currList != "Completed" && currList != "Planning" && currList != "Watching") "Change Status" else currList) },
+                containerColor = dark_pine,
+                contentColor = Color.White
+            )
         }
     ) {
         val screenHeight = LocalConfiguration.current.screenHeightDp.dp
@@ -181,59 +220,81 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                     .padding(top = 26.dp)
                     .padding(top = TopAppBarDefaults.TopAppBarExpandedHeight)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.Top // Align to the top of the row
-                ) {
-                    Card { // Card for the image
-                        AsyncImage(
-                            model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
-                            contentDescription = null,
-                            modifier = Modifier
-                                .clickable { }
-                                .width(170.dp)
-                                .aspectRatio(0.6667f),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Column {
-                        movie?.let { it1 ->
-                            Text(
-                                text = it1.title,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
+                Box {
+                    val icon = painterResource(id = R.drawable.custom_list)
+                    Icon(
+                        painter = icon,
+                        contentDescription = "Copy to list",
+                        modifier = Modifier
+                            .padding(top = 10.dp, end = 10.dp, bottom = 0.dp)
+                            .align(Alignment.TopEnd) // puts the icon in top right corner of card
+                            .clickable {
+                                showModal = true
+                                fabClicked = false
+                                // TODO: if there are no custom lists, popup create list dialog (copy from list screen), and then add to that list
+                            }
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.Top // Align to the top of the row
+                    ) {
+                        Card { // Card for the image
+                            AsyncImage(
+                                model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .clickable { }
+                                    .width(170.dp)
+                                    .aspectRatio(0.6667f),
+                                contentScale = ContentScale.Crop
                             )
                         }
-                        Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                        Text(
-                            text = (movie?.runtime?.toString() ?: "") + " minutes",
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                        Text(
-                            text = (movie?.releaseDate ?: ""),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                        Row( // TODO: make prettier
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-                            //Spacer(modifier = Modifier.width(10.dp))
-                            Box(
-                                Modifier.align(Alignment.CenterVertically).padding(top = 36.dp, start = 24.dp)
-                                    //.clip(CircleShape)
-                                    //.size(100.dp)
-                                    .clickable { showChangeRatingDialog = true } // display the dialog
-                            ) {
-                                CircularProgressBar(userRating = movie?.userRating ?: 0.0f)
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        Column {
+                            movie?.let { it1 ->
+                                Text(
+                                    text = it1.title,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.fillMaxWidth(0.85f) // DON'T CHANGE, AVOIDS ICON COVERING CHARACTERS (EXPERTLY CALCULATED)
+                                )
                             }
-                            Spacer(modifier = Modifier.weight(1f))
+                            Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
+                            Text(
+                                text = (movie?.runtime?.toString() ?: "") + " minutes",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
+                            Text(
+                                text = (movie?.releaseDate ?: ""),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
+                            Row( // TODO: make prettier
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                //Spacer(modifier = Modifier.width(10.dp))
+                                Box(
+                                    Modifier
+                                        .align(Alignment.CenterVertically)
+                                        .padding(top = 36.dp, start = 24.dp)
+                                        //.clip(CircleShape)
+                                        //.size(100.dp)
+                                        .clickable {
+                                            showChangeRatingDialog = true
+                                        } // display the dialog
+                                ) {
+                                    CircularProgressBar(userRating = movie?.userRating ?: 0.0f)
+                                }
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
                         }
                     }
                 }
@@ -358,6 +419,14 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
             }
         )
     }
+    if (showModal) { // popup bottom sheet
+        ModalBottomSheet(
+            onDismissRequest = { showModal = false },
+            sheetState = sheetState,
+        ) {
+            LocalDetailBottomSheet(allLists, viewModel, currList, movie_to_add, fabClicked) { showModal = false }
+        }
+    }
 }
 
 @Composable
@@ -429,5 +498,127 @@ fun CircularProgressBar(
             fontSize = fontSize,
             fontWeight = FontWeight.Bold
         )
+    }
+}
+// functionality for bottom sheet, content differs depending on if the FAB was clicked or the copy icon
+@Composable
+fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewModel, currList: String, movie: Movie?, fabWasClicked: Boolean, onDismiss: () -> Unit) {
+    // first determine the status of the movie
+    val listsForMovie by viewModel.listsForMovie.collectAsState()
+    var alreadyExistsInList: String? = null
+    for (list in viewModel.defaultLists) {
+        if (list.listName in listsForMovie) {
+            alreadyExistsInList = list.listName
+            break
+        }
+    }
+    Column(modifier = Modifier.padding(1.dp)) {
+        if (fabWasClicked) { // FAB was clicked so display default lists (statuses)
+            Row(
+                modifier = Modifier
+                    .padding(start = 2.dp, end = 2.dp)
+                    .fillMaxWidth()
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "Currently in \"$alreadyExistsInList\"",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            viewModel.defaultLists.forEach { defaultList ->
+                // Only display "Completed", "Planning", and "Watching"
+                if (defaultList.listName in listOf(
+                        "Completed",
+                        "Planning",
+                        "Watching"
+                    ) && defaultList.listName != alreadyExistsInList
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 2.dp, end = 2.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                if (alreadyExistsInList != null) {
+                                    viewModel.moveMovieToList(
+                                        alreadyExistsInList,
+                                        defaultList.listName
+                                    )
+                                }
+                                onDismiss()
+                            }
+                            .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Choose icon based on singleList.listName
+                        val icon = when (defaultList.listName) {
+                            "Completed" -> R.drawable.completed_icon
+                            "Planning" -> R.drawable.planning_icon
+                            "Watching" -> R.drawable.watching_icon
+                            else -> R.drawable.custom_list // custom icon when user makes list
+                        }
+
+                        Icon(
+                            painter = painterResource(id = icon),
+                            contentDescription = defaultList.listName,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = defaultList.listName,
+                            fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+        } else { // copy icon was clicked, display user-created lists
+            Row(
+                modifier = Modifier
+                    .padding(start = 2.dp, end = 2.dp)
+                    .fillMaxWidth()
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(text = "Copy To", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                Spacer(modifier = Modifier.weight(1f))
+            }
+            allLists.forEach { list ->
+                // Only display "Completed", "Planning", and "Watching"
+                if (list.listName !in listOf("Completed", "Planning", "Watching")) {
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 2.dp, end = 2.dp)
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.addMovieToList(list.listName)
+                                onDismiss()
+                            }
+                            .padding(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Choose icon based on singleList.listName
+                        val icon = when (list.listName) {
+                            "Completed" -> R.drawable.completed_icon
+                            "Planning" -> R.drawable.planning_icon
+                            "Watching" -> R.drawable.watching_icon
+                            else -> R.drawable.custom_list // custom icon when user makes list
+                        }
+
+                        Icon(
+                            painter = painterResource(id = icon),
+                            contentDescription = list.listName,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = list.listName,
+                            fontWeight = if (list.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
