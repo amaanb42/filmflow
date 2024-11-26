@@ -43,11 +43,16 @@ fun InventoryNavHost(
 
         composable(
             route = LocalDetailDestination.ROUTE, // New route for LocalDetailScreen
-            arguments = listOf(navArgument("movieId") { type = NavType.IntType })
+            arguments = listOf(
+                navArgument("movieId") { type = NavType.IntType },
+                navArgument("currList") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             val movieId = backStackEntry.arguments?.getInt("movieId")
                 ?: error("Missing movieID argument")
-            LocalMovieDetailsScreen(navController, movieId)
+            val currListName = backStackEntry.arguments?.getString("currList")
+                ?: error("Missing currList argument")
+            LocalMovieDetailsScreen(navController, movieId, currListName)
         }
 
         composable(route = ListDestination.route) {

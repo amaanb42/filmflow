@@ -73,10 +73,10 @@ import kotlinx.coroutines.launch
 
 
 object LocalDetailDestination {
-    const val ROUTE = "localMovieDetails/{movieId}"
+    const val ROUTE = "localMovieDetails/{movieId}/{currList}"
 
-    fun createRoute(movieId: Int): String {
-        return "localMovieDetails/$movieId"
+    fun createRoute(movieId: Int, currList: String): String {
+        return "localMovieDetails/$movieId/$currList"
     }
 }
 
@@ -84,7 +84,7 @@ object LocalDetailDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
-fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
+fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, currListName: String) {
     //var movie by remember { mutableStateOf<MovieDetails?>(null) }
     var movie by remember { mutableStateOf<Movie?>(null) }
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository

@@ -36,11 +36,11 @@ class ListScreenViewModel(
     )
 
     // StateFlow to hold the currently selected list
-    private val _selectedList = MutableStateFlow<UserList?>(null)
-    val selectedList: StateFlow<UserList?> = _selectedList
+    private val _selectedList = MutableStateFlow<String>("")
+    val selectedList: StateFlow<String> = _selectedList
 
     // Function to update the selected list
-    fun selectList(singleList: UserList?) {
+    fun selectList(singleList: String) {
         _selectedList.value = singleList
     }
 
@@ -52,15 +52,15 @@ class ListScreenViewModel(
     )
 
     // Function to filter movies based on list selection
-    fun updateListMovies(singleList: UserList?) {
-        allMovies = if (singleList == null) { // "All" is selected
+    fun updateListMovies(singleList: String) {
+        allMovies = if (singleList == "") { // "All" is selected
             movieRepository.getAllMoviesStream().stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = emptyList()
             )
         } else { // any other list is selected
-            listMoviesRepository.getMoviesForListStream(singleList.listName).stateIn(
+            listMoviesRepository.getMoviesForListStream(singleList).stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
                 initialValue = emptyList()

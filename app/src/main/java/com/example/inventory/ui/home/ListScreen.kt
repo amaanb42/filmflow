@@ -117,7 +117,10 @@ fun ListScreen(navController: NavHostController){
             TopAppBar(
                 title = {
                     // "Movie List" by default but changes depending on list selected
-                    Text(text = selectedList?.listName ?: "Movie List", maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(text = if (selectedList == "") "Movie List" else selectedList,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 },
 
                 actions = {
@@ -150,7 +153,7 @@ fun ListScreen(navController: NavHostController){
                     // Choose icon based on selectedList
                     // As the code currently is, if a user makes a custom list, the FAB icon
                     // will be the same as the All icon instead of the custom icon in the bottom sheet
-                    val icon = when (selectedList?.listName) {
+                    val icon = when (selectedList) {
                         "Completed" -> painterResource(id = R.drawable.completed_icon)
                         "Planning" -> painterResource(id = R.drawable.planning_icon)
                         "Watching" -> painterResource(id = R.drawable.watching_icon)
@@ -162,7 +165,9 @@ fun ListScreen(navController: NavHostController){
                         contentDescription = "Edit"
                     )
                 },
-                text = { Text(text = selectedList?.listName ?: "All", maxLines = 1, overflow = TextOverflow.Ellipsis) }, // default
+                text = { Text(text = if (selectedList == "") "All" else selectedList,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis) }, // default
                 containerColor = dark_pine,
                 contentColor = Color.White,
                 modifier = Modifier.offset(y = (-100).dp).sizeIn(maxWidth = 150.dp)
@@ -218,9 +223,9 @@ fun ListScreen(navController: NavHostController){
             }
             // display movies based on view selection (default grid view)
             if (showGridView)
-                ListGridView(navController, listMovies)
+                ListGridView(navController, listMovies, selectedList)
             else
-                ListHorizontalView(navController ,listMovies)
+                ListHorizontalView(navController ,listMovies, selectedList)
         }
     }
     // bottom sheet displays after clicking FAB
@@ -235,7 +240,7 @@ fun ListScreen(navController: NavHostController){
 }
 
 @Composable
-fun ListGridView(navController: NavHostController, listMovies: List<Movie>) {
+fun ListGridView(navController: NavHostController, listMovies: List<Movie>, currList: String) {
     // grid layout for movies, showing only poster and title
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -257,7 +262,7 @@ fun ListGridView(navController: NavHostController, listMovies: List<Movie>) {
                         contentDescription = null,
                         modifier = Modifier
                             .clickable {
-                                navigateToLocalDetails(navController, movie.movieID)
+                                navigateToLocalDetails(navController, movie.movieID, currList)
                             }
                             .width(135.dp)
                             .aspectRatio(0.6667f),
@@ -288,7 +293,7 @@ fun ListGridView(navController: NavHostController, listMovies: List<Movie>) {
 }
 
 @Composable
-fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>) {
+fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>, currList: String) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -300,7 +305,7 @@ fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>
                     .fillMaxSize()
                     .padding(5.dp)
                     .clickable {
-                        navigateToLocalDetails(navController, movie.movieID)
+                        navigateToLocalDetails(navController, movie.movieID, currList)
                     }
             ) {
                 Card(
@@ -394,7 +399,7 @@ fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>
 }
 
 @Composable
-fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: UserList?, onDismiss: () -> Unit) {
+fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: String, onDismiss: () -> Unit) {
     // these are used for the rename list dialog
     var showRenameDialog by remember { mutableStateOf(false) }
     var oldListName by remember { mutableStateOf("") }
@@ -416,8 +421,8 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         .padding(start = 2.dp, end = 2.dp)
                         .fillMaxWidth()
                         .clickable {
-                            viewModel.selectList(null)
-                            viewModel.updateListMovies(null)
+                            viewModel.selectList("")
+                            viewModel.updateListMovies("")
                             onDismiss()
                         }
                         .padding(10.dp),
@@ -431,7 +436,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "All",
-                        fontWeight = if (currList == null) FontWeight.Bold else FontWeight.Normal,
+                        fontWeight = if (currList == "") FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -444,8 +449,8 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         .padding(start = 2.dp, end = 2.dp)
                         .fillMaxWidth()
                         .clickable {
-                            viewModel.selectList(defaultList)
-                            viewModel.updateListMovies(defaultList)
+                            viewModel.selectList(defaultList.listName)
+                            viewModel.updateListMovies(defaultList.listName)
                             onDismiss()
                         }
                         .padding(10.dp),
@@ -467,7 +472,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = defaultList.listName,
-                        fontWeight = if (defaultList.listName == currList?.listName) FontWeight.ExtraBold else FontWeight.Normal,
+                        fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
                         modifier = Modifier.weight(1f)
                     )
                 }
@@ -484,8 +489,8 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                             .padding(start = 2.dp, end = 2.dp)
                             .fillMaxWidth()
                             .clickable {
-                                viewModel.selectList(singleList)
-                                viewModel.updateListMovies(singleList)
+                                viewModel.selectList(singleList.listName)
+                                viewModel.updateListMovies(singleList.listName)
                                 onDismiss()
                             }
                             .padding(10.dp),
@@ -499,7 +504,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = singleList.listName,
-                            fontWeight = if (singleList.listName == currList?.listName) FontWeight.ExtraBold else FontWeight.Normal,
+                            fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
                             modifier = Modifier.weight(1f)
                         )
                         Box {
@@ -532,8 +537,8 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                                     text = { Text(text = "Delete", color = Color.Red) },
                                     onClick = {
                                         viewModel.deleteList(singleList.listName) // delete the list
-                                        viewModel.selectList(null) // reset back to default "All"
-                                        viewModel.updateListMovies(null)
+                                        viewModel.selectList("") // reset back to default "All"
+                                        viewModel.updateListMovies("")
                                         expanded = false // Close the menu
                                     }
                                 )
@@ -600,9 +605,9 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                             if (!viewModel.isInList && newListName.isNotBlank()) { // if new name doesn't already exist
                                 viewModel.renameList(oldListName, newListName.trim())
                                 // need to select list again
-                                if (currList?.listName == oldListName) {
-                                    viewModel.selectList(UserList(newListName.trim()))
-                                    viewModel.updateListMovies(UserList(newListName.trim()))
+                                if (currList == oldListName) {
+                                    viewModel.selectList(newListName.trim())
+                                    viewModel.updateListMovies(newListName.trim())
                                 }
                                 showRenameDialog = false
                             } else if (newListName.isBlank()) { // display message if whitespace is entered
@@ -720,6 +725,6 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
 }
 
 // function that handles navController and passes movieId to detail screen
-fun navigateToLocalDetails(navController: NavHostController, movieId: Int) {
-    navController.navigate(LocalDetailDestination.createRoute(movieId))
+fun navigateToLocalDetails(navController: NavHostController, movieId: Int, currList: String) {
+    navController.navigate(LocalDetailDestination.createRoute(movieId, currList))
 }
