@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
@@ -159,8 +160,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                         }
                     }) {
                         Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Search"
+                            imageVector = if (isSearching) Icons.Filled.Close else Icons.Filled.Search,
+                            contentDescription = if (isSearching) "Close Search" else "Search"
                         )
                     }
 
