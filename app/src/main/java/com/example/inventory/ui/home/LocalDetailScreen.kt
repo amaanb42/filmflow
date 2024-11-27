@@ -182,7 +182,16 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
         },
         // Change movie status FAB
         floatingActionButton = {
+            val listsForMovie by viewModel.listsForMovie.collectAsState()
+            val status: String =
+                if ("Completed" in listsForMovie)
+                    "Completed"
+                else if ("Watching" in listsForMovie)
+                    "Watching"
+                else
+                    "Planning"
             ExtendedFloatingActionButton(
+
                 onClick = {
                     coroutineScope.launch {
                         showModal = true // bottom sheet will popup
@@ -190,7 +199,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                     }
                 },
                 icon = {
-                    val icon = when (currList) {
+                    val icon = when (status) {
                         "Completed" -> painterResource(id = R.drawable.completed_icon)
                         "Watching" -> painterResource(id = R.drawable.watching_icon)
                         else -> painterResource(id = R.drawable.planning_icon) // just have to set one of them to the default
@@ -201,14 +210,6 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                     )
                 },
                 text = { // this is awful but just go with it...
-                    val listsForMovie by viewModel.listsForMovie.collectAsState()
-                    val status: String = 
-                        if ("Completed" in listsForMovie)
-                            "Completed"
-                        else if ("Watching" in listsForMovie)
-                            "Watching"
-                        else
-                            "Planning"
                     Text(status)
                },
                 containerColor = dark_pine,
