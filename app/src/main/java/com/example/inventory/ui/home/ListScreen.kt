@@ -40,6 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
@@ -58,6 +59,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -111,6 +113,9 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     var listViewIcon by remember { mutableStateOf(horizontalIcon) } // either gonna be gridIcon or horizontalIcon (default)
     var showGridView by remember { mutableStateOf(true) } // need bool for switching icon
 
+    var searchQuery by remember { mutableStateOf("") }
+    var isSearching by remember { mutableStateOf(false) } // State to track search mode
+
 
     Scaffold(
         topBar = {
@@ -120,15 +125,39 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     bottom = 0.dp
                 ),
                 title = {
-                    // "Movie List" by default but changes depending on list selected
-                    Text(text = if (selectedList == "") "Movie List" else selectedList,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    if (isSearching) { // Display TextField when searching
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            // Remove label and any other visual elements
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp), // Add some padding
+                            singleLine = true, // Ensure single line input
+                            textStyle = TextStyle(
+                                color = Color.White, // Set text color to white
+                                fontSize = 18.sp // Adjust font size as needed
+                            ),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color.Transparent, // Hide border
+                                unfocusedBorderColor = Color.Transparent
+                            )
+                        )
+                    } else { // Display list title when not searching
+                        Text(
+                            text = if (selectedList == "") "Movie List" else selectedList,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 },
-
                 actions = {
-                    IconButton(onClick = { /*Handle search*/ }) {
+                    IconButton(onClick = {
+                        isSearching = !isSearching // Toggle search mode
+                        if (!isSearching) {
+                            searchQuery = "" // Clear search query when exiting search mode
+                        }
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = "Search"
@@ -216,11 +245,21 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     Icon(painter = listViewIcon, contentDescription = "View")
                 }
             }
+
+            // Filtered movie list
+            val filteredMovies = if (searchQuery.isEmpty()) {
+                listMovies
+            } else {
+                listMovies.filter { movie ->
+                    movie.title.contains(searchQuery, ignoreCase = true)
+                }
+            }
+
             // display movies based on view selection (default grid view)
             if (showGridView)
-                ListGridView(navController, listMovies, selectedList, navbarModifier = modifier)
+                ListGridView(navController, filteredMovies, selectedList, searchQuery, navbarModifier = modifier)
             else
-                ListHorizontalView(navController ,listMovies, selectedList, navbarModifier = modifier)
+                ListHorizontalView(navController, filteredMovies, selectedList, searchQuery, navbarModifier = modifier)
         }
     }
     // bottom sheet displays after clicking FAB
@@ -239,8 +278,16 @@ fun ListGridView(
     navController: NavHostController,
     listMovies: List<Movie>,
     currList: String,
+    searchQuery: String,
     navbarModifier: Modifier = Modifier //for navbar height adjustment
 ) {
+    val filteredMovies = if (searchQuery.isEmpty()) {
+        listMovies
+    } else {
+        listMovies.filter { movie ->
+            movie.title.contains(searchQuery, ignoreCase = true)
+        }
+    }
     // grid layout for movies, showing only poster and title
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -248,7 +295,7 @@ fun ListGridView(
             //.padding(top = 36.dp),
         contentPadding = PaddingValues(horizontal = 15.dp)
     ) { // display the movies
-        items(listMovies) { movie ->
+        items(filteredMovies) { movie ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -289,13 +336,21 @@ fun ListHorizontalView(
     navController: NavHostController,
     listMovies: List<Movie>,
     currList: String,
+    searchQuery: String,
     navbarModifier: Modifier = Modifier
 ) {
+    val filteredMovies = if (searchQuery.isEmpty()) {
+        listMovies
+    } else {
+        listMovies.filter { movie ->
+            movie.title.contains(searchQuery, ignoreCase = true)
+        }
+    }
     LazyColumn(
         modifier = navbarModifier
             .fillMaxSize()
     ) {
-        items(listMovies) { movie ->
+        items(filteredMovies) { movie ->
             Row(
                 modifier = Modifier
                     .fillMaxSize()
