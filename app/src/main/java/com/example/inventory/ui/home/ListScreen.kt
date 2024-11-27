@@ -48,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,9 +57,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -116,7 +120,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
 
     var searchQuery by remember { mutableStateOf("") }
     var isSearching by remember { mutableStateOf(false) } // State to track search mode
-
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester()}
 
     Scaffold(
         topBar = {
@@ -133,7 +138,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                             // Remove label and any other visual elements
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp), // Add some padding
+                                .padding(8.dp) // Add some padding
+                                .focusRequester(focusRequester),
                             singleLine = true, // Ensure single line input
                             textStyle = TextStyle(
                                 color = Color.White, // Set text color to white
@@ -155,9 +161,6 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 actions = {
                     IconButton(onClick = {
                         isSearching = !isSearching // Toggle search mode
-                        if (!isSearching) {
-                            searchQuery = "" // Clear search query when exiting search mode
-                        }
                     }) {
                         Icon(
                             imageVector = if (isSearching) Icons.Filled.Close else Icons.Filled.Search,
@@ -173,6 +176,17 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     }
                 },
             )
+            //LaunchedEffect for focus requesting in outlined text field for searching
+            LaunchedEffect(isSearching) {
+                if (isSearching) {
+                    keyboardController?.show()
+                    //delay(100)
+                    focusRequester.requestFocus()
+                } else {
+                    searchQuery = ""
+                    keyboardController?.hide()
+                }
+            }
         },
         floatingActionButton = {
             ExtendedFloatingActionButton( // opens up the bottom sheet for list selection and editing
