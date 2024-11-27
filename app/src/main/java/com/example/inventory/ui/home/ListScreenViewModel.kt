@@ -10,6 +10,7 @@ import com.example.inventory.data.UserListRepository
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +25,6 @@ class ListScreenViewModel(
     private val listMoviesRepository: ListMoviesRepository,
     private val movieRepository: MovieRepository
 ) : ViewModel() {
-
     // used for displaying in modal bottom sheet, no need to pull from db
     val defaultLists: List<UserList> = listOf(UserList("Planning"), UserList("Watching"), UserList("Completed"))
 
@@ -35,8 +35,30 @@ class ListScreenViewModel(
         initialValue = emptyList()
     )
 
+    // gets movie counts for all and default lists, only way i could think of doing this.
+    val totalCount: StateFlow<Int> = userListRepository.getTotalMovieCount().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+    val completedCount: StateFlow<Int> = userListRepository.getMovieCountStream("Completed").stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+    val watchingCount: StateFlow<Int> = userListRepository.getMovieCountStream("Watching").stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+    val planningCount: StateFlow<Int> = userListRepository.getMovieCountStream("Planning").stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+
     // StateFlow to hold the currently selected list
-    private val _selectedList = MutableStateFlow<String>("")
+    private val _selectedList = MutableStateFlow("")
     val selectedList: StateFlow<String> = _selectedList
 
     // Function to update the selected list

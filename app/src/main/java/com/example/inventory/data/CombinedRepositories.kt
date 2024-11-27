@@ -14,6 +14,8 @@ interface UserListRepository {
     suspend fun incShowCount(listName: String)
     suspend fun decMovieCount(listName: String)
     suspend fun decShowCount(listName: String)
+    fun getMovieCountStream(listName: String): Flow<Int>
+    fun getTotalMovieCount(): Flow<Int>
     suspend fun updateListByName(oldName: String, newName: String)
     suspend fun deleteListByName(listName: String)
     suspend fun insertList(list: UserList)

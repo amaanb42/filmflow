@@ -383,6 +383,11 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
     var showRenameDialog by remember { mutableStateOf(false) }
     var oldListName by remember { mutableStateOf("") }
 
+    val totalCount by viewModel.totalCount.collectAsState()
+    val planningCount by viewModel.planningCount.collectAsState()
+    val watchingCount by viewModel.watchingCount.collectAsState()
+    val completedCount by viewModel.completedCount.collectAsState()
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -417,6 +422,12 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         text = "All",
                         fontWeight = if (currList == "") FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = totalCount.toString(),
+                        fontWeight = if (currList == "") FontWeight.Bold else FontWeight.Normal,
+                        modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                        textAlign = TextAlign.Right
                     )
                 }
             }
@@ -454,6 +465,17 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
                         modifier = Modifier.weight(1f)
                     )
+                    Text(
+                        text = when (defaultList.listName) {
+                            "Planning" -> planningCount.toString()
+                            "Watching" -> watchingCount.toString()
+                            "Completed" -> completedCount.toString()
+                            else -> "0"
+                        }, //
+                        fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                        modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                        textAlign = TextAlign.Right
+                    )
                 }
             }
             item {
@@ -485,6 +507,12 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                             text = singleList.listName,
                             fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
                             modifier = Modifier.weight(1f)
+                        )
+                        Text(
+                            text = singleList.movieCount.toString(),
+                            fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                            textAlign = TextAlign.Right
                         )
                         Box {
                             Icon(
