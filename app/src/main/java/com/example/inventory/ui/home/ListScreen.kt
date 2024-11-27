@@ -71,6 +71,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -83,6 +84,10 @@ import com.example.inventory.ui.theme.dark_pine
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
+class SharedViewModel : ViewModel() {
+    var showGridView by mutableStateOf(true)
+}
 
 object ListDestination : NavigationDestination {
     override val route = "list"
@@ -116,7 +121,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     val horizontalIcon = painterResource(id = R.drawable.horizontal_view_icon)
 
     var listViewIcon by remember { mutableStateOf(horizontalIcon) } // either gonna be gridIcon or horizontalIcon (default)
-    var showGridView by remember { mutableStateOf(true) } // need bool for switching icon
+    val sharedViewModel: SharedViewModel = viewModel()
+    var showGridView = sharedViewModel.showGridView // Access the state from the ViewModel
 
     var searchQuery by remember { mutableStateOf("") }
     var isSearching by remember { mutableStateOf(false) } // State to track search mode
@@ -247,8 +253,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            showGridView = !showGridView // helps switch the view
-                            listViewIcon = if (showGridView) horizontalIcon else gridIcon // changes icon
+                            sharedViewModel.showGridView = !sharedViewModel.showGridView
+                            listViewIcon = if (!sharedViewModel.showGridView) horizontalIcon else gridIcon
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
