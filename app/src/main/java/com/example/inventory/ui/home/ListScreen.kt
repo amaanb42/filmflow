@@ -138,7 +138,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                             // Remove label and any other visual elements
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp) // Add some padding
+                                //.padding(8.dp) // Add some padding
                                 .focusRequester(focusRequester),
                             singleLine = true, // Ensure single line input
                             textStyle = TextStyle(
@@ -180,7 +180,6 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
             LaunchedEffect(isSearching) {
                 if (isSearching) {
                     keyboardController?.show()
-                    //delay(100)
                     focusRequester.requestFocus()
                 } else {
                     searchQuery = ""
