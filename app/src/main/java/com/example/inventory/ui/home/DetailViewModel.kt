@@ -23,22 +23,6 @@ class DetailViewModel(
     private val currMovieID: Int
 ) : ViewModel() {
 
-    // adding a movie to a list
-    fun addMovieToList(listName: String, movie: Movie) {
-        viewModelScope.launch {
-            movieRepository.insertMovie(movie) //have to add to Movie table first
-            listMoviesRepository.insertListMovieRelation(ListMovies(listName, movie.movieID)) //add to ListMovies relation table
-        }
-    }
-
-    fun moveMovieToList(oldListName: String, newListName: String, movie: Movie) {
-        viewModelScope.launch {
-            // remove the other relation first and then insert new one
-            listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, movie.movieID))
-            listMoviesRepository.insertListMovieRelation(ListMovies(newListName, movie.movieID))
-        }
-    }
-
     // used for displaying in modal bottom sheet, no need to pull from db
     val defaultLists: List<UserList> =  listOf(UserList("Planning"), UserList("Watching"), UserList("Completed"))
 
@@ -59,32 +43,24 @@ class DetailViewModel(
     private val _selectedList = MutableStateFlow<UserList?>(null)
     val selectedList: StateFlow<UserList?> = _selectedList
 
-    // Function to update the selected list
-    fun selectList(singleList: UserList?) {
-        _selectedList.value = singleList
+    // adding a movie to a list
+    fun addMovieToList(listName: String, movie: Movie) {
+        viewModelScope.launch {
+            movieRepository.insertMovie(movie) // have to add to Movie table first
+            if (listName !in listsForMovie.value) { // if movie isn't already in the selected list
+                listMoviesRepository.insertListMovieRelation(ListMovies(listName, movie.movieID)) //add to ListMovies relation table
+                userListRepository.incMovieCount(listName) // increment the list's movie count
+            }
+        }
     }
 
-    // StateFlow for displaying all movies on List Screen, default on app start
-    var allMovies: StateFlow<List<Movie>> = movieRepository.getAllMoviesStream().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-
-    // Function to filter movies based on list selection
-    fun updateListMovies(singleList: UserList?) {
-        allMovies = if (singleList == null) { // "All" is selected
-            movieRepository.getAllMoviesStream().stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
-        } else { // any other list is selected
-            listMoviesRepository.getMoviesForListStream(singleList.listName).stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000),
-                initialValue = emptyList()
-            )
+    fun moveMovieToList(oldListName: String, newListName: String, movie: Movie) {
+        viewModelScope.launch {
+            // remove the other relation first and then insert new one
+            listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, movie.movieID))
+            userListRepository.decMovieCount(oldListName) // decrement the old list's movie count
+            listMoviesRepository.insertListMovieRelation(ListMovies(newListName, movie.movieID))
+            userListRepository.incMovieCount(newListName) // increment the new list's movie count
         }
     }
 }

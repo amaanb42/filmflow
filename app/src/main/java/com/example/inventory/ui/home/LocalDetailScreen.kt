@@ -164,9 +164,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                     confirmButton = {
                         TextButton(onClick = {
                             navController.navigate(ListDestination.route)
-                            viewModel.viewModelScope.launch {
-                                movieRepository.deleteMovieByID(movieId)
-                            }
+                            viewModel.deleteMovie(movieId)
                             showDeleteDialog = false
                         }) {
                             Text("Delete")
@@ -580,7 +578,7 @@ fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewM
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = defaultList.listName,
-                            fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                            fontWeight = FontWeight.Normal,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -626,7 +624,7 @@ fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewM
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = list.listName,
-                            fontWeight = if (list.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
+                            fontWeight = FontWeight.Normal,
                             modifier = Modifier.weight(1f)
                         )
                     }

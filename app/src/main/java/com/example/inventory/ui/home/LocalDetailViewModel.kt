@@ -47,19 +47,34 @@ class LocalDetailViewModel(
         }
     }
 
-    // TODO: put movie deletion/moving functions below here
     // used on local detail screen to copy over movie to another user-created list
     fun addMovieToList(listName: String) {
         viewModelScope.launch {
-            listMoviesRepository.insertListMovieRelation(ListMovies(listName, currMovieID)) //add to ListMovies relation table
+            if (listName !in listsForMovie.value) { // have to add to Movie table first
+                listMoviesRepository.insertListMovieRelation(ListMovies(listName, currMovieID)) //add to ListMovies relation table
+                userListRepository.incMovieCount(listName) // increment the list's movie count
+            }
         }
     }
+
     // use for changing status of movie between default lists
     fun moveMovieToList(oldListName: String, newListName: String) {
         viewModelScope.launch {
             // remove the other relation first and then insert new one
             listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, currMovieID))
+            userListRepository.decMovieCount(oldListName) // decrement the old list's movie count
             listMoviesRepository.insertListMovieRelation(ListMovies(newListName, currMovieID))
+            userListRepository.incMovieCount(newListName) // increment the new list's movie count
+        }
+    }
+
+    // deletes a movie from the DB and its relations
+    fun deleteMovie(movieID: Int) {
+        viewModelScope.launch {
+            for (listName in listsForMovie.value) { // decrement movie count for each list the movie was in
+                userListRepository.decMovieCount(listName)
+            }
+            movieRepository.deleteMovieByID(movieID)
         }
     }
 }
