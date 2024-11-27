@@ -383,7 +383,6 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
     var showRenameDialog by remember { mutableStateOf(false) }
     var oldListName by remember { mutableStateOf("") }
 
-    val totalCount by viewModel.totalCount.collectAsState()
     val planningCount by viewModel.planningCount.collectAsState()
     val watchingCount by viewModel.watchingCount.collectAsState()
     val completedCount by viewModel.completedCount.collectAsState()
@@ -424,7 +423,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                         modifier = Modifier.weight(1f)
                     )
                     Text(
-                        text = totalCount.toString(),
+                        text = (planningCount + watchingCount + completedCount).toString(),
                         fontWeight = if (currList == "") FontWeight.Bold else FontWeight.Normal,
                         modifier = Modifier.padding(start = 10.dp, end = 10.dp),
                         textAlign = TextAlign.Right

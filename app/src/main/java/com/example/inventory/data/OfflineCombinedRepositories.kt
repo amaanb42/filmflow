@@ -21,7 +21,6 @@ class OfflineUserListRepository(private val userListDao: UserListDao) : UserList
     override suspend fun decMovieCount(listName: String) = userListDao.decMovieCount(listName)
     override suspend fun decShowCount(listName: String) = userListDao.decShowCount(listName)
     override fun getMovieCountStream(listName: String): Flow<Int> = userListDao.getMovieCount(listName)
-    override fun getTotalMovieCount(): Flow<Int> = userListDao.getTotalMovieCount()
     override suspend fun updateListByName(oldName: String, newName: String) = userListDao.updateListByName(oldName, newName)
     override suspend fun deleteListByName(listName: String) = userListDao.deleteListByName(listName)
     override suspend fun insertList(list: UserList) = userListDao.insert(list)

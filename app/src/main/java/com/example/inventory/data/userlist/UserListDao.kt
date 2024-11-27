@@ -54,11 +54,6 @@ interface UserListDao {
             "WHERE listName = :listName")
     fun getMovieCount(listName: String): Flow<Int>
 
-    /* Get the movie count for a list */
-    @Query("SELECT SUM(movieCount) " +
-            "FROM user_lists ")
-    fun getTotalMovieCount(): Flow<Int>
-
     /* Update a specified list's name, cascades update to list_movies and list_shows bc of FK constraints */
     @Query("UPDATE user_lists " +
             "SET listName = :newName " +

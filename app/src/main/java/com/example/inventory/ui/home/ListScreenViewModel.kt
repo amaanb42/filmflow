@@ -35,12 +35,7 @@ class ListScreenViewModel(
         initialValue = emptyList()
     )
 
-    // gets movie counts for all and default lists, only way i could think of doing this.
-    val totalCount: StateFlow<Int> = userListRepository.getTotalMovieCount().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0
-    )
+    // gets movie counts for default lists, only way i could think of doing this.
     val completedCount: StateFlow<Int> = userListRepository.getMovieCountStream("Completed").stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
