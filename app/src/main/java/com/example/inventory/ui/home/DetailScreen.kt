@@ -128,7 +128,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 },
                 // Back icon
                 navigationIcon = {
-                    IconButton(onClick = { navController.navigate(SearchDestination.route) }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
