@@ -26,7 +26,7 @@ class ListScreenViewModel(
 ) : ViewModel() {
 
     // used for displaying in modal bottom sheet, no need to pull from db
-    val defaultLists: List<UserList> = listOf(UserList("Completed"), UserList("Planning"), UserList("Watching"))
+    val defaultLists: List<UserList> = listOf(UserList("Planning"), UserList("Watching"), UserList("Completed"))
 
     // StateFlow for displaying all lists in the bottom screen sheet
     val allLists: StateFlow<List<UserList>> = userListRepository.getAllListsStream().stateIn(

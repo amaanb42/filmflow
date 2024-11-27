@@ -192,16 +192,25 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                 icon = {
                     val icon = when (currList) {
                         "Completed" -> painterResource(id = R.drawable.completed_icon)
-                        "Planning" -> painterResource(id = R.drawable.planning_icon)
                         "Watching" -> painterResource(id = R.drawable.watching_icon)
-                        else -> painterResource(id = R.drawable.add_icon) // TODO: change to edit icon or something idk
+                        else -> painterResource(id = R.drawable.planning_icon) // just have to set one of them to the default
                     }
                     Icon(
                         painter = icon,
                         contentDescription = "Change movie status"
                     )
                 },
-                text = { Text(if (currList != "Completed" && currList != "Planning" && currList != "Watching") "Change Status" else currList) },
+                text = { // this is awful but just go with it...
+                    val listsForMovie by viewModel.listsForMovie.collectAsState()
+                    val status: String = 
+                        if ("Completed" in listsForMovie)
+                            "Completed"
+                        else if ("Watching" in listsForMovie)
+                            "Watching"
+                        else
+                            "Planning"
+                    Text(status)
+               },
                 containerColor = dark_pine,
                 contentColor = Color.White
             )
@@ -275,7 +284,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                            Row( // TODO: make prettier
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                             ) {
