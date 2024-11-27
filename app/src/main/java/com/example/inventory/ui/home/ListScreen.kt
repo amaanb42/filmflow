@@ -140,7 +140,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     IconButton(onClick = {/* TODO: Some shit idk yet */}) {
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
-                            contentDescription = "More Stuff"
+                            contentDescription = "Triple dot menu"
                         )
                     }
                 },
@@ -178,8 +178,6 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
             )
         }
     ) { innerPadding ->
-//        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-//        val topPadding = screenHeight * 0.12f // 12% of screen height
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {

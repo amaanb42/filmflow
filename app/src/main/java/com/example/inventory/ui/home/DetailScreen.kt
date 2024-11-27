@@ -178,7 +178,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp).padding(top = 26.dp)
+                    .padding(16.dp)
+                    //.padding(top = 26.dp)
                     .padding(top = TopAppBarDefaults.TopAppBarExpandedHeight)
             ) {
                 Row(
@@ -234,9 +235,9 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(start = 16.dp, end = 16.dp)
             ) {
-                Column(modifier = Modifier.padding(all = 15.dp)) {
+                Column(modifier = Modifier.padding(15.dp)) {
                     Text(
                         text = "Synopsis",
                         style = MaterialTheme.typography.bodyMedium,

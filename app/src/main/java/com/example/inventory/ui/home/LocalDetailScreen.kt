@@ -208,12 +208,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
             )
         }
     ) {
-        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-        val topPadding = screenHeight * 0.05f // 12% of screen height
-        Column(
-            modifier = Modifier
-                .padding(top = topPadding)
-        ) {
+        Column {
             // Image and text in a Row
             Card(
                 colors = CardDefaults.cardColors(
@@ -222,7 +217,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-                    .padding(top = 26.dp)
+                    //.padding(top = 26.dp)
                     .padding(top = TopAppBarDefaults.TopAppBarExpandedHeight)
             ) {
                 Box {
@@ -311,7 +306,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(start = 16.dp, end = 16.dp)
             ) {
                 Column(modifier = Modifier.padding(all = 15.dp)) {
                     Text(
