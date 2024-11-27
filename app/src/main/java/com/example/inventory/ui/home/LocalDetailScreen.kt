@@ -163,7 +163,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                     text = { Text("Confirm movie deletion.") },
                     confirmButton = {
                         TextButton(onClick = {
-                            navController.navigate(ListDestination.route)
+                            navController.popBackStack()
                             viewModel.deleteMovie(movieId)
                             showDeleteDialog = false
                         }) {
