@@ -1,6 +1,6 @@
 package com.example.inventory.ui.home
 
-import  android.annotation.SuppressLint
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -168,8 +167,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             )
         }
     ) {
-        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-        val topPadding = screenHeight * 0.05f // 12% of screen height
         Column {
             // Image and text in a Row
             Card(

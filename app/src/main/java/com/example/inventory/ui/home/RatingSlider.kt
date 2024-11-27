@@ -117,7 +117,7 @@ fun LineSlider(
                                     end = width - (thumbSize / 4).toPx() - 20,
                                     t = animatedFraction
                                 ).roundToInt(),
-                                y = -offsetHeight.roundToInt(),
+                                y = 0
                             )
                         }
                         .size(thumbSize)
@@ -153,7 +153,6 @@ fun LineSlider(
                                 ) {
                                     drawSliderPath(
                                         fraction = animatedFraction,
-                                        offsetHeight = offsetHeight,
                                         color = strokeColor,
                                         steps = sliderState.steps
                                     )
@@ -169,7 +168,6 @@ fun LineSlider(
 
 fun DrawScope.drawSliderPath(
     fraction: Float,
-    offsetHeight: Float,
     color: Color,
     steps: Int,
 ) {
@@ -177,41 +175,13 @@ fun DrawScope.drawSliderPath(
     val path = Path()
     val activeWidth = size.width * fraction
     val midPointHeight = size.height / 2
-    val curveHeight = midPointHeight - offsetHeight
     val beyondBounds = size.width * 2
-    val ramp = 48.dp.toPx()
 
 
     // Point far beyond the right edge
     path.moveTo(
         x = beyondBounds,
         y = midPointHeight
-    )
-
-    // Line to the "base" right before the curve
-    path.lineTo(
-        x = activeWidth + ramp,
-        y = midPointHeight
-    )
-
-    // Smooth curve to the top of the curve
-    path.cubicTo(
-        x1 = activeWidth + (ramp / 4),
-        y1 = midPointHeight,
-        x2 = activeWidth + (ramp / 4),
-        y2 = curveHeight,
-        x3 = activeWidth,
-        y3 = curveHeight,
-    )
-
-    // Smooth curve down the curve to the "base" on the other side
-    path.cubicTo(
-        x1 = activeWidth - (ramp / 4),
-        y1 = curveHeight,
-        x2 = activeWidth - (ramp / 4),
-        y2 = midPointHeight,
-        x3 = activeWidth - ramp,
-        y3 = midPointHeight
     )
 
     // Line to a point far beyond the left edge
@@ -226,32 +196,6 @@ fun DrawScope.drawSliderPath(
     path.lineTo(
         x = -beyondBounds,
         y = midPointHeight + variation
-    )
-
-    // Line to the "base" right before the curve
-    path.lineTo(
-        x = activeWidth - ramp,
-        y = midPointHeight + variation
-    )
-
-    // Smooth curve to the top of the curve
-    path.cubicTo(
-        x1 = activeWidth - (ramp / 4),
-        y1 = midPointHeight + variation,
-        x2 = activeWidth - (ramp / 4),
-        y2 = curveHeight + variation,
-        x3 = activeWidth,
-        y3 = curveHeight + variation,
-    )
-
-    // Smooth curve down the curve to the "base" on the other side
-    path.cubicTo(
-        x1 = activeWidth + (ramp / 4),
-        y1 = curveHeight + variation,
-        x2 = activeWidth + (ramp / 4),
-        y2 = midPointHeight + variation,
-        x3 = activeWidth + ramp,
-        y3 = midPointHeight + variation,
     )
 
     // Line to a point far beyond the right edge

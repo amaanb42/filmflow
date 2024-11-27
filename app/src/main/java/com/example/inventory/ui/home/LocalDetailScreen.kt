@@ -111,7 +111,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
     var fabClicked by remember { mutableStateOf(true) } // if copy icon clicked, this is false
 
     val allLists by viewModel.allLists.collectAsState()
-    val movie_to_add by remember { mutableStateOf<Movie?>(null) } // Make this a state
+    val movieToAdd by remember { mutableStateOf<Movie?>(null) } // Make this a state
 
 
 
@@ -225,8 +225,8 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                         painter = icon,
                         contentDescription = "Copy to list",
                         modifier = Modifier
-                            .padding(top = 10.dp, end = 10.dp, bottom = 0.dp)
-                            .align(Alignment.TopEnd) // puts the icon in top right corner of card
+                            .padding(end = 10.dp, bottom = 10.dp)
+                            .align(Alignment.BottomEnd) // puts the icon in top right corner of card
                             .clickable {
                                 showModal = true
                                 fabClicked = false
@@ -330,7 +330,12 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
 
         AlertDialog(
             onDismissRequest = { showChangeRatingDialog = false },
-            title = { Text(text = "Your Rating") },
+            title = {
+                Text(
+                    text = "Your Rating",
+                    fontSize = 20.sp
+                )
+            },
             text = {
                 Column {
                     // Editable text field, border is dark blue unfocused and becomes brighter when user clicks on it
@@ -377,7 +382,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                                 .align(Alignment.CenterHorizontally)
                         )
                     }
-                    Spacer(modifier = Modifier.height(25.dp))
+                    //Spacer(modifier = Modifier.height(15.dp))
                     // Slider for changing rating value from 0.0 to 10.0
                     LineSlider(
                         value = if (newRating.toFloatOrNull() != null && newRating.toFloat() in 0.0..10.0) newRating.toFloat() else 0.0f,
@@ -423,7 +428,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
             onDismissRequest = { showModal = false },
             sheetState = sheetState,
         ) {
-            LocalDetailBottomSheet(allLists, viewModel, currList, movie_to_add, fabClicked) { showModal = false }
+            LocalDetailBottomSheet(allLists, viewModel, currList, movieToAdd, fabClicked) { showModal = false }
         }
     }
 }
