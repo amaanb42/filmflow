@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,6 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -85,7 +87,7 @@ object ListDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ListScreen(navController: NavHostController){
+fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
 
     // for list selection sheet
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
@@ -115,6 +117,10 @@ fun ListScreen(navController: NavHostController){
     Scaffold(
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(
+                    top = 0.dp,
+                    bottom = 0.dp
+                ),
                 title = {
                     // "Movie List" by default but changes depending on list selected
                     Text(text = if (selectedList == "") "Movie List" else selectedList,
@@ -138,8 +144,6 @@ fun ListScreen(navController: NavHostController){
                         )
                     }
                 },
-
-
             )
         },
         floatingActionButton = {
@@ -170,15 +174,14 @@ fun ListScreen(navController: NavHostController){
                     overflow = TextOverflow.Ellipsis) }, // default
                 containerColor = dark_pine,
                 contentColor = Color.White,
-                modifier = Modifier.offset(y = (-100).dp).sizeIn(maxWidth = 150.dp)
+                modifier = Modifier.sizeIn(maxWidth = 150.dp)
             )
         }
-    ) {
-        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-        val topPadding = screenHeight * 0.12f // 12% of screen height
+    ) { innerPadding ->
+//        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+//        val topPadding = screenHeight * 0.12f // 12% of screen height
         Column(
-            modifier = Modifier
-                .padding(top = topPadding)
+            modifier = Modifier.padding(innerPadding)
         ) {
         Row( // contains sorting and view selection buttons
                 modifier = Modifier
@@ -223,9 +226,9 @@ fun ListScreen(navController: NavHostController){
             }
             // display movies based on view selection (default grid view)
             if (showGridView)
-                ListGridView(navController, listMovies, selectedList)
+                ListGridView(navController, listMovies, selectedList, modifier = modifier)
             else
-                ListHorizontalView(navController ,listMovies, selectedList)
+                ListHorizontalView(navController ,listMovies, selectedList, modifier = modifier)
         }
     }
     // bottom sheet displays after clicking FAB
@@ -240,13 +243,17 @@ fun ListScreen(navController: NavHostController){
 }
 
 @Composable
-fun ListGridView(navController: NavHostController, listMovies: List<Movie>, currList: String) {
+fun ListGridView(
+    navController: NavHostController,
+    listMovies: List<Movie>,
+    currList: String,
+    modifier: Modifier = Modifier //for navbar height adjustment
+) {
     // grid layout for movies, showing only poster and title
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 185.dp),
+        modifier = modifier.fillMaxSize(),
+            //.padding(bottom = 185.dp),
         contentPadding = PaddingValues(horizontal = 15.dp, vertical = 10.dp)
     ) { // display the movies
         items(listMovies) { movie ->
@@ -281,23 +288,23 @@ fun ListGridView(navController: NavHostController, listMovies: List<Movie>, curr
                 ) // display the title
             }
         }
-        item { // empty row to prevent FAB from covering last item in list
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
-                    .height(85.dp)
-            ) {}
-        }
+//        item { // empty row to prevent FAB from covering last item in list
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+//                    .height(85.dp)
+//            ) {}
+//        }
     }
 }
 
 @Composable
-fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>, currList: String) {
+fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>, currList: String, modifier: Modifier = Modifier) {
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(bottom = 185.dp)
+            //.padding(bottom = 185.dp)
     ) {
         items(listMovies) { movie ->
             Row(
@@ -384,16 +391,6 @@ fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>
                 }
             }
             Spacer(modifier = Modifier.padding(5.dp))
-        }
-        item { // empty row to prevent FAB from covering last item in list
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
-                    .height(85.dp)
-            ) {
-
-            }
         }
     }
 }

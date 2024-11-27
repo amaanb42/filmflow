@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
@@ -159,9 +160,12 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                    ) {
+                    ) { innerPadding ->
                         // Replace InventoryApp with InventoryNavHost
-                        InventoryNavHost(navController = navController)
+                        InventoryNavHost(
+                            navController = navController,
+                            modifier = Modifier.padding(innerPadding) // Add this line
+                        )
                     }
                 }
             }

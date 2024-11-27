@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -112,6 +113,10 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         //modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(
+                    top = 0.dp,
+                    bottom = 0.dp
+                ),
                 title = {
                     // Movie title in top bar
                     movie?.let {
@@ -165,10 +170,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     ) {
         val screenHeight = LocalConfiguration.current.screenHeightDp.dp
         val topPadding = screenHeight * 0.05f // 12% of screen height
-        Column(
-            modifier = Modifier
-                .padding(top = topPadding)
-        ) {
+        Column {
             // Image and text in a Row
             Card(
                 colors = CardDefaults.cardColors(
