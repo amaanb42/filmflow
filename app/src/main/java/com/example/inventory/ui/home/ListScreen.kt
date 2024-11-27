@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -177,14 +176,11 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
             )
         }
     ) { //innerPadding ->
-        Column(
-            //modifier = Modifier.padding(innerPadding)
-        ) {
+        Column {
         Row( // contains sorting and view selection buttons
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 72.dp),
-                    //.height(IntrinsicSize.Min),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
