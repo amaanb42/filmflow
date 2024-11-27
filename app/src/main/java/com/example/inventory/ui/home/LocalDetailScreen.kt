@@ -270,8 +270,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontWeight = FontWeight.Bold,
                                     maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.fillMaxWidth(0.85f) // DON'T CHANGE, AVOIDS ICON COVERING CHARACTERS (EXPERTLY CALCULATED)
+                                    overflow = TextOverflow.Ellipsis
                                 )
                             }
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
