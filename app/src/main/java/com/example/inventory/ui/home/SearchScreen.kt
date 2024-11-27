@@ -8,9 +8,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,8 +36,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
-import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -57,7 +53,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.Coil
 import coil.compose.AsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieSearchResult
@@ -113,7 +108,9 @@ fun SearchScreen(navController: NavHostController) {
         }.await()
     }
 
-    Scaffold {
+    Scaffold(
+        modifier = Modifier.padding(0.dp)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -321,7 +318,7 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
             modifier = Modifier.fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 24.dp, start = 8.dp, end = 8.dp) // Add bottom padding
+            contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp, start = 8.dp, end = 8.dp) // Add bottom padding
             ) {
             items(movieList) { movie ->
                 Column(
