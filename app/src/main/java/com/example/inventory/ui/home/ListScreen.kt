@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
@@ -58,7 +58,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -177,14 +176,15 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 modifier = Modifier.sizeIn(maxWidth = 150.dp)
             )
         }
-    ) { innerPadding ->
+    ) { //innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding)
+            //modifier = Modifier.padding(innerPadding)
         ) {
         Row( // contains sorting and view selection buttons
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(5.dp),
+                    .padding(top = 72.dp),
+                    //.height(IntrinsicSize.Min),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
@@ -193,8 +193,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     shape = RoundedCornerShape(30.dp),
-                    modifier = Modifier
-                        .padding(top = 2.dp, start = 2.dp)
+                    modifier = Modifier.padding(start = 6.dp, bottom = 12.dp)
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.sort_icon),
@@ -216,17 +215,16 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                    modifier = Modifier
-                        .padding(top = 2.dp, end = 2.dp)
+                    modifier = Modifier.padding(end = 6.dp, bottom = 12.dp)
                 ) {
                     Icon(painter = listViewIcon, contentDescription = "View")
                 }
             }
             // display movies based on view selection (default grid view)
             if (showGridView)
-                ListGridView(navController, listMovies, selectedList, modifier = modifier)
+                ListGridView(navController, listMovies, selectedList, navbarModifier = modifier)
             else
-                ListHorizontalView(navController ,listMovies, selectedList, modifier = modifier)
+                ListHorizontalView(navController ,listMovies, selectedList, navbarModifier = modifier)
         }
     }
     // bottom sheet displays after clicking FAB
@@ -245,20 +243,21 @@ fun ListGridView(
     navController: NavHostController,
     listMovies: List<Movie>,
     currList: String,
-    modifier: Modifier = Modifier //for navbar height adjustment
+    navbarModifier: Modifier = Modifier //for navbar height adjustment
 ) {
     // grid layout for movies, showing only poster and title
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = modifier.fillMaxSize(),
-            //.padding(bottom = 185.dp),
-        contentPadding = PaddingValues(horizontal = 15.dp, vertical = 10.dp)
+        columns = GridCells.Fixed(3),
+        modifier = navbarModifier.fillMaxSize(),
+            //.padding(top = 36.dp),
+        contentPadding = PaddingValues(horizontal = 15.dp)
     ) { // display the movies
         items(listMovies) { movie ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(10.dp)
+                    //.padding(10.dp)
+                    .padding(start = 10.dp, end = 10.dp, bottom = 10.dp)
                     .fillMaxWidth()
             ) {
                 Card { // display the poster
@@ -290,9 +289,14 @@ fun ListGridView(
 }
 
 @Composable
-fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>, currList: String, modifier: Modifier = Modifier) {
+fun ListHorizontalView(
+    navController: NavHostController,
+    listMovies: List<Movie>,
+    currList: String,
+    navbarModifier: Modifier = Modifier
+) {
     LazyColumn(
-        modifier = modifier
+        modifier = navbarModifier
             .fillMaxSize()
     ) {
         items(listMovies) { movie ->
