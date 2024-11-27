@@ -182,8 +182,6 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 },
                 icon = {
                     // Choose icon based on selectedList
-                    // As the code currently is, if a user makes a custom list, the FAB icon
-                    // will be the same as the All icon instead of the custom icon in the bottom sheet
                     val icon = when (selectedList) {
                         "Completed" -> painterResource(id = R.drawable.completed_icon)
                         "Planning" -> painterResource(id = R.drawable.planning_icon)
@@ -201,7 +199,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     overflow = TextOverflow.Ellipsis) }, // default
                 containerColor = dark_pine,
                 contentColor = Color.White,
-                modifier = Modifier.sizeIn(maxWidth = 150.dp)
+                modifier = Modifier.sizeIn(maxWidth = 300.dp)
             )
         }
     ) { //innerPadding ->
