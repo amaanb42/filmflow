@@ -318,7 +318,7 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
     if (movieList.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxHeight(.90f),
+            modifier = Modifier.fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(bottom = 24.dp, start = 8.dp, end = 8.dp) // Add bottom padding

@@ -275,7 +275,7 @@ fun ListGridView(
                     )
                 }
                 Spacer(modifier = Modifier.padding(2.dp)) // some space between poster and title
-                Text(
+                Text( // display the title
                     text = movie.title,
                     fontSize = 14.sp,
                     lineHeight = 1.5.em,
@@ -283,17 +283,9 @@ fun ListGridView(
                     textAlign = TextAlign.Center,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
-                ) // display the title
+                )
             }
         }
-//        item { // empty row to prevent FAB from covering last item in list
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
-//                    .height(85.dp)
-//            ) {}
-//        }
     }
 }
 
@@ -302,7 +294,6 @@ fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
-            //.padding(bottom = 185.dp)
     ) {
         items(listMovies) { movie ->
             Row(
@@ -379,13 +370,6 @@ fun ListHorizontalView(navController: NavHostController, listMovies: List<Movie>
                             modifier = Modifier.padding(top = 5.dp)
                         )
                     }
-//                    Row {
-//                        Text(
-    //                        text = "Directed by: ${movie.director}",
-    //                        fontSize = 12.sp,
-    //                        lineHeight = 1.5.em,
-    //                        modifier = Modifier.padding(top = 5.dp))
-//                    }
                 }
             }
             Spacer(modifier = Modifier.padding(5.dp))
