@@ -79,7 +79,7 @@ object SearchDestination : NavigationDestination {
 )
 @Composable
 fun SearchScreen(navController: NavHostController) {
-    var text by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     var tempMovieList by remember { mutableStateOf(mutableListOf<MovieSearchResult>()) }
     var trendingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
@@ -120,9 +120,9 @@ fun SearchScreen(navController: NavHostController) {
                     .fillMaxWidth()
                     .padding(horizontal = searchBarPadding)
                     .padding(vertical = searchBarVerticalPadding),
-                query = text,
+                query = searchQuery,
                 onQueryChange = {
-                    text = it
+                    searchQuery = it
                 },
                 onSearch = {
                     keyboardController?.hide()
@@ -130,7 +130,7 @@ fun SearchScreen(navController: NavHostController) {
                     coroutineScope.launch(Dispatchers.IO) {
                         delay(200)
                         async {
-                            tempMovieList = getMovieQuery(text)
+                            tempMovieList = getMovieQuery(searchQuery)
                         }.await()
                     }
                 },
@@ -144,7 +144,7 @@ fun SearchScreen(navController: NavHostController) {
                 leadingIcon = {
                     if (active) {
                         Icon(
-                            modifier = Modifier.clickable { text = ""; active = false },
+                            modifier = Modifier.clickable { searchQuery = ""; active = false },
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back Icon"
                         )
@@ -158,14 +158,20 @@ fun SearchScreen(navController: NavHostController) {
                 trailingIcon = {
                     if (active) {
                         Icon(
-                            modifier = Modifier.clickable { text = "" },
+                            modifier = Modifier.clickable {
+                                if (searchQuery.isNotEmpty()) {
+                                    searchQuery = ""  // Clear the search query first
+                                } else {
+                                    active = false  // Close the search bar if the query is already empty
+                                }
+                            },
                             imageVector = Icons.Default.Close,
                             contentDescription = "Close Icon",
                         )
                     }
                 }
             ) {
-                if (text.isNotEmpty()) {
+                if (searchQuery.isNotEmpty()) {
                     SearchRows(tempMovieList, navController)
                 } else {
                     tempMovieList.clear()

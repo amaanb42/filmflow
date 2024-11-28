@@ -71,6 +71,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -114,7 +115,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     // icons for changing list views
     val gridIcon = painterResource(id = R.drawable.grid_view)
     val horizontalIcon = painterResource(id = R.drawable.horizontal_view_icon)
-
+    
     val showGridView by viewModel.showGridView.collectAsState() // need bool for switching icon
 
     var searchQuery by remember { mutableStateOf("") }
