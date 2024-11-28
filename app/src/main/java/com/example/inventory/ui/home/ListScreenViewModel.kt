@@ -25,6 +25,13 @@ class ListScreenViewModel(
     private val listMoviesRepository: ListMoviesRepository,
     private val movieRepository: MovieRepository
 ) : ViewModel() {
+    // for remembering list view
+    private val _showGridView = MutableStateFlow(true)
+    val showGridView: StateFlow<Boolean> = _showGridView
+    fun changeListView() {
+        _showGridView.value = !_showGridView.value
+    }
+
     // used for displaying in modal bottom sheet, no need to pull from db
     val defaultLists: List<UserList> = listOf(UserList("Planning"), UserList("Watching"), UserList("Completed"))
 

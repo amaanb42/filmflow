@@ -115,8 +115,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     val gridIcon = painterResource(id = R.drawable.grid_view)
     val horizontalIcon = painterResource(id = R.drawable.horizontal_view_icon)
 
-    var listViewIcon by remember { mutableStateOf(horizontalIcon) } // either gonna be gridIcon or horizontalIcon (default)
-    var showGridView by remember { mutableStateOf(true) } // need bool for switching icon
+    val showGridView by viewModel.showGridView.collectAsState() // need bool for switching icon
 
     var searchQuery by remember { mutableStateOf("") }
     var isSearching by remember { mutableStateOf(false) } // State to track search mode
@@ -247,14 +246,13 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            showGridView = !showGridView // helps switch the view
-                            listViewIcon = if (showGridView) horizontalIcon else gridIcon // changes icon
+                            viewModel.changeListView() // helps switch the view
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                     modifier = Modifier.padding(end = 6.dp, bottom = 12.dp)
                 ) {
-                    Icon(painter = listViewIcon, contentDescription = "View")
+                    Icon(painter = if (showGridView) horizontalIcon else gridIcon, contentDescription = "View")
                 }
             }
 
