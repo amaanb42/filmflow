@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -34,6 +36,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -43,6 +46,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -54,6 +59,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -63,7 +69,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -299,13 +304,17 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                                 ) {
                                     CircularProgressBar(userRating = movie?.userRating ?: 0.0f)
                                 }
-                                Spacer(modifier = Modifier.weight(1f))
+                                //Spacer(modifier = Modifier.weight(1f))
                             }
                         }
                     }
                 }
             }
 
+            Button(viewModel, movieToAdd, currList)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Synopsis Card
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -631,5 +640,119 @@ fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewM
                 }
             }
         }
+    }
+}
+
+@Composable
+fun SegmentedButtons(
+    viewModel: LocalDetailViewModel,
+    movie: Movie?,
+    currList: String,
+    modifier: Modifier = Modifier
+) {
+    val listsForMovie by viewModel.listsForMovie.collectAsState()
+    var selectedItemIndex by remember { mutableIntStateOf(0) }
+    val items = listOf(
+        R.drawable.planning_icon,
+        R.drawable.watching_icon,
+        R.drawable.completed_icon
+    )
+    val listNames = listOf("Planning", "Watching", "Completed")
+
+    // Determine the initial selected index based on the movie's current list
+    LaunchedEffect(movie, currList) { // Include currList in the LaunchedEffect
+        val index = listNames.indexOf(currList) // Directly find the index of currList
+        if (index != -1) {
+            selectedItemIndex = index
+        }
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        items.forEachIndexed { index, item ->
+            key(selectedItemIndex) { // Add this key
+                ListIconButton(
+                    icon = item,
+                    isSelected = selectedItemIndex == index,
+                    onClick = {
+                        val currentList =
+                            listNames.find { it in listsForMovie } // Find the current list
+                        val newList = listNames[index]
+                        if (currentList != null && currentList != newList) {
+                            viewModel.moveMovieToList(
+                                currentList,
+                                newList
+                            ) // Move only if necessary
+                        }
+                        selectedItemIndex = index
+                    }
+                )
+            }
+            if (index < items.size - 1) {
+                Spacer(modifier = Modifier.width(48.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun ListIconButton(
+    icon: Int, // Changed to Int for drawable resource ID
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val backgroundColor = if (isSelected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    val iconTint = if (isSelected) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    Surface(
+        modifier = Modifier
+            .selectable(
+                selected = isSelected,
+                onClick = onClick,
+                role = Role.RadioButton
+            ),
+            //.padding(horizontal = 8.dp),
+        shape = MaterialTheme.shapes.small,
+        color = backgroundColor
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = icon), // Use painterResource
+                contentDescription = null,
+                tint = iconTint
+            )
+        }
+    }
+}
+
+@Composable
+fun Button(
+    viewModel: LocalDetailViewModel, // Add the ViewModel
+    movie: Movie?, // Add the movie object
+    currList: String
+) {
+    Column {
+        SegmentedButtons(
+            viewModel = viewModel,
+            movie = movie,
+            currList = currList
+        )
     }
 }
