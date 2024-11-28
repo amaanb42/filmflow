@@ -8,13 +8,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.inventory.ui.home.DetailDestination
-import com.example.inventory.ui.home.MovieDetailsScreen
-import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.ListDestination
-import com.example.inventory.ui.home.SearchScreen
 import com.example.inventory.ui.home.ListScreen
 import com.example.inventory.ui.home.LocalDetailDestination
 import com.example.inventory.ui.home.LocalMovieDetailsScreen
+import com.example.inventory.ui.home.MovieDetailsScreen
+import com.example.inventory.ui.home.SearchDestination
+import com.example.inventory.ui.home.SearchScreen
 
 /**
  * Provides Navigation graph for the application.
@@ -52,7 +52,7 @@ fun InventoryNavHost(
                 ?: error("Missing movieID argument")
             val currListName = backStackEntry.arguments?.getString("currList")
                 ?: error("Missing currList argument")
-            LocalMovieDetailsScreen(navController, movieId, currListName)
+            LocalMovieDetailsScreen(navController, movieId)
         }
 
         composable(route = ListDestination.route) {

@@ -28,7 +28,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -50,7 +49,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -77,12 +75,10 @@ import com.example.inventory.R
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.theme.dark_highlight_med
-import com.example.inventory.ui.theme.dark_pine
 import com.example.inventory.ui.theme.material_green
 import com.example.inventory.ui.theme.material_orange
 import com.example.inventory.ui.theme.material_red
 import com.example.inventory.ui.theme.material_yellow
-import kotlinx.coroutines.launch
 
 
 object LocalDetailDestination {
@@ -97,7 +93,7 @@ object LocalDetailDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
-fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, currList: String) {
+fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
     //var movie by remember { mutableStateOf<MovieDetails?>(null) }
     var movie by remember { mutableStateOf<Movie?>(null) }
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
@@ -111,13 +107,10 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
     )
     var showChangeRatingDialog by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
-    val coroutineScope = rememberCoroutineScope()
     var showModal by remember { mutableStateOf(false) } // for popping up bottom sheet
     var fabClicked by remember { mutableStateOf(true) } // if copy icon clicked, this is false
 
     val allLists by viewModel.allLists.collectAsState()
-    val movieToAdd by remember { mutableStateOf<Movie?>(null) } // Make this a state
-
 
 
 // Fetch movie details from the local database using movieId
@@ -183,42 +176,6 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                 )
             }
         },
-        // Change movie status FAB
-        floatingActionButton = {
-            val listsForMovie by viewModel.listsForMovie.collectAsState()
-            val status: String =
-                if ("Completed" in listsForMovie)
-                    "Completed"
-                else if ("Watching" in listsForMovie)
-                    "Watching"
-                else
-                    "Planning"
-            ExtendedFloatingActionButton(
-
-                onClick = {
-                    coroutineScope.launch {
-                        showModal = true // bottom sheet will popup
-                        fabClicked = true // indicate the FAB was clicked, not the copy icon
-                    }
-                },
-                icon = {
-                    val icon = when (status) {
-                        "Completed" -> painterResource(id = R.drawable.completed_icon)
-                        "Watching" -> painterResource(id = R.drawable.watching_icon)
-                        else -> painterResource(id = R.drawable.planning_icon) // just have to set one of them to the default
-                    }
-                    Icon(
-                        painter = icon,
-                        contentDescription = "Change movie status"
-                    )
-                },
-                text = { // this is awful but just go with it...
-                    Text(status)
-               },
-                containerColor = dark_pine,
-                contentColor = Color.White
-            )
-        }
     ) {
         Column {
             // Image and text in a Row
@@ -311,7 +268,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
                 }
             }
 
-            Button(viewModel, movieToAdd, currList)
+            StatusButtons(viewModel)
             Spacer(modifier = Modifier.height(16.dp))
 
             // Synopsis Card
@@ -444,7 +401,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int, curr
             onDismissRequest = { showModal = false },
             sheetState = sheetState,
         ) {
-            LocalDetailBottomSheet(allLists, viewModel, currList, movieToAdd, fabClicked) { showModal = false }
+            LocalDetailBottomSheet(allLists, viewModel, fabClicked) { showModal = false }
         }
     }
 }
@@ -522,7 +479,7 @@ fun CircularProgressBar(
 }
 // functionality for bottom sheet, content differs depending on if the FAB was clicked or the copy icon
 @Composable
-fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewModel, currList: String, movie: Movie?, fabWasClicked: Boolean, onDismiss: () -> Unit) {
+fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewModel, fabWasClicked: Boolean, onDismiss: () -> Unit) {
     // first determine the status of the movie
     val listsForMovie by viewModel.listsForMovie.collectAsState()
     var alreadyExistsInList: String? = null
@@ -646,8 +603,6 @@ fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewM
 @Composable
 fun SegmentedButtons(
     viewModel: LocalDetailViewModel,
-    movie: Movie?,
-    currList: String,
     modifier: Modifier = Modifier
 ) {
     val listsForMovie by viewModel.listsForMovie.collectAsState()
@@ -660,11 +615,17 @@ fun SegmentedButtons(
     val listNames = listOf("Planning", "Watching", "Completed")
 
     // Determine the initial selected index based on the movie's current list
-    LaunchedEffect(movie, currList) { // Include currList in the LaunchedEffect
-        val index = listNames.indexOf(currList) // Directly find the index of currList
-        if (index != -1) {
-            selectedItemIndex = index
-        }
+    val status: String =
+        if ("Completed" in listsForMovie)
+            "Completed"
+        else if ("Watching" in listsForMovie)
+            "Watching"
+        else
+            "Planning"
+
+    // Set the initial selected index based on the status
+    LaunchedEffect(key1 = status) {
+        selectedItemIndex = listNames.indexOf(status)
     }
 
     Row(
@@ -743,16 +704,12 @@ fun ListIconButton(
 }
 
 @Composable
-fun Button(
+fun StatusButtons(
     viewModel: LocalDetailViewModel, // Add the ViewModel
-    movie: Movie?, // Add the movie object
-    currList: String
 ) {
     Column {
         SegmentedButtons(
-            viewModel = viewModel,
-            movie = movie,
-            currList = currList
+            viewModel = viewModel
         )
     }
 }
