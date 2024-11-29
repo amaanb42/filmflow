@@ -264,17 +264,6 @@ fun SearchScreen(navController: NavHostController) {
                     items(trendingMovies)
                      { movie ->
                         Card {
-//                            AsyncImage(
-//                                model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
-//                                contentDescription = null,
-//                                modifier = Modifier
-//                                    .clickable {
-//                                        navigateToMovieDetails(navController, movie.id)
-//                                    }
-//                                    .width(135.dp)
-//                                    .aspectRatio(0.6667f),
-//                                contentScale = ContentScale.Crop
-//                            )
                             SubcomposeAsyncImage(
                                 model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                 contentDescription = null,

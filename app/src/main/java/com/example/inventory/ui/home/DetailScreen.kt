@@ -2,6 +2,7 @@ package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,7 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
@@ -186,14 +188,34 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     verticalAlignment = Alignment.Top // Align to the top of the row
                 ) {
                     Card { // Card for the image
-                        AsyncImage(
+                        SubcomposeAsyncImage(
                             model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
                             contentDescription = null,
                             modifier = Modifier
                                 .clickable { }
                                 .width(170.dp)
                                 .aspectRatio(0.6667f),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Crop,
+                            loading = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(0.6667f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            },
+                            error = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(0.6667f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("Image not available")
+                                }
+                            }
                         )
                     }
 
