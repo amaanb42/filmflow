@@ -55,7 +55,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieSearchResult
@@ -265,7 +264,18 @@ fun SearchScreen(navController: NavHostController) {
                     items(trendingMovies)
                      { movie ->
                         Card {
-                            AsyncImage(
+//                            AsyncImage(
+//                                model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+//                                contentDescription = null,
+//                                modifier = Modifier
+//                                    .clickable {
+//                                        navigateToMovieDetails(navController, movie.id)
+//                                    }
+//                                    .width(135.dp)
+//                                    .aspectRatio(0.6667f),
+//                                contentScale = ContentScale.Crop
+//                            )
+                            SubcomposeAsyncImage(
                                 model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
@@ -274,7 +284,27 @@ fun SearchScreen(navController: NavHostController) {
                                     }
                                     .width(135.dp)
                                     .aspectRatio(0.6667f),
-                                contentScale = ContentScale.Crop
+                                contentScale = ContentScale.Crop,
+                                loading = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .aspectRatio(0.6667f),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
+                                    }
+                                },
+                                error = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .aspectRatio(0.6667f),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text("Image not available")
+                                    }
+                                }
                             )
                         }
                     }
@@ -299,7 +329,7 @@ fun SearchScreen(navController: NavHostController) {
                     items(nowPlayingMovies)
                     { movie ->
                         Card {
-                            AsyncImage(
+                            SubcomposeAsyncImage(
                                 model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
@@ -308,7 +338,27 @@ fun SearchScreen(navController: NavHostController) {
                                     }
                                     .width(135.dp)
                                     .aspectRatio(0.6667f),
-                                contentScale = ContentScale.Crop
+                                contentScale = ContentScale.Crop,
+                                loading = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .aspectRatio(0.6667f),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator()
+                                    }
+                                },
+                                error = {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .aspectRatio(0.6667f),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text("Image not available")
+                                    }
+                                }
                             )
                         }
                     }
