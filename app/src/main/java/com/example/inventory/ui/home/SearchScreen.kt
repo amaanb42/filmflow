@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -54,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieSearchResult
 import com.example.inventory.data.api.displayRandomMovie
@@ -332,7 +335,7 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
                     horizontalAlignment = Alignment.CenterHorizontally // Center the text
                 ) {
                     Card {
-                        AsyncImage(
+                        SubcomposeAsyncImage(
                             model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
                             contentDescription = null,
                             modifier = Modifier
@@ -341,7 +344,27 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
                                 }
                                 .fillMaxWidth()
                                 .aspectRatio(0.6667f),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Crop,
+                            loading = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(0.6667f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            },
+                            error = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(0.6667f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("Image not available")
+                                }
+                            }
                         )
                     }
                     // Movie title
