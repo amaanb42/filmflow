@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
@@ -213,7 +214,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     overflow = TextOverflow.Ellipsis) }, // default
                 containerColor = dark_pine,
                 contentColor = Color.White,
-                modifier = Modifier.sizeIn(maxWidth = 300.dp)
+                modifier = Modifier.sizeIn(maxWidth = 300.dp).offset(y = (20).dp)
             )
         }
     ) { //innerPadding ->
