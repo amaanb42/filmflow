@@ -54,6 +54,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.R
@@ -61,8 +62,6 @@ import com.example.inventory.data.api.MovieSearchResult
 import com.example.inventory.data.api.displayRandomMovie
 import com.example.inventory.data.api.getGenreHardCode
 import com.example.inventory.data.api.getMovieQuery
-import com.example.inventory.data.api.getNowPlayingMovies
-import com.example.inventory.data.api.getTrendingMovies
 import com.example.inventory.ui.navigation.NavigationDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -81,14 +80,14 @@ object SearchDestination : NavigationDestination {
 )
 @Composable
 fun SearchScreen(navController: NavHostController) {
+    val viewModel: SearchScreenViewModel = viewModel()
+
     var searchQuery by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     var tempMovieList by remember { mutableStateOf(mutableListOf<MovieSearchResult>()) }
-    var trendingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
+
     val coroutineScope = rememberCoroutineScope()
     var randomizeGenre by remember { mutableStateOf(Pair("",1))}
-    var nowPlayingMovies by remember { mutableStateOf(listOf<MovieSearchResult>())}
-
 
     val searchBarPadding by animateDpAsState(
         targetValue = if (active) 0.dp else 24.dp,
@@ -101,14 +100,6 @@ fun SearchScreen(navController: NavHostController) {
     )
 
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    //Need Coroutine to do any API searches
-    coroutineScope.launch(Dispatchers.IO) {
-        async {
-            trendingMovies = getTrendingMovies()
-            nowPlayingMovies = getNowPlayingMovies()
-        }.await()
-    }
 
     Scaffold(
         modifier = Modifier.padding(0.dp)
@@ -205,9 +196,6 @@ fun SearchScreen(navController: NavHostController) {
                     sheetState = sheetState,
                     onDismissRequest = { isSheetOpen = false },
                 ) {
-//                    coroutineScope.launch(Dispatchers.IO) {
-//                        async { genreList = getGenreHardCode() }.await()
-//                    }
                     val genreList = getGenreHardCode()
                     LazyVerticalGrid(columns = GridCells.Fixed(2))
                     {
@@ -241,8 +229,6 @@ fun SearchScreen(navController: NavHostController) {
                 }
             }
 
-
-
             // Below code for trending and theater carousels on search screen
             Column (
                 modifier = Modifier.padding(top = 32.dp)
@@ -261,8 +247,7 @@ fun SearchScreen(navController: NavHostController) {
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(trendingMovies)
-                     { movie ->
+                    items(viewModel.trendingMovies, key = { movie -> movie.id }) { movie ->
                         Card {
                             SubcomposeAsyncImage(
                                 model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
@@ -293,7 +278,8 @@ fun SearchScreen(navController: NavHostController) {
                                     ) {
                                         Text("Image not available")
                                     }
-                                }
+                                },
+
                             )
                         }
                     }
@@ -315,8 +301,7 @@ fun SearchScreen(navController: NavHostController) {
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(nowPlayingMovies)
-                    { movie ->
+                    items(viewModel.nowPlayingMovies, key = { movie -> movie.id }) { movie ->
                         Card {
                             SubcomposeAsyncImage(
                                 model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",

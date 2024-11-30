@@ -11,10 +11,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import com.example.inventory.ui.theme.InventoryTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -27,22 +23,26 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.inventory.ui.navigation.InventoryNavHost
-import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.ListDestination
+import com.example.inventory.ui.home.SearchDestination
+import com.example.inventory.ui.navigation.InventoryNavHost
+import com.example.inventory.ui.theme.InventoryTheme
 
 data class BottomNavigationItem(
     val title: String,
@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
                 )
 
                 val navController = rememberNavController()
-                var selectedItemIndex by rememberSaveable { mutableIntStateOf(1) } // 0, 1, 2 changes which navbar icon is highlighted at startup
+                var selectedItemIndex by remember { mutableIntStateOf(1) } // 0, 1, 2 changes which navbar icon is highlighted at startup
 
                 // Determine the current route
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
@@ -128,10 +128,29 @@ class MainActivity : ComponentActivity() {
                                                 try {
                                                     val currentRoute = navController.currentBackStackEntry?.destination?.route
                                                     when (index) {
-                                                        0 -> if (currentRoute != ListDestination.route) navController.navigate(ListDestination.route)
-                                                        1 -> if (currentRoute != SearchDestination.route) navController.navigate(SearchDestination.route)
-                                                        //2 -> if (currentRoute != SettingsDestination.route) navController.navigate(SettingsDestination.route)
-
+                                                        0 -> {
+                                                            if (currentRoute != ListDestination.route) {
+                                                                navController.navigate(ListDestination.route) {
+                                                                    popUpTo(SearchDestination.route) {
+                                                                        inclusive = true
+                                                                        saveState = true
+                                                                    } // Pop up to Search, but don't pop Search itself
+                                                                    restoreState = true
+                                                                }
+                                                            }
+                                                        }
+                                                        1 -> {
+                                                            if (currentRoute != SearchDestination.route) {
+                                                                navController.navigate(SearchDestination.route) {
+                                                                    popUpTo(ListDestination.route) {
+                                                                        inclusive = true
+                                                                        saveState = true
+                                                                    } // Pop up to List, but don't pop List itself
+                                                                    restoreState = true
+                                                                }
+                                                            }
+                                                        }
+                                                        // ... other destinations ...
                                                     }
                                                 } catch (e: Exception) {
                                                     Log.e("NavigationError", "Error navigating to index $index", e)

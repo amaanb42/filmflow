@@ -206,16 +206,16 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     CircularProgressIndicator()
                                 }
                             },
-                            error = {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .aspectRatio(0.6667f),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text("Image not available")
-                                }
-                            }
+//                            error = {
+//                                Box(
+//                                    modifier = Modifier
+//                                        .fillMaxWidth()
+//                                        .aspectRatio(0.6667f),
+//                                    contentAlignment = Alignment.Center
+//                                ) {
+//                                    CircularProgressIndicator()
+//                                }
+//                            }
                         )
                     }
 
@@ -271,13 +271,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     }
                 }
             }
-
-
-
-
-
-            // You can add more details like runtime, release date, rating, synopsis, etc. here
-            // ...
         }
     }
     if (showModal) {
