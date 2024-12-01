@@ -15,6 +15,8 @@ import com.example.inventory.ui.home.LocalMovieDetailsScreen
 import com.example.inventory.ui.home.MovieDetailsScreen
 import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.SearchScreen
+import com.example.inventory.ui.home.SettingsDestination
+import com.example.inventory.ui.home.SettingsScreen
 
 /**
  * Provides Navigation graph for the application.
@@ -33,6 +35,7 @@ fun InventoryNavHost(
             SearchScreen(navController)
             // Pass navController to SearchScreen
         }
+
         composable(
             route = DetailDestination.ROUTE,
             arguments = listOf(navArgument("movieId") { type = NavType.IntType }) // Define the argument type
@@ -57,6 +60,10 @@ fun InventoryNavHost(
 
         composable(route = ListDestination.route) {
             ListScreen(navController)
+        }
+
+        composable(route = SettingsDestination.route) {
+            SettingsScreen(navController)
         }
     }
 }

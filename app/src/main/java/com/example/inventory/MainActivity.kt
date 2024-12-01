@@ -41,6 +41,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.inventory.ui.home.ListDestination
 import com.example.inventory.ui.home.SearchDestination
+import com.example.inventory.ui.home.SettingsDestination
 import com.example.inventory.ui.navigation.InventoryNavHost
 import com.example.inventory.ui.theme.InventoryTheme
 
@@ -103,7 +104,7 @@ class MainActivity : ComponentActivity() {
                             // Show the NavigationBar only on specified screens
                             // Use AnimatedVisibility for the NavigationBar
                             AnimatedVisibility(
-                                visible = currentRoute in listOf(SearchDestination.route, ListDestination.route), //add ListDestination.route and SettingsDestination.route in comma separated list
+                                visible = currentRoute in listOf(SearchDestination.route, ListDestination.route, SettingsDestination.route), //add ListDestination.route and SettingsDestination.route in comma separated list
                                 enter = slideInVertically(
                                     // Start the slide from below the screen
                                     initialOffsetY = { fullHeight -> fullHeight },
@@ -146,6 +147,17 @@ class MainActivity : ComponentActivity() {
                                                                         inclusive = true
                                                                         saveState = true
                                                                     } // Pop up to List, but don't pop List itself
+                                                                    restoreState = true
+                                                                }
+                                                            }
+                                                        }
+                                                        3 -> {
+                                                            if (currentRoute != SettingsDestination.route) {
+                                                                navController.navigate(SettingsDestination.route) {
+                                                                    popUpTo(ListDestination.route) {
+                                                                        inclusive = true
+                                                                        saveState = true
+                                                                    } // Pop up to Settings, but don't pop Settings itself
                                                                     restoreState = true
                                                                 }
                                                             }
