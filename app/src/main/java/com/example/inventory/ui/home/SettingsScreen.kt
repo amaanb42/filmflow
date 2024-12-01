@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,13 +22,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.inventory.R
+import com.example.inventory.data.SettingsDataStore
 import com.example.inventory.ui.navigation.NavigationDestination
+import kotlinx.coroutines.launch
+
 
 object SettingsDestination : NavigationDestination {
     override val route = "settings"
@@ -45,7 +48,9 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
     var selectedTheme by remember { mutableStateOf("Light") }
     val themes = listOf("Light", "Dark", "System Default")
     var startTab by remember { mutableStateOf("Home") }
-    val tabOptions = listOf("List", "Discover", "Stats", "Settings")
+    val tabOptions = listOf("List", "Discover", "Settings")
+    val context = navController.context
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -81,7 +86,13 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
                     label = "Default Starting Tab",
                     options = tabOptions,
                     selectedOption = startTab,
-                    onSelect = { startTab = it }
+                    onSelect = { tab ->
+                        startTab = tab
+
+                        coroutineScope.launch {
+                            SettingsDataStore.saveDefault(context, tab)
+                        }
+                    }
                 )
 
                 Button(

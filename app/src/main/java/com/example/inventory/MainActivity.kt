@@ -27,9 +27,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -40,8 +43,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.inventory.ui.home.ListDestination
 import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.SettingsDestination
+import com.example.inventory.data.SettingsDataStore
 import com.example.inventory.ui.navigation.InventoryNavHost
 import com.example.inventory.ui.theme.InventoryTheme
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 data class BottomNavigationItem(
     val title: String,
@@ -92,6 +98,15 @@ class MainActivity : ComponentActivity() {
 
                 // Determine the current route
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+
+                val coroutineScope = rememberCoroutineScope()
+                var defaultTab by remember { mutableStateOf("Discover") }
+
+                LaunchedEffect(Unit) {
+                    coroutineScope.launch {
+                        defaultTab = SettingsDataStore.getDefaultTab(applicationContext).first()
+                    }
+                }
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -194,7 +209,8 @@ class MainActivity : ComponentActivity() {
                         // Replace InventoryApp with InventoryNavHost
                         InventoryNavHost(
                             navController = navController,
-                            modifier = Modifier.padding(innerPadding) // Add this line
+                            modifier = Modifier.padding(innerPadding),
+                            defaultTab = defaultTab
                         )
                     }
                 }

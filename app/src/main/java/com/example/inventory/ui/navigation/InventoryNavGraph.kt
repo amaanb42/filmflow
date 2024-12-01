@@ -1,5 +1,6 @@
 package com.example.inventory.ui.navigation
 
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -25,10 +26,19 @@ import com.example.inventory.ui.home.SettingsScreen
 fun InventoryNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    defaultTab: String
 ) {
+
+    val startDestination = when (defaultTab) {
+        "Discover" -> SearchDestination.route
+        "List" -> ListDestination.route
+        "Settings" -> SettingsDestination.route
+        else -> SearchDestination.route
+    }
+
     NavHost(
         navController = navController,
-        startDestination = SearchDestination.route, // Set SearchDestination as the start destination
+        startDestination = startDestination, // Set SearchDestination as the start destination
         modifier = modifier
     ) {
         composable(route = SearchDestination.route) {
