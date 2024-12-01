@@ -44,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.SubcomposeAsyncImage
@@ -294,6 +295,23 @@ fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, curr
         }
     }
     Column(modifier = Modifier.padding(1.dp)) {
+        // Display the current list if it exists
+        if (alreadyExistsInList != null) {
+            Row(
+                modifier = Modifier
+                    .padding(start = 2.dp, end = 2.dp)
+                    .fillMaxWidth()
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "Currently in \"$alreadyExistsInList\"",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.weight(1f))
+            }
+        }
+
         viewModel.defaultLists.forEach { defaultList ->
             // Only display "Completed", "Planning", and "Watching"
             if (defaultList.listName in listOf("Completed", "Planning", "Watching") && defaultList.listName != alreadyExistsInList) {

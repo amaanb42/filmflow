@@ -571,7 +571,7 @@ fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewM
                     }
                 }
             }
-        } else { // copy icon was clicked, display user-created lists
+        } else { // copy icon was clicked, display user-created custom lists
             Row(
                 modifier = Modifier
                     .padding(start = 2.dp, end = 2.dp)
@@ -582,7 +582,7 @@ fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewM
                 Spacer(modifier = Modifier.weight(1f))
             }
             allLists.forEach { list ->
-                // Only display "Completed", "Planning", and "Watching"
+                // Only display lists that are NOT completed, planning, watching
                 if (list.listName !in listOf("Completed", "Planning", "Watching")) {
                     Row(
                         modifier = Modifier
