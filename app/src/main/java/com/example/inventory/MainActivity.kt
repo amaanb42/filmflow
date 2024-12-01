@@ -125,30 +125,48 @@ class MainActivity : ComponentActivity() {
                                             onClick = {
                                                 selectedItemIndex = index
                                                 try {
+                                                    val currentRoute = navController.currentBackStackEntry?.destination?.route
                                                     when (index) {
-                                                        0 -> navController.navigate(ListDestination.route) {
-                                                            popUpTo(ListDestination.route) {
-                                                                saveState = true
+                                                        0 -> {
+                                                            if (currentRoute != ListDestination.route) {
+                                                                navController.navigate(ListDestination.route) {
+                                                                    popUpTo(SearchDestination.route) {
+                                                                        inclusive = true
+                                                                        saveState = true
+                                                                    } // Pop up to Search, but don't pop Search itself
+                                                                    restoreState = true
+                                                                }
                                                             }
-                                                            restoreState = true
                                                         }
-                                                        1 -> navController.navigate(SearchDestination.route) {
-                                                            popUpTo(ListDestination.route) {
-                                                                saveState = true
+                                                        1 -> {
+                                                            if (currentRoute != SearchDestination.route) {
+                                                                navController.navigate(SearchDestination.route) {
+                                                                    popUpTo(ListDestination.route) {
+                                                                        inclusive = true
+                                                                        saveState = true
+                                                                    } // Pop up to List, but don't pop List itself
+                                                                    restoreState = true
+                                                                }
                                                             }
-                                                            restoreState = true
                                                         }
-                                                        2 -> navController.navigate(SettingsDestination.route) {
-                                                            popUpTo(ListDestination.route) {
-                                                                saveState = true
+                                                        2 -> {
+                                                            if (currentRoute != SettingsDestination.route) {
+                                                                navController.navigate(SettingsDestination.route) {
+                                                                    popUpTo(ListDestination.route) {
+                                                                        inclusive = true
+                                                                        saveState = true
+                                                                    } // Pop up to Settings, but don't pop Settings itself
+                                                                    restoreState = true
+                                                                }
                                                             }
-                                                            restoreState = true
                                                         }
+                                                        // ... other destinations ...
                                                     }
                                                 } catch (e: Exception) {
                                                     Log.e("NavigationError", "Error navigating to index $index", e)
                                                 }
-                                            },
+                                            }
+                                            ,
                                             label = { Text(text = item.title) },
                                             alwaysShowLabel = false,
                                             icon = {
