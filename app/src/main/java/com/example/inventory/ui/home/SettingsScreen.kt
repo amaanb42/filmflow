@@ -72,6 +72,25 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                DropDownMenuSettings(
+                    label = "Theme",
+                    options = themes,
+                    selectedOption = selectedTheme,
+                    onSelect = { selectedTheme = it}
+                )
+
+                DropDownMenuSettings(
+                    label = "Start Screen",
+                    options = tabOptions,
+                    selectedOption = startTab,
+                    onSelect = { tab ->
+                        startTab = tab
+                        coroutineScope.launch {
+                            SettingsDataStore.saveDefault(context, tab)
+                        }
+                    }
+                )
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Automatic Wallpaper Theming",
@@ -80,31 +99,27 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
                     Switch(checked = false, onCheckedChange = { materialYouEnabled = it })
                 }
 
-                DropDownMenuSettings(
-                    label = "Default Theme",
-                    options = themes,
-                    selectedOption = selectedTheme,
-                    onSelect = { selectedTheme = it}
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Haptic Feedback",
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(checked = false, onCheckedChange = {  })
+                }
 
-                DropDownMenuSettings(
-                    label = "Default Starting Tab",
-                    options = tabOptions,
-                    selectedOption = startTab,
-                    onSelect = { tab ->
-                        startTab = tab
-
-                        coroutineScope.launch {
-                            SettingsDataStore.saveDefault(context, tab)
-                        }
-                    }
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Push Notifications",
+                        modifier = Modifier.weight(1f)
+                    )
+                    Switch(checked = false, onCheckedChange = {  })
+                }
 
                 Button(
                     onClick = { },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text("Export Database to Google Drive")
+                    Text("Export Lists to Google Drive")
                 }
             }
         }
