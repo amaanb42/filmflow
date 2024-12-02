@@ -33,6 +33,9 @@ import com.example.inventory.R
 import com.example.inventory.data.SettingsDataStore
 import com.example.inventory.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
+import android.content.Context
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 
 
 object SettingsDestination : NavigationDestination {
@@ -48,10 +51,12 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
     // var materialYouEnabled by remember { mutableStateOf(false) }
     var selectedTheme by remember { mutableStateOf("Light") }
     val themes = listOf("Wallpaper", "Dark", "Light")
-    var startTab by remember { mutableStateOf("Home") }
     val tabOptions = listOf("List", "Discover", "Settings")
     val context = navController.context
     val coroutineScope = rememberCoroutineScope()
+
+    val startTabFlow = SettingsDataStore.getDefaultTab(context)
+    val startTab = startTabFlow.collectAsState(initial = "Discover").value
 
     Scaffold(
         topBar = {
@@ -84,7 +89,6 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
                     options = tabOptions,
                     selectedOption = startTab,
                     onSelect = { tab ->
-                        startTab = tab
                         coroutineScope.launch {
                             SettingsDataStore.saveDefault(context, tab)
                         }
