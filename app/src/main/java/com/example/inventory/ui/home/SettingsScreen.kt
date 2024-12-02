@@ -47,7 +47,7 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
 
     var materialYouEnabled by remember { mutableStateOf(false) }
     var selectedTheme by remember { mutableStateOf("Light") }
-    val themes = listOf("Light", "Dark", "System Default")
+    val themes = listOf("Wallpaper", "Dark", "Light")
     var startTab by remember { mutableStateOf("Home") }
     val tabOptions = listOf("List", "Discover", "Settings")
     val context = navController.context
@@ -90,14 +90,6 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
                         }
                     }
                 )
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "Automatic Wallpaper Theming",
-                        modifier = Modifier.weight(1f)
-                    )
-                    Switch(checked = false, onCheckedChange = { materialYouEnabled = it })
-                }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
