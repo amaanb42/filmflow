@@ -45,7 +45,7 @@ object SettingsDestination : NavigationDestination {
 @Composable
 fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifier) {
 
-    var materialYouEnabled by remember { mutableStateOf(false) }
+    // var materialYouEnabled by remember { mutableStateOf(false) }
     var selectedTheme by remember { mutableStateOf("Light") }
     val themes = listOf("Wallpaper", "Dark", "Light")
     var startTab by remember { mutableStateOf("Home") }
@@ -90,6 +90,14 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
                         }
                     }
                 )
+
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Text(
+//                        text = "Automatic Wallpaper Theming",
+//                        modifier = Modifier.weight(1f)
+//                    )
+//                    Switch(checked = false, onCheckedChange = { materialYouEnabled = it })
+//                }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
