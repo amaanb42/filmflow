@@ -416,7 +416,11 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                                 CircularProgressIndicator()
                                             },
                                             error = {
-                                                Text("Image not available")
+                                                Icon(
+                                                    painter = painterResource(id = R.drawable.image), // Replace with your icon resource
+                                                    contentDescription = "Image not available",
+                                                    //modifier = Modifier.size(6.dp) // Adjust size as needed
+                                                )
                                             }
                                         )
                                     }
