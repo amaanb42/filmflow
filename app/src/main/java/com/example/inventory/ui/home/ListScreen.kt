@@ -2,6 +2,7 @@ package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -469,13 +470,21 @@ fun ListHorizontalView(
                             fontWeight = FontWeight.SemiBold
                         )
                     }
-                    Row {
-                        Text(
-                            text = "Your Rating: %.1f / 10".format(movie.userRating),
-                            fontSize = 13.sp,
-                            lineHeight = 1.5.em,
-                            modifier = Modifier.padding(top = 5.dp)
-                        )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        //Spacer(modifier = Modifier.width(10.dp))
+                        Box(
+                            Modifier
+                                .align(Alignment.CenterVertically)
+                                //.padding(top = 24.dp)
+                                .padding(top = 16.dp, start = 4.dp)
+                        ) {
+                            RatingCircle(userRating = movie.userRating ?: 0.0f, fontSize = 16.sp, radius = 24.dp, animDuration = 0, strokeWidth = 4.dp)
+                        }
+                        //Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }

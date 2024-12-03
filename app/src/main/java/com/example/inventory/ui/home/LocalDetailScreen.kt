@@ -280,7 +280,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                             showChangeRatingDialog = true
                                         } // display the dialog
                                 ) {
-                                    CircularProgressBar(userRating = movie?.userRating ?: 0.0f)
+                                    RatingCircle(userRating = movie?.userRating ?: 0.0f, fontSize = 28.sp, radius = 50.dp, animDuration = 1000, strokeWidth = 8.dp)
                                 }
                                 //Spacer(modifier = Modifier.weight(1f))
                             }
@@ -428,13 +428,13 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
 }
 
 @Composable
-fun CircularProgressBar(
+fun RatingCircle(
     userRating: Float, // Now takes userRating directly
-    fontSize: TextUnit = 28.sp,
-    radius: Dp = 50.dp,
+    fontSize: TextUnit,
+    radius: Dp,
     // color: Color = MaterialTheme.colorScheme.outline,
-    strokeWidth: Dp = 8.dp,
-    animDuration: Int = 1000,
+    strokeWidth: Dp,
+    animDuration: Int,
     animDelay: Int = 100
 ) {
     var animationPlayed by remember { mutableStateOf(false) }
