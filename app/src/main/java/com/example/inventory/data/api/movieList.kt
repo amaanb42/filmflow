@@ -133,7 +133,7 @@ fun getGenreHardCode(): List<Pair<String, Int>> {
         "Mystery" to 9648,
         "Romance" to 10749,
         "Science Fiction" to 878,
-        "TV Movie" to 10770,
+        //"TV Movie" to 10770,
         "Thriller" to 53,
         "War" to 10752,
         "Western" to 37
