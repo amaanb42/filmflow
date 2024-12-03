@@ -413,7 +413,12 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                                 .aspectRatio(0.666667f),
                                             contentScale = ContentScale.Fit,
                                             loading = {
-                                                CircularProgressIndicator()
+                                                Box(
+                                                    modifier = Modifier.size(24.dp), // changes size of loading icon
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    CircularProgressIndicator()
+                                                }
                                             },
                                             error = {
                                                 Icon(
@@ -503,7 +508,12 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                                     .aspectRatio(0.6667f),
                                                 contentScale = ContentScale.Crop,
                                                 loading = {
-                                                    CircularProgressIndicator()
+                                                    Box(
+                                                        modifier = Modifier.size(24.dp), // changes size of loading icon
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        CircularProgressIndicator()
+                                                    }
                                                 },
                                                 error = {
                                                     Text("Image not available")
