@@ -373,7 +373,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 }
             }
 
-            item { // Row for movie actors
+            item { // Card for movie actors
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -449,7 +449,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp) // Consistent padding on all sides
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp) // Consistent padding on all sides
                 ) {
                     Column { // Use a Column to structure the content
                         Text(
