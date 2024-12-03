@@ -1,11 +1,16 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -112,6 +118,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
     val sheetState = rememberModalBottomSheetState()
     var showModal by remember { mutableStateOf(false) } // for popping up bottom sheet
     var fabClicked by remember { mutableStateOf(true) } // if copy icon clicked, this is false
+    var expanded by remember { mutableStateOf(false) } // State for expanding synopsis
 
     val allLists by viewModel.allLists.collectAsState()
 
@@ -180,161 +187,198 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
             }
         },
     ) {
-        Column {
-            // Image and text in a Row
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    //.padding(top = 26.dp)
-                    .padding(top = TopAppBarDefaults.TopAppBarExpandedHeight)
-            ) {
-                Box {
-                    val icon = painterResource(id = R.drawable.custom_list)
-                    Icon(
-                        painter = icon,
-                        contentDescription = "Copy to list",
-                        modifier = Modifier
-                            .padding(end = 10.dp, bottom = 10.dp)
-                            .align(Alignment.BottomEnd) // puts the icon in top right corner of card
-                            .clickable {
-                                showModal = true
-                                fabClicked = false
-                                // TODO: if there are no custom lists, popup create list dialog (copy from list screen), and then add to that list
-                            }
-                    )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.Top // Align to the top of the row
-                    ) {
-                        Card { // Card for the image
-                            SubcomposeAsyncImage(
-                                model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clickable { }
-                                    .width(170.dp)
-                                    .aspectRatio(0.6667f),
-                                contentScale = ContentScale.Crop,
-                                loading = {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .aspectRatio(0.6667f),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator()
-                                    }
-                                },
-                                error = {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .aspectRatio(0.6667f),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text("Image not available")
-                                    }
+        LazyColumn {
+            item {
+                // Image and text in a Row
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        //.padding(top = 26.dp)
+                        .padding(top = TopAppBarDefaults.TopAppBarExpandedHeight)
+                ) {
+                    Box {
+                        val icon = painterResource(id = R.drawable.custom_list)
+                        Icon(
+                            painter = icon,
+                            contentDescription = "Copy to list",
+                            modifier = Modifier
+                                .padding(end = 10.dp, bottom = 10.dp)
+                                .align(Alignment.BottomEnd) // puts the icon in top right corner of card
+                                .clickable {
+                                    showModal = true
+                                    fabClicked = false
+                                    // TODO: if there are no custom lists, popup create list dialog (copy from list screen), and then add to that list
                                 }
-                            )
-                        }
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.Top // Align to the top of the row
+                        ) {
+                            Card { // Card for the image
+                                SubcomposeAsyncImage(
+                                    model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .clickable { }
+                                        .width(170.dp)
+                                        .aspectRatio(0.6667f),
+                                    contentScale = ContentScale.Crop,
+                                    loading = {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .aspectRatio(0.6667f),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator()
+                                        }
+                                    },
+                                    error = {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .aspectRatio(0.6667f),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text("Image not available")
+                                        }
+                                    }
+                                )
+                            }
 
-                        Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
 
-                        Column {
-                            movie?.let { it1 ->
+                            Column {
+                                movie?.let { it1 ->
+                                    Text(
+                                        text = it1.title,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                                 Text(
-                                    text = it1.title,
+                                    text = (movie?.runtime?.toString() ?: "") + " mins",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
                                 )
-                            }
-                            Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                            Text(
-                                text = (movie?.runtime?.toString() ?: "") + " mins",
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                            Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                            if (movie != null) {
-                                val originalDate = LocalDate.parse(
-                                    movie?.releaseDate,
-                                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                                )
-                                val formattedDate =
-                                    originalDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
-                                Text(
-                                    text = (formattedDate ?: ""),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(28.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "Your Rating",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                //Spacer(modifier = Modifier.width(10.dp))
-                                Box(
-                                    Modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(top = 12.dp)
-                                        //.clip(CircleShape)
-                                        //.size(100.dp)
-                                        .clickable {
-                                            showChangeRatingDialog = true
-                                        } // display the dialog
-                                ) {
-                                    RatingCircle(userRating = movie?.userRating ?: 0.0f, fontSize = 28.sp, radius = 50.dp, animDuration = 1000, strokeWidth = 8.dp)
+                                Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
+                                if (movie != null) {
+                                    val originalDate = LocalDate.parse(
+                                        movie?.releaseDate,
+                                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                    )
+                                    val formattedDate =
+                                        originalDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
+                                    Text(
+                                        text = (formattedDate ?: ""),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
                                 }
-                                //Spacer(modifier = Modifier.weight(1f))
+
+                                Spacer(modifier = Modifier.height(28.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "Your Rating",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    //Spacer(modifier = Modifier.width(10.dp))
+                                    Box(
+                                        Modifier
+                                            .align(Alignment.CenterVertically)
+                                            .padding(top = 12.dp)
+                                            //.clip(CircleShape)
+                                            //.size(100.dp)
+                                            .clickable {
+                                                showChangeRatingDialog = true
+                                            } // display the dialog
+                                    ) {
+                                        RatingCircle(userRating = movie?.userRating ?: 0.0f, fontSize = 28.sp, radius = 50.dp, animDuration = 1000, strokeWidth = 8.dp)
+                                    }
+                                    //Spacer(modifier = Modifier.weight(1f))
+                                }
                             }
                         }
                     }
                 }
             }
 
-            StatusButtons(viewModel)
-            Spacer(modifier = Modifier.height(16.dp))
+            item {
+                StatusButtons(viewModel)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
-            // Synopsis Card
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp)
-            ) {
-                Column(modifier = Modifier.padding(all = 15.dp)) {
-                    Text(
-                        text = "Synopsis",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    movie?.let { it1 ->
-                        Text(
-                            text = it1.overview ?: "", // Provide a default value if overview is null
-                            style = MaterialTheme.typography.bodyMedium,
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp)
+                        .then( // 'then' to conditionally applies clickable
+                            if ((movie?.overview?.length ?: 0) > 250) { // if synopsis length is large, allow expand clickable
+                                Modifier.clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) { expanded = !expanded }
+                            } else {
+                                Modifier // Do not apply clickable if overview is short
+                            }
                         )
+                        .animateContentSize()
+                ) {
+                    Column(modifier = Modifier.padding(15.dp)) {
+                        Text(
+                            text = "Synopsis",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        movie?.let { it1 ->
+                            AnimatedVisibility( // Add AnimatedVisibility
+                                visible = expanded,
+                                enter = expandVertically(),
+                                exit = shrinkVertically()
+                            ) {
+                                Text(
+                                    text = it1.overview ?: "",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.clickable { expanded = false }
+                                )
+                            }
+                            if (!expanded) {
+                                // Display limited synopsis with expand icon
+                                Row(
+                                    modifier = Modifier
+                                        //.clickable { expanded = !expanded }
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = if ((it1.overview?.length ?: 0) > 250) "${it1.overview?.substring(0, 250)}..." else it1.overview ?: "",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
