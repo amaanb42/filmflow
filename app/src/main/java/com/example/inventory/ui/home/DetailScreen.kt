@@ -279,16 +279,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
-                            Spacer(modifier = Modifier.height(28.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                Text(
-                                    text = "Community Average",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth(),
@@ -298,7 +290,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 Box(
                                     Modifier
                                         .align(Alignment.CenterVertically)
-                                        .padding(top = 12.dp)
+                                        .padding(bottom = 12.dp)
                                 ) {
                                     RatingCircle(
                                         userRating = (movie?.rating)?.toFloat() ?: 0.0f, // Add ? before toFloat()
@@ -309,6 +301,15 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     )
                                 }
                                 //Spacer(modifier = Modifier.weight(1f))
+                            }
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "Community Average",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
                             }
                         }
                     }

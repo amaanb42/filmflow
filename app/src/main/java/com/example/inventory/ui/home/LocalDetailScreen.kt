@@ -284,16 +284,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(28.dp))
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Text(
-                                        text = "Your Rating",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
+                                Spacer(modifier = Modifier.height(16.dp))
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth(),
@@ -303,7 +294,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     Box(
                                         Modifier
                                             .align(Alignment.CenterVertically)
-                                            .padding(top = 12.dp)
+                                            .padding(bottom = 12.dp)
                                             //.clip(CircleShape)
                                             //.size(100.dp)
                                             .clickable {
@@ -313,6 +304,15 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                         RatingCircle(userRating = movie?.userRating ?: 0.0f, fontSize = 28.sp, radius = 50.dp, animDuration = 1000, strokeWidth = 8.dp)
                                     }
                                     //Spacer(modifier = Modifier.weight(1f))
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = "Your Rating",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
                                 }
                             }
                         }
