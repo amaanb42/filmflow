@@ -59,6 +59,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -340,8 +341,8 @@ fun ListGridView(
         }
     }
 
-    var lastScrollIndex by remember { mutableStateOf(0) }
-    var scrollState = rememberLazyGridState()
+    var lastScrollIndex by remember { mutableIntStateOf(0) }
+    val scrollState = rememberLazyGridState()
 
     // grid layout for movies, showing only poster and title
     LazyVerticalGrid(
@@ -438,8 +439,8 @@ fun ListHorizontalView(
         }
     }
 
-    var lastScrollIndex by remember { mutableStateOf(0) }
-    var scrollState = rememberLazyListState()
+    var lastScrollIndex by remember { mutableIntStateOf(0) }
+    val scrollState = rememberLazyListState()
 
     LazyColumn(
         state = scrollState,
