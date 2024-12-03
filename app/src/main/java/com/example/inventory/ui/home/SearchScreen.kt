@@ -85,6 +85,7 @@ fun SearchScreen(navController: NavHostController) {
     var searchQuery by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     var tempMovieList by remember { mutableStateOf(mutableListOf<MovieSearchResult>()) }
+    var searchSubmitted by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
     var randomizeGenre by remember { mutableStateOf(Pair("",1))}
@@ -116,10 +117,11 @@ fun SearchScreen(navController: NavHostController) {
                 query = searchQuery,
                 onQueryChange = {
                     searchQuery = it
+                    searchSubmitted = false
                 },
                 onSearch = {
                     keyboardController?.hide()
-
+                    searchSubmitted = true // Set to true when search is submitted
                     coroutineScope.launch(Dispatchers.IO) {
                         delay(200)
                         async {
@@ -165,7 +167,7 @@ fun SearchScreen(navController: NavHostController) {
                 }
             ) {
                 if (searchQuery.isNotEmpty()) {
-                    SearchRows(tempMovieList, navController)
+                    SearchRows(tempMovieList, navController, searchSubmitted)
                 } else {
                     tempMovieList.clear()
                 }
@@ -344,7 +346,7 @@ fun SearchScreen(navController: NavHostController) {
 
 // Shows the search results as a vertical grid after entering query
 @Composable
-fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostController) {
+fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostController, searchSubmitted: Boolean) {
     if (movieList.isNotEmpty()) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -399,6 +401,13 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
                     )
                 }
             }
+        }
+    } else if (searchSubmitted) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("No results found.")
         }
     }
 }
