@@ -209,7 +209,7 @@ fun SearchScreen(navController: NavHostController) {
                                     randomizeGenre = genreList[genre]
                                     coroutineScope.launch(Dispatchers.IO) {
                                         async {
-                                            randMovieID = displayRandomMovie(randomizeGenre)
+                                            randMovieID = displayRandomMovie(randomizeGenre) ?: 0
                                         }.await()
                                         withContext(Dispatchers.Main) {
                                             navigateToMovieDetails(navController, randMovieID)
