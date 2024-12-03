@@ -1,6 +1,9 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,7 +25,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -54,10 +59,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -108,6 +116,9 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
     var showModal by remember { mutableStateOf(false) }
+
+    // variables to assist with hiding the FAB on scroll
+    var fabVisible by rememberSaveable { mutableStateOf(true) }
 
     // collect data from ListScreenViewModel
     val allLists by viewModel.allLists.collectAsState()
@@ -190,33 +201,43 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
             }
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton( // opens up the bottom sheet for list selection and editing
-                onClick = {
-                    coroutineScope.launch {
-                        showModal = true // open the bottom sheet
-                    }
-                },
-                icon = {
-                    // Choose icon based on selectedList
-                    val icon = when (selectedList) {
-                        "Completed" -> painterResource(id = R.drawable.completed_icon)
-                        "Planning" -> painterResource(id = R.drawable.planning_icon)
-                        "Watching" -> painterResource(id = R.drawable.watching_icon)
-                        else -> painterResource(id = R.drawable.all_icon) // Default icon
-                    }
+            AnimatedVisibility(
+                visible = fabVisible,
+                enter = slideInVertically(initialOffsetY = { it * 2 }),
+                exit = slideOutVertically(targetOffsetY = { it * 2 }),
+            ) {
+                ExtendedFloatingActionButton( // opens up the bottom sheet for list selection and editing
+                    onClick = {
+                        coroutineScope.launch {
+                            showModal = true // open the bottom sheet
+                        }
+                    },
+                    icon = {
+                        // Choose icon based on selectedList
+                        val icon = when (selectedList) {
+                            "Completed" -> painterResource(id = R.drawable.completed_icon)
+                            "Planning" -> painterResource(id = R.drawable.planning_icon)
+                            "Watching" -> painterResource(id = R.drawable.watching_icon)
+                            else -> painterResource(id = R.drawable.all_icon) // Default icon
+                        }
 
-                    Icon(
-                        painter = icon,
-                        contentDescription = "Edit"
-                    )
-                },
-                text = { Text(text = if (selectedList == "") "All" else selectedList,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis) }, // default
-                containerColor = dark_pine,
-                contentColor = Color.White,
-                modifier = Modifier.sizeIn(maxWidth = 300.dp).offset(y = (20).dp)
-            )
+                        Icon(
+                            painter = icon,
+                            contentDescription = "Edit"
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = if (selectedList == "") "All" else selectedList,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }, // default
+                    containerColor = dark_pine,
+                    contentColor = Color.White,
+                    modifier = Modifier.sizeIn(maxWidth = 300.dp).offset(y = (20).dp)
+                )
+            }
         }
     ) { //innerPadding ->
         Column {
@@ -270,9 +291,25 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
 
             // display movies based on view selection (default grid view)
             if (showGridView)
-                ListGridView(navController, filteredMovies, selectedList, searchQuery, navbarModifier = modifier)
+                ListGridView(
+                    navController,
+                    filteredMovies,
+                    selectedList,
+                    searchQuery,
+                    fabVisible, // Pass fabVisible
+                    { newValue -> fabVisible = newValue }, // Pass a lambda to update fabVisible
+                    navbarModifier = modifier
+                )
             else
-                ListHorizontalView(navController, filteredMovies, selectedList, searchQuery, navbarModifier = modifier)
+                ListHorizontalView(
+                    navController,
+                    filteredMovies,
+                    selectedList,
+                    searchQuery,
+                    fabVisible, // Pass fabVisible
+                    { newValue -> fabVisible = newValue }, // Pass a lambda to update fabVisible
+                    navbarModifier = modifier
+                )
         }
     }
     // bottom sheet displays after clicking FAB
@@ -292,7 +329,9 @@ fun ListGridView(
     listMovies: List<Movie>,
     currList: String,
     searchQuery: String,
-    navbarModifier: Modifier = Modifier //for navbar height adjustment
+    fabVisible: Boolean, // Receive fabVisible
+    updateFabVisible: (Boolean) -> Unit, // Receive the update lambda
+    navbarModifier: Modifier = Modifier // for navbar height adjustment
 ) {
     val filteredMovies = if (searchQuery.isEmpty()) {
         listMovies
@@ -301,8 +340,13 @@ fun ListGridView(
             movie.title.contains(searchQuery, ignoreCase = true)
         }
     }
+
+    var lastScrollIndex by remember { mutableIntStateOf(0) }
+    val scrollState = rememberLazyGridState()
+
     // grid layout for movies, showing only poster and title
     LazyVerticalGrid(
+        state = scrollState,
         columns = GridCells.Fixed(3),
         modifier = navbarModifier.fillMaxSize(),
             //.padding(top = 36.dp),
@@ -362,6 +406,19 @@ fun ListGridView(
             }
         }
     }
+    LaunchedEffect(scrollState) {
+        var isFirstEmission = true
+        snapshotFlow { scrollState.firstVisibleItemIndex }
+            .collect { index ->
+                if (isFirstEmission) {
+                    isFirstEmission = false
+                    updateFabVisible(true) // Ensure FAB is visible initially
+                } else {
+                    updateFabVisible(index < lastScrollIndex) // Only hide when scrolling down
+                }
+                lastScrollIndex = index
+            }
+    }
 }
 
 @Composable
@@ -370,7 +427,9 @@ fun ListHorizontalView(
     listMovies: List<Movie>,
     currList: String,
     searchQuery: String,
-    navbarModifier: Modifier = Modifier
+    fabVisible: Boolean, // Receive fabVisible
+    updateFabVisible: (Boolean) -> Unit, // Receive the update lambda
+    navbarModifier: Modifier = Modifier // for navbar height adjustment
 ) {
     val filteredMovies = if (searchQuery.isEmpty()) {
         listMovies
@@ -379,7 +438,12 @@ fun ListHorizontalView(
             movie.title.contains(searchQuery, ignoreCase = true)
         }
     }
+
+    var lastScrollIndex by remember { mutableIntStateOf(0) }
+    val scrollState = rememberLazyListState()
+
     LazyColumn(
+        state = scrollState,
         modifier = navbarModifier
             .fillMaxSize()
     ) {
@@ -488,8 +552,21 @@ fun ListHorizontalView(
                     }
                 }
             }
-            Spacer(modifier = Modifier.padding(5.dp))
+            HorizontalDivider(modifier = Modifier.padding(all = 8.dp).padding(start = 4.dp, end = 4.dp))
         }
+    }
+    LaunchedEffect(scrollState) {
+        var isFirstEmission = true
+        snapshotFlow { scrollState.firstVisibleItemIndex }
+            .collect { index ->
+                if (isFirstEmission) {
+                    isFirstEmission = false
+                    updateFabVisible(true) // Ensure FAB is visible initially
+                } else {
+                    updateFabVisible(index < lastScrollIndex) // Only hide when scrolling down
+                }
+                lastScrollIndex = index
+            }
     }
 }
 
