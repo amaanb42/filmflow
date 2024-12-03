@@ -13,6 +13,7 @@ import com.example.inventory.data.userlist.UserList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -26,6 +27,23 @@ class DetailViewModel(
     // used for displaying in modal bottom sheet, no need to pull from db
     val defaultLists: List<UserList> =  listOf(UserList("Planning"), UserList("Watching"), UserList("Completed"))
 
+    // gets movie counts for default lists, only way i could think of doing this.
+    val completedCount: StateFlow<Int> = userListRepository.getMovieCountStream("Completed").stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+    val watchingCount: StateFlow<Int> = userListRepository.getMovieCountStream("Watching").stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+    val planningCount: StateFlow<Int> = userListRepository.getMovieCountStream("Planning").stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+
     // StateFlow for displaying all lists in the bottom screen sheet
     val allLists: StateFlow<List<UserList>> = userListRepository.getAllListsStream().stateIn(
         scope = viewModelScope,
@@ -38,10 +56,6 @@ class DetailViewModel(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
-
-    // StateFlow to hold the currently selected list
-    private val _selectedList = MutableStateFlow<UserList?>(null)
-    val selectedList: StateFlow<UserList?> = _selectedList
 
     // adding a movie to a list
     fun addMovieToList(listName: String, movie: Movie) {

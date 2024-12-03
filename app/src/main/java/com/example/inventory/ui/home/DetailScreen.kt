@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,7 +55,6 @@ import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
-import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.theme.dark_pine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -87,18 +87,16 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     var showModal by remember { mutableStateOf(false) }
 
     // collect data from ListScreenViewModel
-    val allLists by viewModel.allLists.collectAsState()
-    val selectedList by viewModel.selectedList.collectAsState()
-    val currList = selectedList?.listName // used for highlighting selection in bottom sheet
+    val listsMovieIn by viewModel.listsForMovie.collectAsState()
 
-    var movie_to_add by remember { mutableStateOf<Movie?>(null) } // Make this a state
+    var movieToAdd by remember { mutableStateOf<Movie?>(null) } // Make this a state
 
     //Alter code below to fetch from local database instead of using the TMDB function
     LaunchedEffect(key1 = movieId) {
         coroutineScope.launch(Dispatchers.IO) { // Launch in IO thread
             movie = getDetailsFromID(movieId)
             // Update movie_to_add after movie is loaded
-            movie_to_add = Movie(
+            movieToAdd= Movie(
                 movieId,
                 movie?.title ?: "", // Provide an empty string if title is null
                 movie?.overview,
@@ -153,19 +151,33 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     // Choose icon based on selectedList
                     // As the code currently is, if a user makes a custom list, the FAB icon
                     // will be the same as the All icon instead of the custom icon in the bottom sheet
-                    val icon = when (selectedList?.listName) {
-                        "Completed" -> painterResource(id = R.drawable.completed_icon)
-                        "Planning" -> painterResource(id = R.drawable.planning_icon)
-                        "Watching" -> painterResource(id = R.drawable.watching_icon)
-                        else -> painterResource(id = R.drawable.add_icon) // Default icon
-                    }
+                    val icon =
+                        if ("Planning" in listsMovieIn)
+                            painterResource(id = R.drawable.planning_icon)
+                        else if ("Watching" in listsMovieIn)
+                            painterResource(id = R.drawable.watching_icon)
+                        else if ("Completed" in listsMovieIn)
+                            painterResource(id = R.drawable.completed_icon)
+                        else
+                            painterResource(id = R.drawable.add_icon) // Default icon
 
                     Icon(
                         painter = icon,
                         contentDescription = "Add movie to list"
                     )
                 },
-                text = { Text(selectedList?.listName ?: "Add") },
+                text = {
+                    Text(
+                        if ("Planning" in listsMovieIn)
+                            "Planning"
+                        else if ("Watching" in listsMovieIn)
+                            "Watching"
+                        else if ("Completed" in listsMovieIn)
+                            "Completed"
+                        else
+                            "All"
+                    )
+                },
                 containerColor = dark_pine,
                 contentColor = Color.White
             )
@@ -307,13 +319,18 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             onDismissRequest = { showModal = false },
             sheetState = sheetState,
         ) {
-            DetailBottomSheet(allLists, viewModel, currList, movie_to_add) { showModal = false }
+            DetailBottomSheet(viewModel, movieToAdd) { showModal = false }
         }
     }
 }
 
 @Composable
-fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, currList: String?, movie: Movie?, onDismiss: () -> Unit) {
+fun DetailBottomSheet(viewModel: DetailViewModel, movie: Movie?, onDismiss: () -> Unit) {
+    // get movie counts for default lists from view model
+    val planningCount by viewModel.planningCount.collectAsState()
+    val watchingCount by viewModel.watchingCount.collectAsState()
+    val completedCount by viewModel.completedCount.collectAsState()
+    // check what lists the movie is already in
     val listsForMovie by viewModel.listsForMovie.collectAsState()
     var alreadyExistsInList: String? = null
     for (list in viewModel.defaultLists) {
@@ -323,63 +340,55 @@ fun DetailBottomSheet(allLists: List<UserList>, viewModel: DetailViewModel, curr
         }
     }
     Column(modifier = Modifier.padding(1.dp)) {
-        // Display the current list if it exists
-        if (alreadyExistsInList != null) {
+        viewModel.defaultLists.forEach { defaultList ->
+            // Only display "Completed", "Planning", and "Watching"
+            //if (defaultList.listName in listOf("Planning", "Watching", "Completed") && defaultList.listName != alreadyExistsInList) {
             Row(
                 modifier = Modifier
                     .padding(start = 2.dp, end = 2.dp)
                     .fillMaxWidth()
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = "Currently in \"$alreadyExistsInList\"",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.weight(1f))
-            }
-        }
-
-        viewModel.defaultLists.forEach { defaultList ->
-            // Only display "Completed", "Planning", and "Watching"
-            if (defaultList.listName in listOf("Completed", "Planning", "Watching") && defaultList.listName != alreadyExistsInList) {
-                Row(
-                    modifier = Modifier
-                        .padding(start = 2.dp, end = 2.dp)
-                        .fillMaxWidth()
-                        .clickable {
-                            movie?.let {
-                                if (alreadyExistsInList != null) { // if the movie is already in a default list, move it
-                                    viewModel.moveMovieToList(alreadyExistsInList, defaultList.listName, it)
-                                } else { // otherwise, add it to the selected default list
-                                    viewModel.addMovieToList(defaultList.listName, it)
-                                }
+                    .clickable {
+                        movie?.let {
+                            if (alreadyExistsInList != null) { // if the movie is already in a default list, move it
+                                viewModel.moveMovieToList(alreadyExistsInList, defaultList.listName, it)
+                            } else { // otherwise, add it to the selected default list
+                                viewModel.addMovieToList(defaultList.listName, it)
                             }
-                            onDismiss()
                         }
-                        .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Choose icon based on singleList.listName
-                    val icon = when (defaultList.listName) {
-                        "Completed" -> R.drawable.completed_icon
-                        "Planning" -> R.drawable.planning_icon
-                        "Watching" -> R.drawable.watching_icon
-                        else -> R.drawable.custom_list // custom icon when user makes list
+                        onDismiss()
                     }
-
-                    Icon(
-                        painter = painterResource(id = icon),
-                        contentDescription = defaultList.listName,
-                        modifier = Modifier.padding(start=8.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = defaultList.listName,
-                        fontWeight = if (defaultList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
-                        modifier = Modifier.weight(1f)
-                    )
+                    .padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Choose icon based on singleList.listName
+                val icon = when (defaultList.listName) {
+                    "Completed" -> R.drawable.completed_icon
+                    "Planning" -> R.drawable.planning_icon
+                    "Watching" -> R.drawable.watching_icon
+                    else -> R.drawable.custom_list // won't ever appear
                 }
+                Icon(
+                    painter = painterResource(id = icon),
+                    contentDescription = defaultList.listName,
+                    modifier = Modifier.padding(start=8.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = defaultList.listName,
+                    fontWeight = if (defaultList.listName == alreadyExistsInList) FontWeight.ExtraBold else FontWeight.Normal,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = when (defaultList.listName) {
+                        "Planning" -> planningCount.toString()
+                        "Watching" -> watchingCount.toString()
+                        "Completed" -> completedCount.toString()
+                        else -> "0"
+                    }, //
+                    fontWeight = if (defaultList.listName == alreadyExistsInList) FontWeight.ExtraBold else FontWeight.Normal,
+                    modifier = Modifier.padding(start = 10.dp, end = 10.dp),
+                    textAlign = TextAlign.Right
+                )
             }
         }
     }
