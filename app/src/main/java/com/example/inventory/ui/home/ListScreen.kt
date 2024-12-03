@@ -397,6 +397,7 @@ fun ListGridView(
                 Text( // display the title
                     text = movie.title,
                     fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
                     lineHeight = 1.5.em,
                     modifier = Modifier.width(135.dp),
                     textAlign = TextAlign.Center,
