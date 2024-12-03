@@ -2,6 +2,7 @@ package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -237,14 +238,41 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         )
                         Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                         Text(
-                            text = String.format("%.1f/10", movie?.rating ?: 0.0), // Format with one decimal place
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                        Text(
                             text = (movie?.releaseDate ?: ""),
                             style = MaterialTheme.typography.bodyMedium
                         )
+
+                        Spacer(modifier = Modifier.height(28.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "Community Average",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            //Spacer(modifier = Modifier.width(10.dp))
+                            Box(
+                                Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .padding(top = 12.dp)
+                            ) {
+                                RatingCircle(
+                                    userRating = (movie?.rating)?.toFloat() ?: 0.0f, // Add ? before toFloat()
+                                    fontSize = 28.sp,
+                                    radius = 50.dp,
+                                    animDuration = 1000,
+                                    strokeWidth = 8.dp
+                                )
+                            }
+                            //Spacer(modifier = Modifier.weight(1f))
+                        }
                     }
                 }
             }

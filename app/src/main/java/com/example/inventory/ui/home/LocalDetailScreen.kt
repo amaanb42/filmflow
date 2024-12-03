@@ -264,16 +264,28 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 text = (movie?.releaseDate ?: ""),
                                 style = MaterialTheme.typography.bodyMedium
                             )
-                            Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
+
+
+                            Spacer(modifier = Modifier.height(28.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "Your Rating",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
                             Row(
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
                             ) {
                                 //Spacer(modifier = Modifier.width(10.dp))
                                 Box(
                                     Modifier
                                         .align(Alignment.CenterVertically)
-                                        .padding(top = 36.dp, start = 24.dp)
+                                        .padding(top = 12.dp)
                                         //.clip(CircleShape)
                                         //.size(100.dp)
                                         .clickable {
