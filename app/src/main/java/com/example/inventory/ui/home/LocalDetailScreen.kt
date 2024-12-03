@@ -80,6 +80,8 @@ import com.example.inventory.ui.theme.material_green
 import com.example.inventory.ui.theme.material_orange
 import com.example.inventory.ui.theme.material_red
 import com.example.inventory.ui.theme.material_yellow
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 object LocalDetailDestination {
@@ -249,6 +251,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 Text(
                                     text = it1.title,
                                     style = MaterialTheme.typography.bodyMedium,
+                                    fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis
@@ -256,15 +259,22 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             }
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                             Text(
-                                text = (movie?.runtime?.toString() ?: "") + " minutes",
+                                text = (movie?.runtime?.toString() ?: "") + " mins",
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                            Text(
-                                text = (movie?.releaseDate ?: ""),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-
+                            if (movie != null) {
+                                val originalDate = LocalDate.parse(
+                                    movie?.releaseDate,
+                                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                )
+                                val formattedDate =
+                                    originalDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
+                                Text(
+                                    text = (formattedDate ?: ""),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
 
                             Spacer(modifier = Modifier.height(28.dp))
                             Row(

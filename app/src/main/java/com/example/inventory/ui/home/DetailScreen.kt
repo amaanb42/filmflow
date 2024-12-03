@@ -58,6 +58,9 @@ import com.example.inventory.data.movie.Movie
 import com.example.inventory.ui.theme.dark_pine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.internal.format
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 object DetailDestination {
@@ -240,20 +243,30 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             Text(
                                 text = it1.title,
                                 style = MaterialTheme.typography.bodyMedium,
+                                fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                         Text(
-                            text = (movie?.runtime?.toString() ?: "") + " minutes",
+                            text = (movie?.runtime?.toString() ?: "") + " mins",
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                        Text(
-                            text = (movie?.releaseDate ?: ""),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-
+                        if (movie != null) {
+                            val originalDate = LocalDate.parse(
+                                movie?.releaseDate,
+                                DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                            )
+                            val formattedDate =
+                                originalDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
+                            Text(
+                                text = (formattedDate ?: ""),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
                         Spacer(modifier = Modifier.height(28.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -350,7 +363,11 @@ fun DetailBottomSheet(viewModel: DetailViewModel, movie: Movie?, onDismiss: () -
                     .clickable {
                         movie?.let {
                             if (alreadyExistsInList != null) { // if the movie is already in a default list, move it
-                                viewModel.moveMovieToList(alreadyExistsInList, defaultList.listName, it)
+                                viewModel.moveMovieToList(
+                                    alreadyExistsInList,
+                                    defaultList.listName,
+                                    it
+                                )
                             } else { // otherwise, add it to the selected default list
                                 viewModel.addMovieToList(defaultList.listName, it)
                             }

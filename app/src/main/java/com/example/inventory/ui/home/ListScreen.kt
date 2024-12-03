@@ -500,7 +500,7 @@ fun ListHorizontalView(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                             softWrap = false,
-                            fontSize = 20.sp)
+                            fontSize = 18.sp)
                     }
                     Row {
                         val originalDate = LocalDate.parse(movie.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
