@@ -464,39 +464,55 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             fontWeight = FontWeight.Bold // Add FontWeight for emphasis
                         )
 
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp), // Consistent padding
-                            contentPadding = PaddingValues(vertical = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(viewModel.similarMovies, key = { movie -> movie.id }) { movie ->
-                                Card {
-                                    SubcomposeAsyncImage(
-                                        model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .clickable {
-                                                navigateToMovieDetails(navController, movie.id)
-                                            }
-                                            .width(124.dp)
-                                            .aspectRatio(0.6667f),
-                                        contentScale = ContentScale.Crop,
-                                        loading = {
-                                            CircularProgressIndicator()
-                                        },
-                                        error = {
-                                            Text("Image not available")
+                        if (viewModel.recommendedMovies.isEmpty()) { // Check if the list is empty
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("No recommendations")
+                            }
+                            } else {
+                                LazyRow(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp), // Consistent padding
+                                    contentPadding = PaddingValues(vertical = 16.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    items(
+                                        viewModel.recommendedMovies,
+                                        key = { movie -> movie.id }) { movie ->
+                                        Card {
+                                            SubcomposeAsyncImage(
+                                                model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .clickable {
+                                                        navigateToMovieDetails(
+                                                            navController,
+                                                            movie.id
+                                                        )
+                                                    }
+                                                    .width(124.dp)
+                                                    .aspectRatio(0.6667f),
+                                                contentScale = ContentScale.Crop,
+                                                loading = {
+                                                    CircularProgressIndicator()
+                                                },
+                                                error = {
+                                                    Text("Image not available")
+                                                }
+                                            )
                                         }
-                                    )
-                                }
+                                    }
                             }
                         }
+
                     }
                 }
             }
-
         }
     }
     if (showModal) {

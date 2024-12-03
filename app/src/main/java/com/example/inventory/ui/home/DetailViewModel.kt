@@ -30,7 +30,7 @@ class DetailViewModel(
 ) : ViewModel() {
 
 
-    var similarMovies by mutableStateOf(listOf<MovieSearchResult>())
+    var recommendedMovies by mutableStateOf(listOf<MovieSearchResult>())
         private set
 
     var movieCast by mutableStateOf(listOf<MovieCast>())
@@ -38,7 +38,7 @@ class DetailViewModel(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            similarMovies = getRecommendedMovies(currMovieID)
+            recommendedMovies = getRecommendedMovies(currMovieID)
             movieCast = getMovieCast(currMovieID)
         }
     }
