@@ -13,6 +13,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -20,6 +22,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,15 +30,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.inventory.R
 import com.example.inventory.data.SettingsDataStore
 import com.example.inventory.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
-import android.content.Context
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 
 
 object SettingsDestination : NavigationDestination {
@@ -66,6 +68,14 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
                     bottom = 0.dp
                 ),
                 title = { Text("Settings") },
+                actions = {
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.bug_report),
+                            contentDescription = "Bug Report"
+                        )
+                    }
+                }
             )
         },
 
@@ -77,6 +87,32 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+
+                Text(
+                    text = "List Backup",
+                    textAlign = TextAlign.Center,
+                    //fontSize = 14.sp
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp) // Add space between buttons
+                ) {
+                    Button(
+                        onClick = { /*TODO*/ },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Export")
+                    }
+
+                    Button(
+                        onClick = { /*TODO*/ },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Import")
+                    }
+                }
+
                 DropDownMenuSettings(
                     label = "Theme",
                     options = themes,
@@ -119,12 +155,7 @@ fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifi
                     Switch(checked = false, onCheckedChange = {  })
                 }
 
-                Button(
-                    onClick = { },
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text("Export Lists to Google Drive")
-                }
+
             }
         }
     )
