@@ -59,12 +59,14 @@ class LocalDetailViewModel(
 
     // use for changing status of movie between default lists
     fun moveMovieToList(oldListName: String, newListName: String) {
-        viewModelScope.launch {
-            // remove the other relation first and then insert new one
-            listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, currMovieID))
-            userListRepository.decMovieCount(oldListName) // decrement the old list's movie count
-            listMoviesRepository.insertListMovieRelation(ListMovies(newListName, currMovieID))
-            userListRepository.incMovieCount(newListName) // increment the new list's movie count
+        if (oldListName != newListName){
+            viewModelScope.launch {
+                // remove the other relation first and then insert new one
+                listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, currMovieID))
+                userListRepository.decMovieCount(oldListName) // decrement the old list's movie count
+                listMoviesRepository.insertListMovieRelation(ListMovies(newListName, currMovieID))
+                userListRepository.incMovieCount(newListName) // increment the new list's movie count
+            }
         }
     }
 
