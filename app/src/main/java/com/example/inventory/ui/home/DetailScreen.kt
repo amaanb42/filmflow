@@ -1,7 +1,12 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -94,8 +99,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
 
     // collect data from ListScreenViewModel
     val listsMovieIn by viewModel.listsForMovie.collectAsState()
-
     var movieToAdd by remember { mutableStateOf<Movie?>(null) } // Make this a state
+    var expanded by remember { mutableStateOf(false) } // State for expanding synopsis
 
     //Alter code below to fetch from local database instead of using the TMDB function
     LaunchedEffect(key1 = movieId) {
@@ -315,6 +320,17 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp)
+                        .then( // 'then' to conditionally applies clickable
+                            if ((movie?.overview?.length ?: 0) > 250) { // if synopsis length is large, allow expand clickable
+                                Modifier.clickable(
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) { expanded = !expanded }
+                            } else {
+                                Modifier // Do not apply clickable if overview is short
+                            }
+                        )
+                        .animateContentSize()
                 ) {
                     Column(modifier = Modifier.padding(15.dp)) {
                         Text(
@@ -324,10 +340,31 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         movie?.let { it1 ->
-                            Text(
-                                text = it1.overview,
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
+                            AnimatedVisibility( // Add AnimatedVisibility
+                                visible = expanded,
+                                enter = expandVertically(),
+                                exit = shrinkVertically()
+                            ) {
+                                Text(
+                                    text = it1.overview,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.clickable { expanded = false }
+                                )
+                            }
+                            if (!expanded) {
+                                // Display limited synopsis with expand icon
+                                Row(
+                                    modifier = Modifier
+                                        //.clickable { expanded = !expanded }
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = if (it1.overview.length > 250) "${it1.overview.substring(0, 250)}..." else it1.overview,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
