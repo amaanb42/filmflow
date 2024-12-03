@@ -1,19 +1,22 @@
 package com.example.inventory.ui.home
 
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ListMoviesRepository
 import com.example.inventory.data.MovieRepository
 import com.example.inventory.data.UserListRepository
+import com.example.inventory.data.api.MovieSearchResult
+import com.example.inventory.data.api.getSimilarMovies
 import com.example.inventory.data.listmovies.ListMovies
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -23,6 +26,16 @@ class DetailViewModel(
     private val movieRepository: MovieRepository,
     private val currMovieID: Int
 ) : ViewModel() {
+
+
+    var similarMovies by mutableStateOf(listOf<MovieSearchResult>())
+        private set
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            similarMovies = getSimilarMovies(currMovieID)
+        }
+    }
 
     // used for displaying in modal bottom sheet, no need to pull from db
     val defaultLists: List<UserList> =  listOf(UserList("Planning"), UserList("Watching"), UserList("Completed"))

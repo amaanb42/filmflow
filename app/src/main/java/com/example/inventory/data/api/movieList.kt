@@ -74,6 +74,12 @@ fun getNowPlayingMovies(): List<MovieSearchResult>{
     return parseMovieList(resultsArray)
 }
 
+fun getSimilarMovies(id: Int): List<MovieSearchResult>{
+    val trendingMoviesJson = apiRequest("https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=1")
+    val resultsArray = trendingMoviesJson?.getJSONArray("results") ?: JSONArray()
+    return parseMovieList(resultsArray)
+}
+
 // Does it pull all this data for each movie in the search result?
 // If so, we should only pull the id, title, poster, and popularity for the results.
 // Then get all of the extensive data for a movie once the user has selected it
