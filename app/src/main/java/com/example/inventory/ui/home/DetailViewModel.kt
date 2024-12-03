@@ -9,8 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ListMoviesRepository
 import com.example.inventory.data.MovieRepository
 import com.example.inventory.data.UserListRepository
+import com.example.inventory.data.api.MovieCast
 import com.example.inventory.data.api.MovieSearchResult
-import com.example.inventory.data.api.getSimilarMovies
+import com.example.inventory.data.api.getMovieCast
+import com.example.inventory.data.api.getRecommendedMovies
 import com.example.inventory.data.listmovies.ListMovies
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
@@ -31,9 +33,13 @@ class DetailViewModel(
     var similarMovies by mutableStateOf(listOf<MovieSearchResult>())
         private set
 
+    var movieCast by mutableStateOf(listOf<MovieCast>())
+        private set
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            similarMovies = getSimilarMovies(currMovieID)
+            similarMovies = getRecommendedMovies(currMovieID)
+            movieCast = getMovieCast(currMovieID)
         }
     }
 

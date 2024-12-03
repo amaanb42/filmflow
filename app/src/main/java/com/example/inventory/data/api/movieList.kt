@@ -69,15 +69,21 @@ fun getTrendingMovies(): List<MovieSearchResult> {
 }
 
 fun getNowPlayingMovies(): List<MovieSearchResult>{
-    val trendingMoviesJson = apiRequest("https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1")
-    val resultsArray = trendingMoviesJson?.getJSONArray("results") ?: JSONArray()
+    val nowPlayingMovies = apiRequest("https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1")
+    val resultsArray = nowPlayingMovies?.getJSONArray("results") ?: JSONArray()
     return parseMovieList(resultsArray)
 }
 
-fun getSimilarMovies(id: Int): List<MovieSearchResult>{
-    val trendingMoviesJson = apiRequest("https://api.themoviedb.org/3/movie/${id}/similar?language=en-US&page=1")
-    val resultsArray = trendingMoviesJson?.getJSONArray("results") ?: JSONArray()
+fun getRecommendedMovies(id: Int): List<MovieSearchResult>{
+    val recommendedMoviesJson = apiRequest("https://api.themoviedb.org/3/movie/${id}/recommendations?language=en-US&page=1")
+    val resultsArray = recommendedMoviesJson?.getJSONArray("results") ?: JSONArray()
     return parseMovieList(resultsArray)
+}
+
+fun getMovieCast(id: Int): List<MovieCast> {
+    val castSelection = apiRequest("https://api.themoviedb.org/3/movie/${id}/credits?language=en-US")
+    val castArray = castSelection?.getJSONArray("cast") ?: JSONArray() // Access "cast" directly
+    return parseCastList(castArray)
 }
 
 // Does it pull all this data for each movie in the search result?
@@ -103,6 +109,22 @@ fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
         }
     }
     return movieAttributes
+}
+
+fun parseCastList(cast: JSONArray): MutableList<MovieCast> {
+    val castList: MutableList<MovieCast> = mutableListOf()
+
+    for (i in 0 until cast.length()) {
+        val castMember = cast.getJSONObject(i)
+        val castToAdd = MovieCast(
+            castMember.getInt("id"),
+            castMember.getString("name"),
+            castMember.getString("character"),
+            castMember.getString("profile_path")
+        )
+        castList.add(castToAdd)
+    }
+    return castList
 }
 
 fun parseMovieDetails(movie: JSONObject): MovieDetails {

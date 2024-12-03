@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -370,6 +371,75 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 }
             }
 
+            item { // Row for movie actors
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Column {
+                        Text(
+                            text = "Cast",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, top = 12.dp),
+                            textAlign = TextAlign.Left,
+                            fontWeight = FontWeight.Bold
+                        )
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp),
+                            contentPadding = PaddingValues(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(viewModel.movieCast) { castMember ->
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Card {
+                                        SubcomposeAsyncImage(
+                                            model = "https://image.tmdb.org/t/p/w500${castMember.posterPath}",
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(124.dp)
+                                                .aspectRatio(0.666667f),
+                                            contentScale = ContentScale.Fit,
+                                            loading = {
+                                                CircularProgressIndicator()
+                                            },
+                                            error = {
+                                                Text("Image not available")
+                                            }
+                                        )
+                                    }
+                                    Text(
+                                        text = castMember.realName,
+                                        fontSize = 14.sp,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.width(130.dp),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        text = castMember.characterName,
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.width(130.dp),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             item {
                 Card(
                     colors = CardDefaults.cardColors(
@@ -381,7 +451,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 ) {
                     Column { // Use a Column to structure the content
                         Text(
-                            text = "Similar",
+                            text = "Recommended",
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .fillMaxWidth()
