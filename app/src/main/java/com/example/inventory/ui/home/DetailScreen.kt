@@ -188,7 +188,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         else if ("Completed" in listsMovieIn)
                             "Completed"
                         else
-                            "All"
+                            "Add"
                     )
                 },
                 containerColor = dark_pine,
