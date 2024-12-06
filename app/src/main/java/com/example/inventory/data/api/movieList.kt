@@ -96,11 +96,14 @@ fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
 
     for ( i in 0 until movies.length()){
         val movie = movies.getJSONObject(i)
+
+        // Safely access 'popularity' with a default value
+        val popularity = movie.optDouble("popularity", 0.0) // Default to 0.0 if not found
         val movieToAdd = MovieSearchResult(
             movie.get("id") as Int,
             movie.get("title") as String,
             movie.get("poster_path").toString(),
-            movie.get("popularity") as Double // Include popularity
+            popularity
         )
 
         //If the movie poster is null then it doesn't show up, to change remove the if and leave the "movieAttributes.add(movieToAdd)" as it is
