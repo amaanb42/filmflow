@@ -234,7 +234,7 @@ fun SearchScreen(navController: NavHostController) {
 
             // Below code for trending and theater carousels on search screen
             Column (
-                modifier = Modifier.padding(top = 32.dp)
+                //modifier = Modifier.padding(top = 32.dp)
             ) {
                 Text(
                     text = "Trending",
@@ -259,7 +259,7 @@ fun SearchScreen(navController: NavHostController) {
                                     .clickable {
                                         navigateToMovieDetails(navController, movie.id)
                                     }
-                                    .width(135.dp)
+                                    .width(128.dp)
                                     .aspectRatio(0.6667f),
                                 contentScale = ContentScale.Crop,
                                 loading = {
@@ -313,7 +313,7 @@ fun SearchScreen(navController: NavHostController) {
                                     .clickable {
                                         navigateToMovieDetails(navController, movie.id)
                                     }
-                                    .width(135.dp)
+                                    .width(128.dp)
                                     .aspectRatio(0.6667f),
                                 contentScale = ContentScale.Crop,
                                 loading = {

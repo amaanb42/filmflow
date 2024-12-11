@@ -369,7 +369,8 @@ fun ListGridView(
                             .clickable {
                                 navigateToLocalDetails(navController, movie.movieID, currList)
                             }
-                            .width(135.dp)
+                            //width(135.dp)
+                            .fillMaxWidth()
                             .aspectRatio(0.6667f),
                         contentScale = ContentScale.Crop,
                         loading = {
