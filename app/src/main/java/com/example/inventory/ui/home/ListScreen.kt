@@ -347,7 +347,8 @@ fun ListGridView(
     // grid layout for movies, showing only poster and title
     LazyVerticalGrid(
         state = scrollState,
-        columns = GridCells.Fixed(3),
+        //columns = GridCells.Fixed(3),
+        columns = GridCells.Adaptive(minSize = 128.dp),
         modifier = navbarModifier.fillMaxSize(),
             //.padding(top = 36.dp),
         contentPadding = PaddingValues(horizontal = 15.dp)

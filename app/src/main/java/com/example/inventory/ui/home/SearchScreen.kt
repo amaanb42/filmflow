@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -186,8 +187,8 @@ fun SearchScreen(navController: NavHostController) {
                 shape = RoundedCornerShape(32.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 145.dp)
-                    .padding(top = 0.dp),
+                    .width(100.dp)
+                    .wrapContentSize(align = Alignment.Center)
             ) {
                 Text(text = stringResource(R.string.random_button))
             }
@@ -349,7 +350,8 @@ fun SearchScreen(navController: NavHostController) {
 fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostController, searchSubmitted: Boolean) {
     if (movieList.isNotEmpty()) {
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            //columns = GridCells.Fixed(2),
+            columns = GridCells.Adaptive(minSize = 128.dp),
             modifier = Modifier.fillMaxHeight(),
             horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
