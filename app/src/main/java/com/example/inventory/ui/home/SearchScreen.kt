@@ -83,9 +83,9 @@ object SearchDestination : NavigationDestination {
 fun SearchScreen(navController: NavHostController) {
     val viewModel: SearchScreenViewModel = viewModel()
 
-    var searchQuery by remember { mutableStateOf("") }
-    var active by remember { mutableStateOf(false) }
-    var tempMovieList by remember { mutableStateOf(mutableListOf<MovieSearchResult>()) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var active by rememberSaveable { mutableStateOf(false) }
+    var tempMovieList by rememberSaveable { mutableStateOf(mutableListOf<MovieSearchResult>()) }
     var searchSubmitted by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
