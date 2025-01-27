@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -737,7 +739,8 @@ fun SegmentedButtons(
                             ) // Move only if necessary
                         }
                         selectedItemIndex = index
-                    }
+                    },
+                    label = listNames[index] // displays list name for icon
                 )
             }
             if (index < items.size - 1) {
@@ -751,42 +754,76 @@ fun SegmentedButtons(
 fun ListIconButton(
     icon: Int, // Changed to Int for drawable resource ID
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    label: String, //label for buttons
 ) {
-    val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        MaterialTheme.colorScheme.surfaceVariant
-    }
+//    val backgroundColor = if (isSelected) {
+//        MaterialTheme.colorScheme.primary
+//    } else {
+//        MaterialTheme.colorScheme.surfaceVariant
+//    }
+//
+//    val iconTint = if (isSelected) {
+//        MaterialTheme.colorScheme.onPrimary
+//    } else {
+//        MaterialTheme.colorScheme.onSurfaceVariant
+//    }
 
-    val iconTint = if (isSelected) {
-        MaterialTheme.colorScheme.onPrimary
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    val animatedSurfaceColor = animateColorAsState(
+        if (isSelected) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant
+        },
+        animationSpec = tween(
+            durationMillis = 300, // Adjust the duration as needed
+            easing = FastOutSlowInEasing // Use an easing function for smoother transitions
+        )
+    )
 
-    Surface(
-        modifier = Modifier
-            .selectable(
-                selected = isSelected,
-                onClick = onClick,
-                role = Role.RadioButton
-            ),
-            //.padding(horizontal = 8.dp),
-        shape = MaterialTheme.shapes.small,
-        color = backgroundColor
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = icon), // Use painterResource
-                contentDescription = null,
-                tint = iconTint
-            )
+    val animatedIconColor = animateColorAsState(
+        if (isSelected) {
+            MaterialTheme.colorScheme.onPrimary
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        animationSpec = tween(
+            durationMillis = 300, // Adjust the duration as needed
+            easing = FastOutSlowInEasing // Use an easing function for smoother transitions
+        )
+    )
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        key(isSelected, animatedSurfaceColor.value) { // Add this key
+            Surface(
+                modifier = Modifier
+                    .selectable(
+                        selected = isSelected,
+                        onClick = onClick,
+                        role = Role.RadioButton
+                    ),
+                shape = MaterialTheme.shapes.small,
+                color = animatedSurfaceColor.value
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = icon),
+                        contentDescription = null,
+                        tint = animatedIconColor.value
+                    )
+                }
+            }
         }
+        Text(
+            text = label,
+            modifier = Modifier.padding(top = 4.dp),
+            color = animatedIconColor.value,
+            fontSize = MaterialTheme.typography.bodyMedium.fontSize
+        )
     }
 }
 
