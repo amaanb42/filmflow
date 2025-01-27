@@ -167,15 +167,15 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
             if (showDeleteDialog) {
                 AlertDialog(
                     onDismissRequest = { showDeleteDialog = false },
-                    title = { Text("Deletion") },
-                    text = { Text("Confirm movie deletion.") },
+                    title = { Text("Removal") },
+                    text = { Text("Remove this movie from your list?") },
                     confirmButton = {
                         TextButton(onClick = {
                             navController.popBackStack()
                             viewModel.deleteMovie(movieId)
                             showDeleteDialog = false
                         }) {
-                            Text("Delete")
+                            Text("Remove")
                         }
                     },
                     dismissButton = {
