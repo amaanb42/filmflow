@@ -45,6 +45,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -52,7 +53,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -69,6 +73,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -134,6 +139,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester()}
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -169,6 +176,12 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                         )
                     }
                 },
+                //colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = MaterialTheme.colorScheme.surface
+                ),
+                scrollBehavior = scrollBehavior,
                 actions = {
                     IconButton(onClick = {
                         isSearching = !isSearching // Toggle search mode
@@ -223,6 +236,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 }
             }
         },
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
             AnimatedVisibility(
                 visible = fabVisible,
@@ -262,8 +276,12 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 )
             }
         }
-    ) { //innerPadding ->
-        Column {
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
             // Filtered movie list
             val filteredMovies = if (searchQuery.isEmpty()) {
                 listMovies
@@ -274,26 +292,27 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
             }
 
             // display movies based on view selection (default grid view)
-            if (showGridView)
+            if (showGridView) {
                 ListGridView(
                     navController,
                     filteredMovies,
                     selectedList,
                     searchQuery,
-                    fabVisible, // Pass fabVisible
+                    // Pass fabVisible
                     { newValue -> fabVisible = newValue }, // Pass a lambda to update fabVisible
                     navbarModifier = modifier
                 )
-            else
+            } else {
                 ListHorizontalView(
                     navController,
                     filteredMovies,
                     selectedList,
                     searchQuery,
-                    fabVisible, // Pass fabVisible
+                    // Pass fabVisible
                     { newValue -> fabVisible = newValue }, // Pass a lambda to update fabVisible
                     navbarModifier = modifier
                 )
+            }
         }
     }
     // bottom sheet displays after clicking FAB
@@ -313,7 +332,7 @@ fun ListGridView(
     listMovies: List<Movie>,
     currList: String,
     searchQuery: String,
-    fabVisible: Boolean, // Receive fabVisible
+    // Receive fabVisible
     updateFabVisible: (Boolean) -> Unit, // Receive the update lambda
     navbarModifier: Modifier = Modifier // for navbar height adjustment
 ) {
@@ -414,7 +433,7 @@ fun ListHorizontalView(
     listMovies: List<Movie>,
     currList: String,
     searchQuery: String,
-    fabVisible: Boolean, // Receive fabVisible
+    // Receive fabVisible
     updateFabVisible: (Boolean) -> Unit, // Receive the update lambda
     navbarModifier: Modifier = Modifier // for navbar height adjustment
 ) {
