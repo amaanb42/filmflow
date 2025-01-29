@@ -53,10 +53,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -533,7 +531,7 @@ fun ListHorizontalView(
                             modifier = Modifier.padding(top = 5.dp)
                         )
                         Text(
-                            text = "${movie.runtime} mins",
+                            text = formatRuntime(movie.runtime),
                             fontSize = 13.sp,
                             lineHeight = 1.5.em,
                             modifier = Modifier.padding(top = 5.dp),

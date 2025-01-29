@@ -263,7 +263,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             }
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                             Text(
-                                text = (movie?.runtime?.toString() ?: "") + " mins",
+                                text = formatRuntime(movie?.runtime),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
