@@ -35,8 +35,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -181,12 +179,37 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                         )
                     }
 
-                    IconButton(onClick = {/* TODO: Some shit idk yet */}) {
+                    IconButton(
+                        onClick = {
+                            /*TODO: Sorting*/
+                        },
+                        //colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        //modifier = Modifier.padding(end = 6.dp, bottom = 12.dp)
+                    ) {
                         Icon(
-                            imageVector = Icons.Filled.MoreVert,
-                            contentDescription = "Triple dot menu"
+                            painter = painterResource(id = R.drawable.sort_icon),
+                            contentDescription = "Sorting",
                         )
                     }
+
+                    IconButton(
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.changeListView() // helps switch the view
+                            }
+                        },
+                        //colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                        //modifier = Modifier.padding(end = 6.dp, bottom = 12.dp)
+                    ) {
+                        Icon(painter = if (showGridView) horizontalIcon else gridIcon, contentDescription = "View")
+                    }
+
+//                    IconButton(onClick = {/* TODO: Some shit idk yet */}) {
+//                        Icon(
+//                            imageVector = Icons.Filled.MoreVert,
+//                            contentDescription = "Triple dot menu"
+//                        )
+//                    }
                 },
             )
             //LaunchedEffect for focus requesting in outlined text field for searching
@@ -241,45 +264,6 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
         }
     ) { //innerPadding ->
         Column {
-        Row( // contains sorting and view selection buttons
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 72.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = {
-                        /*TODO: Sorting*/
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                    shape = RoundedCornerShape(30.dp),
-                    modifier = Modifier.padding(start = 6.dp, bottom = 12.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.sort_icon),
-                        contentDescription = "Sorting",
-                        modifier = Modifier.padding(end = 5.dp)
-                    )
-                    Text(
-                        text = "Sort"
-                    )
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Button(
-                    onClick = {
-                        coroutineScope.launch {
-                            viewModel.changeListView() // helps switch the view
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                    modifier = Modifier.padding(end = 6.dp, bottom = 12.dp)
-                ) {
-                    Icon(painter = if (showGridView) horizontalIcon else gridIcon, contentDescription = "View")
-                }
-            }
-
             // Filtered movie list
             val filteredMovies = if (searchQuery.isEmpty()) {
                 listMovies
