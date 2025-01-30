@@ -32,10 +32,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -73,6 +77,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathSegment
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -140,7 +145,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = remember { FocusRequester()}
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior() // topappbar hides/shows on scroll
+    var expanded by remember { mutableStateOf(false) } // for drop-down menu
 
     Scaffold(
         topBar = {
@@ -157,12 +163,11 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                             // Remove label and any other visual elements
                             modifier = Modifier
                                 .fillMaxWidth()
-                                //.padding(8.dp) // Add some padding
                                 .focusRequester(focusRequester),
                             singleLine = true, // Ensure single line input
                             textStyle = TextStyle(
-                                color = Color.White, // Set text color to white
-                                fontSize = 18.sp // Adjust font size as needed
+                                color = Color.White,
+                                fontSize = 18.sp
                             ),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color.Transparent, // Hide border
@@ -193,16 +198,31 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                         )
                     }
 
-                    IconButton(
-                        onClick = {
-                            /*TODO: Sorting*/
-                        },
-                        //colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        //modifier = Modifier.padding(end = 6.dp, bottom = 12.dp)
-                    ) {
+                    IconButton(onClick = { expanded = !expanded }) {
                         Icon(
                             painter = painterResource(id = R.drawable.sort_icon),
                             contentDescription = "Sorting",
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        // First section
+                        DropdownMenuItem(
+                            text = { Text("Title") },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null) },
+                            onClick = { /* Do something... */ }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Rating") },
+                            leadingIcon = { Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = null) },
+                            onClick = { /* Do something... */ }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Release") },
+                            leadingIcon = { Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = null) },
+                            onClick = { /* Do something... */ }
                         )
                     }
 
@@ -356,7 +376,7 @@ fun ListGridView(
     LazyVerticalGrid(
         state = scrollState,
         //columns = GridCells.Fixed(3),
-        columns = GridCells.Adaptive(minSize = 128.dp),
+        columns = GridCells.Adaptive(minSize = 96.dp),
         modifier = navbarModifier.fillMaxSize(),
             //.padding(top = 36.dp),
         contentPadding = PaddingValues(horizontal = 15.dp)
