@@ -1,6 +1,7 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.expandVertically
@@ -71,6 +72,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 
 object DetailDestination {
@@ -268,16 +270,25 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             )
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                             if (movie != null) {
-                                val originalDate = LocalDate.parse(
-                                    movie?.releaseDate,
-                                    DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                                )
-                                val formattedDate =
-                                    originalDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
-                                Text(
-                                    text = (formattedDate ?: ""),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                                // Check if releaseDate is not null or empty
+                                val releaseDate = movie?.releaseDate
+                                if (!releaseDate.isNullOrEmpty()) {
+                                    val originalDate = LocalDate.parse(
+                                        releaseDate,
+                                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                    )
+                                    val formattedDate = originalDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
+                                    Text(
+                                        text = formattedDate,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                } else {
+                                    // Handle the case where releaseDate is null or empty
+                                    Text(
+                                        text = "N/A", // Fallback text
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -343,30 +354,44 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        movie?.let { it1 ->
-                            AnimatedVisibility( // Add AnimatedVisibility
-                                visible = expanded,
-                                enter = expandVertically(),
-                                exit = shrinkVertically()
-                            ) {
-                                Text(
-                                    text = it1.overview,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    modifier = Modifier.clickable { expanded = false }
-                                )
-                            }
-                            if (!expanded) {
-                                // Display limited synopsis with expand icon
-                                Row(
-                                    modifier = Modifier
-                                        //.clickable { expanded = !expanded }
-                                        .fillMaxWidth()
+                        if (movie?.overview?.isEmpty() == true) { // Check if the list is empty
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) { Text("Not available.") }
+                        } else {
+                            movie?.let { it1 ->
+                                AnimatedVisibility( // Add AnimatedVisibility
+                                    visible = expanded,
+                                    enter = expandVertically(),
+                                    exit = shrinkVertically()
                                 ) {
                                     Text(
-                                        text = if (it1.overview.length > 250) "${it1.overview.substring(0, 250)}..." else it1.overview,
+                                        text = it1.overview,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        modifier = Modifier.weight(1f)
+                                        modifier = Modifier.clickable { expanded = false }
                                     )
+                                }
+                                if (!expanded) {
+                                    // Display limited synopsis with expand icon
+                                    Row(
+                                        modifier = Modifier
+                                            //.clickable { expanded = !expanded }
+                                            .fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = if (it1.overview.length > 250) "${
+                                                it1.overview.substring(
+                                                    0,
+                                                    250
+                                                )
+                                            }..." else it1.overview,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -393,58 +418,67 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             textAlign = TextAlign.Left,
                             fontWeight = FontWeight.Bold
                         )
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp),
-                            contentPadding = PaddingValues(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(viewModel.movieCast) { castMember ->
-                                Column(
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Card {
-                                        SubcomposeAsyncImage(
-                                            model = "https://image.tmdb.org/t/p/w500${castMember.posterPath}",
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .size(124.dp)
-                                                .aspectRatio(0.666667f),
-                                            contentScale = ContentScale.Fit,
-                                            loading = {
-                                                Box(
-                                                    modifier = Modifier.size(24.dp), // changes size of loading icon
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    CircularProgressIndicator()
+                        if (viewModel.movieCast.isEmpty()) { // Check if the list is empty
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) { Text("Not available.") }
+                        } else {
+                            LazyRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp),
+                                contentPadding = PaddingValues(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(viewModel.movieCast) { castMember ->
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Card {
+                                            SubcomposeAsyncImage(
+                                                model = "https://image.tmdb.org/t/p/w500${castMember.posterPath}",
+                                                contentDescription = null,
+                                                modifier = Modifier
+                                                    .size(124.dp)
+                                                    .aspectRatio(0.666667f),
+                                                contentScale = ContentScale.Fit,
+                                                loading = {
+                                                    Box(
+                                                        modifier = Modifier.size(24.dp), // changes size of loading icon
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        CircularProgressIndicator()
+                                                    }
+                                                },
+                                                error = {
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.image), // Replace with your icon resource
+                                                        contentDescription = "Image not available",
+                                                        //modifier = Modifier.size(6.dp) // Adjust size as needed
+                                                    )
                                                 }
-                                            },
-                                            error = {
-                                                Icon(
-                                                    painter = painterResource(id = R.drawable.image), // Replace with your icon resource
-                                                    contentDescription = "Image not available",
-                                                    //modifier = Modifier.size(6.dp) // Adjust size as needed
-                                                )
-                                            }
+                                            )
+                                        }
+                                        Text(
+                                            text = castMember.realName,
+                                            fontSize = 14.sp,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.width(130.dp),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                        Text(
+                                            text = castMember.characterName,
+                                            fontSize = 12.sp,
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.width(130.dp),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                     }
-                                    Text(
-                                        text = castMember.realName,
-                                        fontSize = 14.sp,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.width(130.dp),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Text(
-                                        text = castMember.characterName,
-                                        fontSize = 12.sp,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.width(130.dp),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
                                 }
                             }
                         }
@@ -479,9 +513,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     .fillMaxWidth()
                                     .padding(16.dp),
                                 contentAlignment = Alignment.Center
-                            ) {
-                                Text("No recommendations")
-                            }
+                            ) { Text("Not available.") }
                             } else {
                                 LazyRow(
                                     modifier = Modifier

@@ -37,9 +37,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -77,7 +75,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathSegment
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -221,6 +218,11 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                         )
                         DropdownMenuItem(
                             text = { Text("Release") },
+                            leadingIcon = { Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = null) },
+                            onClick = { /* Do something... */ }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Runtime") },
                             leadingIcon = { Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = null) },
                             onClick = { /* Do something... */ }
                         )
