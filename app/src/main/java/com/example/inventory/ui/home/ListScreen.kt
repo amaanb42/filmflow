@@ -151,7 +151,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     val sortedMovies = when (sortSelection) {
         "Title" -> listMovies.sortedBy { it.title }
         "Rating" -> listMovies.sortedByDescending { it.userRating ?: 0.0f }
-        "Release" -> listMovies.sortedBy { LocalDate.parse(it.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")) }
+        "Release" -> listMovies.sortedByDescending { LocalDate.parse(it.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")) }
         "Runtime" -> listMovies.sortedBy { it.runtime }
         else -> listMovies
     }
