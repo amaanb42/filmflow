@@ -151,7 +151,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     val sortedMovies = when (sortSelection) {
         "Title" -> listMovies.sortedBy { it.title }
         "Rating" -> listMovies.sortedByDescending { it.userRating ?: 0.0f }
-        "Release" -> listMovies.sortedBy { it.releaseDate }
+        "Release" -> listMovies.sortedBy { LocalDate.parse(it.releaseDate, DateTimeFormatter.ofPattern("yyyy-MM-dd")) }
         "Runtime" -> listMovies.sortedBy { it.runtime }
         else -> listMovies
     }
@@ -389,7 +389,7 @@ fun ListGridView(
     LazyVerticalGrid(
         state = scrollState,
         //columns = GridCells.Fixed(3),
-        columns = GridCells.Adaptive(minSize = 96.dp),
+        columns = GridCells.Adaptive(minSize = 108.dp),
         modifier = navbarModifier.fillMaxSize(),
             //.padding(top = 36.dp),
         contentPadding = PaddingValues(horizontal = 15.dp)
