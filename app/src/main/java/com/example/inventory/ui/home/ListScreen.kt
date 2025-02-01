@@ -145,6 +145,17 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior() // topappbar hides/shows on scroll
     var expanded by remember { mutableStateOf(false) } // for drop-down menu
 
+    var sortSelection by rememberSaveable { mutableStateOf("Title") } // Defaults to title sort
+
+    // Create a sorted copy of the list
+    val sortedMovies = when (sortSelection) {
+        "Title" -> listMovies.sortedBy { it.title }
+        "Rating" -> listMovies.sortedByDescending { it.userRating ?: 0.0f }
+        "Release" -> listMovies.sortedBy { it.releaseDate }
+        "Runtime" -> listMovies.sortedBy { it.runtime }
+        else -> listMovies
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -209,22 +220,22 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                         DropdownMenuItem(
                             text = { Text("Title") },
                             leadingIcon = { Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null) },
-                            onClick = { /* Do something... */ }
+                            onClick = { sortSelection = "Title" }
                         )
                         DropdownMenuItem(
                             text = { Text("Rating") },
                             leadingIcon = { Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = null) },
-                            onClick = { /* Do something... */ }
+                            onClick = { sortSelection = "Rating" }
                         )
                         DropdownMenuItem(
                             text = { Text("Release") },
                             leadingIcon = { Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = null) },
-                            onClick = { /* Do something... */ }
+                            onClick = { sortSelection = "Release" }
                         )
                         DropdownMenuItem(
                             text = { Text("Runtime") },
                             leadingIcon = { Icon(Icons.Outlined.KeyboardArrowDown, contentDescription = null) },
-                            onClick = { /* Do something... */ }
+                            onClick = { sortSelection = "Runtime" }
                         )
                     }
 
@@ -311,9 +322,9 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
         ) {
             // Filtered movie list
             val filteredMovies = if (searchQuery.isEmpty()) {
-                listMovies
+                sortedMovies
             } else {
-                listMovies.filter { movie ->
+                sortedMovies.filter { movie ->
                     movie.title.contains(searchQuery, ignoreCase = true)
                 }
             }
@@ -322,7 +333,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
             if (showGridView) {
                 ListGridView(
                     navController,
-                    filteredMovies,
+                    sortedMovies,
                     selectedList,
                     searchQuery,
                     // Pass fabVisible
@@ -332,7 +343,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
             } else {
                 ListHorizontalView(
                     navController,
-                    filteredMovies,
+                    sortedMovies,
                     selectedList,
                     searchQuery,
                     // Pass fabVisible
