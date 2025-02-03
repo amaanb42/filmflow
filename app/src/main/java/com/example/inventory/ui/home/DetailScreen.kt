@@ -2,7 +2,10 @@ package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.clickable
@@ -24,6 +27,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -36,6 +40,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -44,6 +49,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -323,6 +331,11 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         }
                     }
                 }
+            }
+
+            item {
+                StatusButtons(viewModel)
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             item {
@@ -597,8 +610,7 @@ fun DetailBottomSheet(viewModel: DetailViewModel, movie: Movie?, onDismiss: () -
                             if (alreadyExistsInList != null) { // if the movie is already in a default list, move it
                                 viewModel.moveMovieToList(
                                     alreadyExistsInList,
-                                    defaultList.listName,
-                                    it
+                                    defaultList.listName
                                 )
                             } else { // otherwise, add it to the selected default list
                                 viewModel.addMovieToList(defaultList.listName, it)
@@ -640,5 +652,152 @@ fun DetailBottomSheet(viewModel: DetailViewModel, movie: Movie?, onDismiss: () -
                 )
             }
         }
+    }
+}
+
+@Composable
+fun SegmentedButtons(
+    viewModel: DetailViewModel,
+    modifier: Modifier = Modifier,
+) {
+    val listsForMovie by viewModel.listsForMovie.collectAsState()
+    var selectedItemIndex by remember { mutableIntStateOf(0) }
+    val items = listOf(
+        R.drawable.planning_icon,
+        R.drawable.watching_icon,
+        R.drawable.completed_icon
+    )
+    val listNames = listOf("Planning", "Watching", "Completed")
+
+    // Determine the initial selected index based on the movie's current list
+    val status: String =
+        if ("Completed" in listsForMovie)
+            "Completed"
+        else if ("Watching" in listsForMovie)
+            "Watching"
+        else
+            "Planning"
+
+    // Set the initial selected index based on the status
+    LaunchedEffect(key1 = status) {
+        selectedItemIndex = listNames.indexOf(status)
+    }
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        items.forEachIndexed { index, item ->
+            key(selectedItemIndex) { // Add this key
+                ListIconButton(
+                    icon = item,
+                    isSelected = selectedItemIndex == index,
+                    onClick = {
+                        val currentList =
+                            listNames.find { it in listsForMovie } // Find the current list
+                        val newList = listNames[index]
+                        if (currentList != null && currentList != newList) {
+                            viewModel.moveMovieToList(
+                                currentList,
+                                newList
+                            ) // Move only if necessary
+                        }
+                        selectedItemIndex = index
+                    },
+                    label = listNames[index] // displays list name for icon
+                )
+            }
+            if (index < items.size - 1) {
+                Spacer(modifier = Modifier.width(48.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun ListIconButton(
+    icon: Int, // Changed to Int for drawable resource ID
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    label: String, //label for buttons
+) {
+//    val backgroundColor = if (isSelected) {
+//        MaterialTheme.colorScheme.primary
+//    } else {
+//        MaterialTheme.colorScheme.surfaceVariant
+//    }
+//
+//    val iconTint = if (isSelected) {
+//        MaterialTheme.colorScheme.onPrimary
+//    } else {
+//        MaterialTheme.colorScheme.onSurfaceVariant
+//    }
+
+    val animatedSurfaceColor = animateColorAsState(
+        if (isSelected) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant
+        },
+        animationSpec = tween(
+            durationMillis = 300, // Adjust the duration as needed
+            easing = FastOutSlowInEasing // Use an easing function for smoother transitions
+        )
+    )
+
+    val animatedIconColor = animateColorAsState(
+        if (isSelected) {
+            MaterialTheme.colorScheme.onPrimary
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        },
+        animationSpec = tween(
+            durationMillis = 300, // Adjust the duration as needed
+            easing = FastOutSlowInEasing // Use an easing function for smoother transitions
+        )
+    )
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        key(isSelected, animatedSurfaceColor.value) { // Add this key
+            Surface(
+                modifier = Modifier
+                    .selectable(
+                        selected = isSelected,
+                        onClick = onClick,
+                        role = Role.RadioButton
+                    ),
+                shape = MaterialTheme.shapes.small,
+                color = animatedSurfaceColor.value
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = icon),
+                        contentDescription = null,
+                        tint = animatedIconColor.value
+                    )
+                }
+            }
+        }
+        Text(
+            text = label,
+            modifier = Modifier.padding(top = 4.dp),
+            color = animatedIconColor.value,
+            fontSize = MaterialTheme.typography.bodyMedium.fontSize
+        )
+    }
+}
+
+@Composable
+fun StatusButtons(
+    viewModel: DetailViewModel // Add the ViewModel
+) {
+    Column {
+        SegmentedButtons(viewModel = viewModel)
     }
 }

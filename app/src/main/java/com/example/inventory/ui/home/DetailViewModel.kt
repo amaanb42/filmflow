@@ -87,12 +87,12 @@ class DetailViewModel(
         }
     }
 
-    fun moveMovieToList(oldListName: String, newListName: String, movie: Movie) {
+    fun moveMovieToList(oldListName: String, newListName: String) {
         viewModelScope.launch {
             // remove the other relation first and then insert new one
-            listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, movie.movieID))
+            listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, currMovieID))
             userListRepository.decMovieCount(oldListName) // decrement the old list's movie count
-            listMoviesRepository.insertListMovieRelation(ListMovies(newListName, movie.movieID))
+            listMoviesRepository.insertListMovieRelation(ListMovies(newListName, currMovieID))
             userListRepository.incMovieCount(newListName) // increment the new list's movie count
         }
     }
