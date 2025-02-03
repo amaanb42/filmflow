@@ -320,8 +320,19 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 }
                             }
 
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Row {
+                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.audience),
+                                    contentDescription = "Audience Icon",
+                                    modifier = Modifier.size(20.dp) // Adjust size as needed
+                                )
+                                Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
+                                RatingText(movieDetails)
+                            }
 
                             Spacer(modifier = Modifier.height(16.dp))
+
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth(),
