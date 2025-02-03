@@ -64,8 +64,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -268,39 +270,56 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 Text(
                                     text = it1.title,
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontSize = 18.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                            Text(
-                                text = formatRuntime(movieDetails?.runtime),
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
+                            Row {
+                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.runtime),
+                                    contentDescription = "Runtime Icon",
+                                    modifier = Modifier.size(20.dp) // Adjust size as needed
+                                )
+                                Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
+                                Text(
+                                    text = formatRuntime(movieDetails?.runtime),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                            if (movieDetails != null) {
-                                // Check if releaseDate is not null or empty
-                                val releaseDate = movieDetails?.releaseDate
-                                if (!releaseDate.isNullOrEmpty()) {
-                                    val originalDate = LocalDate.parse(
-                                        releaseDate,
-                                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                                    )
-                                    val formattedDate = originalDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
-                                    Text(
-                                        text = formattedDate,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                } else {
-                                    // Handle the case where releaseDate is null or empty
-                                    Text(
-                                        text = "N/A", // Fallback text
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
+
+                            Row {
+                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.release),
+                                    contentDescription = "Release Icon",
+                                    modifier = Modifier.size(20.dp) // Adjust size as needed
+                                )
+                                Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
+                                if (movieDetails != null) {
+                                    // Check if releaseDate is not null or empty
+                                    val releaseDate = movieDetails?.releaseDate
+                                    if (!releaseDate.isNullOrEmpty()) {
+                                        val originalDate = LocalDate.parse(
+                                            releaseDate,
+                                            DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                                        )
+                                        val formattedDate = originalDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
+                                        Text(
+                                            text = formattedDate,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    } else {
+                                        // Handle the case where releaseDate is null or empty
+                                        Text(
+                                            text = "N/A", // Fallback text
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
                                 }
                             }
+
 
                             Spacer(modifier = Modifier.height(16.dp))
                             Row(
@@ -459,9 +478,9 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             LazyRow(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 8.dp),
-                                contentPadding = PaddingValues(vertical = 8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    .padding(horizontal = 14.dp),
+                                contentPadding = PaddingValues(vertical = 12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 items(viewModel.movieCast) { castMember ->
                                     Column(
