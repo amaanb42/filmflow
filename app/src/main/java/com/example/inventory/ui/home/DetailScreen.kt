@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -660,73 +659,40 @@ fun ListIconButton(
     icon: Int, // Changed to Int for drawable resource ID
     isSelected: Boolean,
     onClick: () -> Unit,
-    label: String, //label for buttons
+    label: String, // Label for buttons
 ) {
-//    val backgroundColor = if (isSelected) {
-//        MaterialTheme.colorScheme.primary
-//    } else {
-//        MaterialTheme.colorScheme.surfaceVariant
-//    }
-//
-//    val iconTint = if (isSelected) {
-//        MaterialTheme.colorScheme.onPrimary
-//    } else {
-//        MaterialTheme.colorScheme.onSurfaceVariant
-//    }
-
-    val animatedSurfaceColor = animateColorAsState(
-        if (isSelected) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.surfaceVariant
-        },
-        animationSpec = tween(
-            durationMillis = 300, // Adjust the duration as needed
-            easing = FastOutSlowInEasing // Use an easing function for smoother transitions
-        )
+    val animateSurfaceColor = animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = tween(durationMillis = 400)
     )
-
-    val animatedIconColor = animateColorAsState(
-        if (isSelected) {
-            MaterialTheme.colorScheme.onPrimary
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        },
-        animationSpec = tween(
-            durationMillis = 300, // Adjust the duration as needed
-            easing = FastOutSlowInEasing // Use an easing function for smoother transitions
-        )
-    )
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        key(isSelected, animatedSurfaceColor.value) { // Add this key
-            Surface(
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable { onClick() } // Handle click outside the Surface
+    ) {
+        Surface(
+            modifier = Modifier
+                .selectable(
+                    selected = isSelected,
+                    onClick = onClick,
+                    role = Role.Button
+                ),
+            shape = MaterialTheme.shapes.small,
+            color = animateSurfaceColor.value
+        ) {
+            Row(
                 modifier = Modifier
-                    .selectable(
-                        selected = isSelected,
-                        onClick = onClick,
-                        role = Role.RadioButton
-                    ),
-                shape = MaterialTheme.shapes.small,
-                color = animatedSurfaceColor.value
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = icon),
-                        contentDescription = null,
-                        tint = animatedIconColor.value
-                    )
-                }
+                Icon(
+                    painter = painterResource(id = icon),
+                    contentDescription = null
+                )
             }
         }
         Text(
             text = label,
             modifier = Modifier.padding(top = 4.dp),
-            color = animatedIconColor.value,
             fontSize = MaterialTheme.typography.bodyMedium.fontSize
         )
     }
