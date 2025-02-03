@@ -1,6 +1,7 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
@@ -8,8 +9,11 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -165,7 +169,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         // Add movie to list FAB
         floatingActionButton = {
             movieToAdd?.let { movie -> // Use movie here for clarity
-
                 FloatingActionButton(
                     onClick = {
                         if (isInList) {
@@ -181,13 +184,24 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     contentColor = Color.White,
                     modifier = Modifier.offset(y = (20).dp)
                 ) { // Icon is set directly in the content lambda
-                    val icon = if (isInList) {
-                        Icons.Filled.Delete
-                    } else {
-                        Icons.Filled.Add
-                    }
+                    // Use AnimatedContent to smoothly transition between icons
+                    AnimatedContent(
+                        targetState = isInList,
+                        transitionSpec = {
+                            scaleIn(animationSpec = tween(400)) togetherWith scaleOut(animationSpec = tween(400))
+                        }
+                    ) { targetState ->
+                        val icon = if (targetState) {
+                            Icons.Filled.Delete
+                        } else {
+                            Icons.Filled.Add
+                        }
 
-                    Icon(imageVector = icon, contentDescription = if (isInList) "Remove from List" else "Add to List")
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = if (targetState) "Remove from List" else "Add to List"
+                        )
+                    }
                 }
             }
         }
