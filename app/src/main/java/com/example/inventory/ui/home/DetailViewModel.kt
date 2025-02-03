@@ -96,6 +96,16 @@ class DetailViewModel(
             userListRepository.incMovieCount(newListName) // increment the new list's movie count
         }
     }
+
+    // deletes a movie from the DB and its relations
+    fun deleteMovie(movieID: Int) {
+        viewModelScope.launch {
+            for (listName in listsForMovie.value) { // decrement movie count for each list the movie was in
+                userListRepository.decMovieCount(listName)
+            }
+            movieRepository.deleteMovieByID(movieID)
+        }
+    }
 }
 // pass the repository to DetailViewModel
 class DetailViewModelFactory(

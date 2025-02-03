@@ -7,7 +7,11 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -30,24 +34,25 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
@@ -75,6 +80,7 @@ import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.ui.theme.dark_pine
+import com.example.inventory.ui.theme.material_red
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -89,12 +95,11 @@ object DetailDestination {
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
 fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
-    var movie by remember { mutableStateOf<MovieDetails?>(null) }
+    var movieDetails by remember { mutableStateOf<MovieDetails?>(null) } // Renamed for clarity
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
     val listMoviesRepository = InventoryApplication().container.listMoviesRepository
     val movieRepository = InventoryApplication().container.movieRepository
@@ -103,29 +108,28 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         movieRepository,
         movieId)
     )
-    val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
-    var showModal by remember { mutableStateOf(false) }
 
     // collect data from ListScreenViewModel
     val listsMovieIn by viewModel.listsForMovie.collectAsState()
     var movieToAdd by remember { mutableStateOf<Movie?>(null) } // Make this a state
     var expanded by remember { mutableStateOf(false) } // State for expanding synopsis
+    val isInList by remember { derivedStateOf { "Planning" in listsMovieIn || "Watching" in listsMovieIn || "Completed" in listsMovieIn } }
 
     //Alter code below to fetch from local database instead of using the TMDB function
     LaunchedEffect(key1 = movieId) {
         coroutineScope.launch(Dispatchers.IO) { // Launch in IO thread
-            movie = getDetailsFromID(movieId)
+            movieDetails = getDetailsFromID(movieId)
             // Update movie_to_add after movie is loaded
             movieToAdd= Movie(
                 movieId,
-                movie?.title ?: "", // Provide an empty string if title is null
-                movie?.overview,
+                movieDetails?.title ?: "", // Provide an empty string if title is null
+                movieDetails?.overview,
                 "", // Provide an empty string for director since it's missing
-                movie?.posterPath ?: "", // Provide an empty string if posterPath is null
-                movie?.releaseDate,
-                movie?.runtime,
-                //movie?.rating?.toFloat(), // Convert Double? to Float?
+                movieDetails?.posterPath ?: "", // Provide an empty string if posterPath is null
+                movieDetails?.releaseDate,
+                movieDetails?.runtime,
+                //movieDetails?.rating?.toFloat(), // Convert Double? to Float?
                 0.0.toFloat(), // Sends 0.0 to localDB instead of TMDB rating
                 emptyList() // Provide an empty list for genres
             )
@@ -141,7 +145,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 ),
                 title = {
                     // Movie title in top bar
-                    movie?.let {
+                    movieDetails?.let {
                         Text(
                             text = it.title, // Replace with actual movie title when available
                             overflow = TextOverflow.Ellipsis,
@@ -162,47 +166,32 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         },
         // Add movie to list FAB
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = {
-                    coroutineScope.launch {
-                        showModal = true
-                    }
-                },
-                icon = {
-                    // Choose icon based on selectedList
-                    // As the code currently is, if a user makes a custom list, the FAB icon
-                    // will be the same as the All icon instead of the custom icon in the bottom sheet
-                    val icon =
-                        if ("Planning" in listsMovieIn)
-                            painterResource(id = R.drawable.planning_icon)
-                        else if ("Watching" in listsMovieIn)
-                            painterResource(id = R.drawable.watching_icon)
-                        else if ("Completed" in listsMovieIn)
-                            painterResource(id = R.drawable.completed_icon)
-                        else
-                            painterResource(id = R.drawable.add_icon) // Default icon
+            movieToAdd?.let { movie -> // Use movie here for clarity
 
-                    Icon(
-                        painter = icon,
-                        contentDescription = "Add movie to list"
-                    )
-                },
-                text = {
-                    Text(
-                        if ("Planning" in listsMovieIn)
-                            "Planning"
-                        else if ("Watching" in listsMovieIn)
-                            "Watching"
-                        else if ("Completed" in listsMovieIn)
-                            "Completed"
-                        else
-                            "Add"
-                    )
-                },
-                containerColor = dark_pine,
-                contentColor = Color.White,
-                modifier = Modifier.offset(y = (20).dp)
-            )
+                FloatingActionButton(
+                    onClick = {
+                        if (isInList) {
+                            // Delete the movie from whichever list it's in
+                            viewModel.deleteMovie(movieId) // New function in ViewModel
+
+                        } else {
+                            // Add the movie to the "Planning" list
+                            viewModel.addMovieToList("Planning", movie)
+                        }
+                    },
+                    containerColor = if (isInList) material_red else dark_pine,
+                    contentColor = Color.White,
+                    modifier = Modifier.offset(y = (20).dp)
+                ) { // Icon is set directly in the content lambda
+                    val icon = if (isInList) {
+                        Icons.Filled.Delete
+                    } else {
+                        Icons.Filled.Add
+                    }
+
+                    Icon(imageVector = icon, contentDescription = if (isInList) "Remove from List" else "Add to List")
+                }
+            }
         }
     ) {
         LazyColumn {
@@ -226,7 +215,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     ) {
                         Card { // Card for the image
                             SubcomposeAsyncImage(
-                                model = "https://image.tmdb.org/t/p/w500${movie?.posterPath}",
+                                model = "https://image.tmdb.org/t/p/w500${movieDetails?.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
                                     .clickable { }
@@ -259,7 +248,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         Spacer(modifier = Modifier.width(16.dp))
 
                         Column {
-                            movie?.let { it1 ->
+                            movieDetails?.let { it1 ->
                                 Text(
                                     text = it1.title,
                                     style = MaterialTheme.typography.bodyMedium,
@@ -271,13 +260,13 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             }
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                             Text(
-                                text = formatRuntime(movie?.runtime),
+                                text = formatRuntime(movieDetails?.runtime),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                            if (movie != null) {
+                            if (movieDetails != null) {
                                 // Check if releaseDate is not null or empty
-                                val releaseDate = movie?.releaseDate
+                                val releaseDate = movieDetails?.releaseDate
                                 if (!releaseDate.isNullOrEmpty()) {
                                     val originalDate = LocalDate.parse(
                                         releaseDate,
@@ -310,7 +299,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                         .padding(bottom = 12.dp)
                                 ) {
                                     RatingCircle(
-                                        userRating = (movie?.rating)?.toFloat() ?: 0.0f, // Add ? before toFloat()
+                                        userRating = (movieDetails?.rating)?.toFloat() ?: 0.0f, // Add ? before toFloat()
                                         fontSize = 28.sp,
                                         radius = 50.dp,
                                         animDuration = 1000,
@@ -334,8 +323,16 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             }
 
             item {
-                StatusButtons(viewModel)
-                Spacer(modifier = Modifier.height(16.dp))
+                AnimatedVisibility(
+                    visible = isInList,
+                    enter = slideInVertically() + fadeIn(), // Or other animations
+                    exit = slideOutVertically() + fadeOut()  // Or other animations
+                ) {
+                    Column {
+                        StatusButtons(viewModel)
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
             }
 
             item {
@@ -347,7 +344,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp)
                         .then( // 'then' to conditionally applies clickable
-                            if ((movie?.overview?.length ?: 0) > 250) { // if synopsis length is large, allow expand clickable
+                            if ((movieDetails?.overview?.length ?: 0) > 250) { // if synopsis length is large, allow expand clickable
                                 Modifier.clickable(
                                     indication = null,
                                     interactionSource = remember { MutableInteractionSource() }
@@ -365,7 +362,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
-                        if (movie?.overview?.isEmpty() == true) { // Check if the list is empty
+                        if (movieDetails?.overview?.isEmpty() == true) { // Check if the list is empty
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -373,7 +370,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 contentAlignment = Alignment.Center
                             ) { Text("Not available.") }
                         } else {
-                            movie?.let { it1 ->
+                            movieDetails?.let { it1 ->
                                 AnimatedVisibility( // Add AnimatedVisibility
                                     visible = expanded,
                                     enter = expandVertically(),
@@ -569,87 +566,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
 
                     }
                 }
-            }
-        }
-    }
-    if (showModal) {
-        ModalBottomSheet(
-            onDismissRequest = { showModal = false },
-            sheetState = sheetState,
-        ) {
-            DetailBottomSheet(viewModel, movieToAdd) { showModal = false }
-        }
-    }
-}
-
-@Composable
-fun DetailBottomSheet(viewModel: DetailViewModel, movie: Movie?, onDismiss: () -> Unit) {
-    // get movie counts for default lists from view model
-    val planningCount by viewModel.planningCount.collectAsState()
-    val watchingCount by viewModel.watchingCount.collectAsState()
-    val completedCount by viewModel.completedCount.collectAsState()
-    // check what lists the movie is already in
-    val listsForMovie by viewModel.listsForMovie.collectAsState()
-    var alreadyExistsInList: String? = null
-    for (list in viewModel.defaultLists) {
-        if (list.listName in listsForMovie) {
-            alreadyExistsInList = list.listName
-            break
-        }
-    }
-    Column(modifier = Modifier.padding(1.dp)) {
-        viewModel.defaultLists.forEach { defaultList ->
-            // Only display "Completed", "Planning", and "Watching"
-            //if (defaultList.listName in listOf("Planning", "Watching", "Completed") && defaultList.listName != alreadyExistsInList) {
-            Row(
-                modifier = Modifier
-                    .padding(start = 2.dp, end = 2.dp)
-                    .fillMaxWidth()
-                    .clickable {
-                        movie?.let {
-                            if (alreadyExistsInList != null) { // if the movie is already in a default list, move it
-                                viewModel.moveMovieToList(
-                                    alreadyExistsInList,
-                                    defaultList.listName
-                                )
-                            } else { // otherwise, add it to the selected default list
-                                viewModel.addMovieToList(defaultList.listName, it)
-                            }
-                        }
-                        onDismiss()
-                    }
-                    .padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Choose icon based on singleList.listName
-                val icon = when (defaultList.listName) {
-                    "Completed" -> R.drawable.completed_icon
-                    "Planning" -> R.drawable.planning_icon
-                    "Watching" -> R.drawable.watching_icon
-                    else -> R.drawable.custom_list // won't ever appear
-                }
-                Icon(
-                    painter = painterResource(id = icon),
-                    contentDescription = defaultList.listName,
-                    modifier = Modifier.padding(start=8.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = defaultList.listName,
-                    fontWeight = if (defaultList.listName == alreadyExistsInList) FontWeight.ExtraBold else FontWeight.Normal,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = when (defaultList.listName) {
-                        "Planning" -> planningCount.toString()
-                        "Watching" -> watchingCount.toString()
-                        "Completed" -> completedCount.toString()
-                        else -> "0"
-                    }, //
-                    fontWeight = if (defaultList.listName == alreadyExistsInList) FontWeight.ExtraBold else FontWeight.Normal,
-                    modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-                    textAlign = TextAlign.Right
-                )
             }
         }
     }
