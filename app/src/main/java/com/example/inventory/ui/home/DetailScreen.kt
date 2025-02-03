@@ -169,6 +169,12 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         // Add movie to list FAB
         floatingActionButton = {
             movieToAdd?.let { movie -> // Use movie here for clarity
+                // Animate the containerColor
+                val animatedContainerColor by animateColorAsState(
+                    targetValue = if (isInList) material_red else dark_pine,
+                    animationSpec = tween(durationMillis = 400) // Adjust duration as needed
+                )
+
                 FloatingActionButton(
                     onClick = {
                         if (isInList) {
@@ -180,7 +186,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             viewModel.addMovieToList("Planning", movie)
                         }
                     },
-                    containerColor = if (isInList) material_red else dark_pine,
+                    containerColor = animatedContainerColor,
                     contentColor = Color.White,
                     modifier = Modifier.offset(y = (20).dp)
                 ) { // Icon is set directly in the content lambda
@@ -196,7 +202,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         } else {
                             Icons.Filled.Add
                         }
-
                         Icon(
                             imageVector = icon,
                             contentDescription = if (targetState) "Remove from List" else "Add to List"
