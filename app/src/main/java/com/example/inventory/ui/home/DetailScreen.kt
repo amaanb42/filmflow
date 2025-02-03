@@ -6,10 +6,8 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
@@ -355,7 +353,11 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         )
                         .animateContentSize()
                 ) {
-                    Column(modifier = Modifier.padding(15.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .animateContentSize() // Add this modifier
+                    ) {
                         Text(
                             text = "Synopsis",
                             style = MaterialTheme.typography.bodyMedium,
@@ -371,34 +373,36 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             ) { Text("Not available.") }
                         } else {
                             movieDetails?.let { it1 ->
-                                AnimatedVisibility( // Add AnimatedVisibility
-                                    visible = expanded,
-                                    enter = expandVertically(),
-                                    exit = shrinkVertically()
-                                ) {
+//                                AnimatedVisibility(
+//                                    visible = expanded,
+//                                    enter = fadeIn(animationSpec = tween(300)) + expandVertically(animationSpec = tween(300)),
+//                                    exit = fadeOut(animationSpec = tween(300)) + shrinkVertically(animationSpec = tween(300)),
+//                                    modifier = Modifier.wrapContentHeight() // Ensure it wraps content
+//                                ) {
+//
+//                                }
+                                if (expanded) {
                                     Text(
                                         text = it1.overview,
                                         style = MaterialTheme.typography.bodyMedium,
                                         modifier = Modifier.clickable { expanded = false }
                                     )
-                                }
-                                if (!expanded) {
-                                    // Display limited synopsis with expand icon
+                                } else {
                                     Row(
                                         modifier = Modifier
-                                            //.clickable { expanded = !expanded }
+                                            .clickable { expanded = true }
                                             .fillMaxWidth()
                                     ) {
                                         Text(
-                                            text = if (it1.overview.length > 250) "${
-                                                it1.overview.substring(
-                                                    0,
-                                                    250
-                                                )
-                                            }..." else it1.overview,
+                                            text = if (it1.overview.length > 250) "${it1.overview.substring(0, 250)}..." else it1.overview,
                                             style = MaterialTheme.typography.bodyMedium,
                                             modifier = Modifier.weight(1f)
                                         )
+//                                            Icon(
+//                                                imageVector = Icons.Default.ArrowDropDown,
+//                                                contentDescription = "Expand",
+//                                                modifier = Modifier.align(Alignment.CenterVertically)
+//                                            )
                                     }
                                 }
                             }
