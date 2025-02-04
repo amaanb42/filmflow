@@ -380,7 +380,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                         strokeWidth = 8.dp
                                     )
                                 }
-                                //Spacer(modifier = Modifier.weight(1f))
                             }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -649,7 +648,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         }
     }
     if (showChangeRatingDialog) { // show the dialog for changing a rating
-        userRating =movieToAdd?.userRating ?: 0.0f // Initialize with the current rating
+        var tempUserRating by remember { mutableFloatStateOf(movieToAdd?.userRating ?: 0.0f) } // Temporary state for the rating being edited
         var errorMessage by remember { mutableStateOf("") } // if it's blank, then the user can submit their rating, otherwise no
 
         AlertDialog(
@@ -665,12 +664,12 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     // Editable text field, border is dark blue unfocused and becomes brighter when user clicks on it
                     OutlinedTextField(
                         shape = RoundedCornerShape(36.dp),
-                        value = "%.1f".format(userRating), // Format the Float to a String with one decimal place
+                        value = "%.1f".format(tempUserRating), // Format the Float to a String with one decimal place
                         onValueChange = { newValue ->
                             if (newValue.length <= 4) { // longest string that can be inputted is 10.0
                                 val parsedValue = newValue.toFloatOrNull()
                                 if (parsedValue != null && parsedValue in 0.0f..10.0f) {
-                                    userRating = parsedValue
+                                    tempUserRating = parsedValue
                                     errorMessage = ""
                                 } else {
                                     errorMessage = if (parsedValue == null) {
@@ -709,9 +708,9 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     }
                     // Slider for changing rating value from 0.0 to 10.0
                     LineSlider(
-                        value = userRating, // Use the Float value directly
+                        value = tempUserRating, // Use the temporary Float value
                         onValueChange = { value ->
-                            userRating = value // Update the Float value directly
+                            tempUserRating = value // Update the temporary Float value
                             errorMessage = "" // clear error message since slider will always have valid input
                         },
                         valueRange = 0.0f..10.0f,
@@ -726,7 +725,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         .clickable {
                             if (errorMessage.isEmpty()) { // if there isn't an error message, let the user submit their rating
                                 movieToAdd?.movieID?.let {
-                                    viewModel.changeMovieRating(it, userRating)
+                                    viewModel.changeMovieRating(it, tempUserRating) // Update the actual userRating
                                 }
                                 showChangeRatingDialog = false // close the dialog
                             }

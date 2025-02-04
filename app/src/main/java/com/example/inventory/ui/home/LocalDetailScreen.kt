@@ -396,77 +396,7 @@ fun LocalMovieDetailsScreen(navController: NavHostController, movieId: Int) {
     }
 }
 
-@Composable
-fun RatingCircle(
-    userRating: Float, // Now takes userRating directly
-    fontSize: TextUnit,
-    radius: Dp,
-    // color: Color = MaterialTheme.colorScheme.outline,
-    strokeWidth: Dp,
-    animDuration: Int,
-    animDelay: Int = 100
-) {
-    var animationPlayed by remember { mutableStateOf(false) }
 
-    // Calculate percentage based on userRating (0 to 10 scale)
-    val percentage = userRating / 10f
-
-    val curPercentage = animateFloatAsState(
-        targetValue = if (animationPlayed) percentage else 0f,
-        label = "Rating Animation",
-        animationSpec = tween(
-            durationMillis = animDuration,
-            delayMillis = animDelay
-        )
-    )
-    LaunchedEffect(key1 = true) { animationPlayed = true }
-
-    // Determine the color based on userRating
-    // Use animateColorAsState for smooth color transitions
-    val color = animateColorAsState(
-        targetValue = when (userRating) {
-            in 0.0f..2.9f -> material_red        // 0 - 2.9: Red
-            in 3.0f..4.9f -> material_orange     // 3 - 4.9: Orange
-            in 5.0f..6.9f -> material_yellow     // 5 - 6.9: Yellow
-            in 7.0f..8.9f -> material_green      // 7 - 8.9: Green
-            in 9.0f..10.0f -> MaterialTheme.colorScheme.outline // 9 - 10: Blue
-            else -> MaterialTheme.colorScheme.outline // Default color
-        },
-        label = "Color Animation" // Add a label for debugging
-    ).value
-
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.size(radius * 2f)
-    ) {
-        Canvas(
-            modifier = Modifier.size(radius * 2f)
-                //.clip(CircleShape)
-        ) {
-            // Draw the white circle first
-            drawCircle(
-                color = Color.White,
-                radius = radius.toPx(), // Adjust radius for the stroke width
-                style = Stroke(1.dp.toPx()) // Thin stroke width
-            )
-
-            // Draw arc on top
-            drawArc(
-                color = color,
-                -90f,
-                360 * curPercentage.value,
-                useCenter = false,
-                style = Stroke(strokeWidth.toPx(), cap = StrokeCap.Round)
-            )
-        }
-        Text(
-            text = String.format(java.util.Locale.ENGLISH, "%.1f", userRating), // Display userRating with one decimal place
-            color = Color.White,
-            fontSize = fontSize,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
 // functionality for bottom sheet, content differs depending on if the FAB was clicked or the copy icon
 @Composable
 fun LocalDetailBottomSheet(allLists: List<UserList>, viewModel: LocalDetailViewModel, fabWasClicked: Boolean, onDismiss: () -> Unit) {
