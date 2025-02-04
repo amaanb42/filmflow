@@ -15,7 +15,6 @@ import com.example.inventory.data.api.getMovieCast
 import com.example.inventory.data.api.getRecommendedMovies
 import com.example.inventory.data.listmovies.ListMovies
 import com.example.inventory.data.movie.Movie
-import com.example.inventory.data.userlist.UserList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,33 +42,6 @@ class DetailViewModel(
         }
     }
 
-    // used for displaying in modal bottom sheet, no need to pull from db
-    val defaultLists: List<UserList> =  listOf(UserList("Planning"), UserList("Watching"), UserList("Completed"))
-
-    // gets movie counts for default lists, only way i could think of doing this.
-    val completedCount: StateFlow<Int> = userListRepository.getMovieCountStream("Completed").stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0
-    )
-    val watchingCount: StateFlow<Int> = userListRepository.getMovieCountStream("Watching").stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0
-    )
-    val planningCount: StateFlow<Int> = userListRepository.getMovieCountStream("Planning").stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = 0
-    )
-
-    // StateFlow for displaying all lists in the bottom screen sheet
-    val allLists: StateFlow<List<UserList>> = userListRepository.getAllListsStream().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-
     val listsForMovie: StateFlow<List<String>> = listMoviesRepository.getListsForMovieStream(currMovieID).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -94,6 +66,13 @@ class DetailViewModel(
             userListRepository.decMovieCount(oldListName) // decrement the old list's movie count
             listMoviesRepository.insertListMovieRelation(ListMovies(newListName, currMovieID))
             userListRepository.incMovieCount(newListName) // increment the new list's movie count
+        }
+    }
+
+    // update rating of locally stored movie
+    fun changeMovieRating(movieID: Int, newRating: Float) {
+        viewModelScope.launch {
+            movieRepository.updateUserRating(movieID, newRating)
         }
     }
 

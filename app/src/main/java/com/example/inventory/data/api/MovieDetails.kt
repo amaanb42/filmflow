@@ -7,5 +7,5 @@ data class MovieDetails (
     val posterPath: String, //movie poster
     val releaseDate: String,
     val runtime: Int,
-    val rating: Double //vote_average
+    val audienceRating: Double //vote_average
 )

@@ -32,11 +32,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,8 +47,9 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -55,8 +58,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -68,8 +69,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -82,6 +84,7 @@ import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
+import com.example.inventory.ui.theme.dark_highlight_med
 import com.example.inventory.ui.theme.dark_pine
 import com.example.inventory.ui.theme.material_red
 import kotlinx.coroutines.Dispatchers
@@ -118,6 +121,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     var movieToAdd by remember { mutableStateOf<Movie?>(null) } // Make this a state
     var expanded by remember { mutableStateOf(false) } // State for expanding synopsis
     val isInList by remember { derivedStateOf { "Planning" in listsMovieIn || "Watching" in listsMovieIn || "Completed" in listsMovieIn } }
+
+    var showChangeRatingDialog by remember { mutableStateOf(false) }
 
     //Alter code below to fetch from local database instead of using the TMDB function
     LaunchedEffect(key1 = movieId) {
@@ -343,9 +348,14 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     Modifier
                                         .align(Alignment.CenterVertically)
                                         .padding(bottom = 12.dp)
+                                        //.clip(CircleShape)
+                                        //.size(100.dp)
+                                        .clickable {
+                                            showChangeRatingDialog = true
+                                        } // display the dialog
                                 ) {
                                     RatingCircle(
-                                        userRating = (movieDetails?.rating)?.toFloat() ?: 0.0f, // Add ? before toFloat()
+                                        userRating = (movieDetails?.audienceRating)?.toFloat() ?: 0.0f, // Add ? before toFloat()
                                         fontSize = 28.sp,
                                         radius = 50.dp,
                                         animDuration = 1000,
@@ -619,6 +629,105 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 }
             }
         }
+    }
+    if (showChangeRatingDialog) { // show the dialog for changing a rating
+        var newRating by remember { mutableStateOf("%.1f".format(movieToAdd?.userRating!!.toFloat())) }
+        var errorMessage by remember { mutableStateOf("") } // if its blank, then the user can submit their rating, otherwise no
+
+        AlertDialog(
+            onDismissRequest = { showChangeRatingDialog = false },
+            title = {
+                Text(
+                    text = "Your Rating",
+                    fontSize = 20.sp
+                )
+            },
+            text = {
+                Column {
+                    // Editable text field, border is dark blue unfocused and becomes brighter when user clicks on it
+                    OutlinedTextField(
+                        shape = RoundedCornerShape(36.dp),
+                        value = newRating,
+                        onValueChange = {
+                            if (it.length <= 4) { // longest string that can be inputted is 10.0
+                                newRating = it
+                                errorMessage =
+                                    if (newRating.toFloatOrNull() != null && newRating.toFloat() in 0.0..10.0) {
+                                        ""
+                                    } else if (newRating.toFloatOrNull() != null && newRating.toFloat() !in 0.0..10.0) {
+                                        "Rating must be between 0 and 10."
+                                    } else {
+                                        "Enter a valid number."
+                                    }
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Decimal // pull up num pad for users
+                        ),
+                        modifier = Modifier
+                            .padding(bottom = 8.dp)
+                            .width(100.dp)
+                            .align(Alignment.CenterHorizontally),
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            fontSize = 30.sp,
+                            textAlign = TextAlign.Center
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors( // make border color appear if input is clicked (focused)
+                            unfocusedBorderColor = dark_highlight_med,
+                            focusedBorderColor = Color.Unspecified,
+                        ),
+
+                        )
+                    if (errorMessage.isNotEmpty()) { // display an error message preventing user from selecting "Change"
+                        Text(
+                            text = errorMessage,
+                            color = Color.Red,
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
+                    //Spacer(modifier = Modifier.height(15.dp))
+                    // Slider for changing rating value from 0.0 to 10.0
+                    LineSlider(
+                        value = if (newRating.toFloatOrNull() != null && newRating.toFloat() in 0.0..10.0) newRating.toFloat() else 0.0f,
+                        onValueChange = { value ->
+                            errorMessage = "" // clear error message since slider will always have valid input
+                            newRating = "%.1f".format(value) // format to tens place
+                        },
+                        valueRange = 0.0f..10.0f,
+                        steps = 20, // 10.0 - 0.0 divided by 0.1 gives 100 steps
+
+                    )
+                }
+            },
+            confirmButton = {
+                Text(
+                    "Change",
+                    modifier = Modifier
+                        .clickable {
+                            if (errorMessage.isEmpty()) { // if there isn't an error message, let the user submit their rating
+                                movieToAdd?.movieID?.let {
+                                    viewModel.changeMovieRating(it, newRating.toFloat())
+                                }
+                                showChangeRatingDialog = false // close the dialog
+                            }
+                        }
+                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
+                )
+            },
+            dismissButton = {
+                Text(
+                    "Cancel",
+                    modifier = Modifier
+                        .clickable {
+                            showChangeRatingDialog = false // close the dialog
+                        }
+                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
+                )
+            }
+        )
     }
 }
 

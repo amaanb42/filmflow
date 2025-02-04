@@ -36,7 +36,7 @@ import com.example.inventory.data.api.MovieDetails
 // For formatting the TMDB community rating into a nice percentage
 @Composable
 fun RatingText(movieDetails: MovieDetails?) {
-    val rating = movieDetails?.rating
+    val rating = movieDetails?.audienceRating
 
     val formattedRating = if (rating != null) {
         val percentage = rating * 10 // Multiply by 10 to shift decimal place

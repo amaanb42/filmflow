@@ -40,12 +40,7 @@ class LocalDetailViewModel(
         initialValue = emptyList()
     )
 
-    // update rating of locally stored movie
-    fun changeMovieRating(movieID: Int, newRating: Float) {
-        viewModelScope.launch {
-            movieRepository.updateUserRating(movieID, newRating)
-        }
-    }
+
 
     // used on local detail screen to copy over movie to another user-created list
     fun addMovieToList(listName: String) {
