@@ -321,9 +321,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 .fillMaxSize()
         ) {
             // Filtered movie list
-            val filteredMovies = if (searchQuery.isEmpty()) {
-                sortedMovies
-            } else {
+            if (searchQuery.isNotEmpty()) {
                 sortedMovies.filter { movie ->
                     movie.title.contains(searchQuery, ignoreCase = true)
                 }
