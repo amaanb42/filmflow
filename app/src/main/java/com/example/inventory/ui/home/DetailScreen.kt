@@ -146,8 +146,6 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         movieToAdd = Movie(
                             movieId,
                             details.title,
-                            details.overview,
-                            "",
                             details.posterPath,
                             details.releaseDate,
                             details.runtime,
@@ -306,10 +304,18 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     modifier = Modifier.size(20.dp) // Adjust size as needed
                                 )
                                 Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
-                                Text(
-                                    text = formatRuntime(movieDetails?.runtime),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
+                                if (movieDetails?.runtime != 0)
+                                {
+                                    Text(
+                                        text = formatRuntime(movieDetails?.runtime),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                } else {
+                                    Text(
+                                        text = "Unknown", // Fallback text
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
                             }
 
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
@@ -320,7 +326,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     modifier = Modifier.size(20.dp) // Adjust size as needed
                                 )
                                 Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
-                                if (movieDetails != null) {
+                                if (movieDetails?.releaseDate != null) {
                                     // Check if releaseDate is not null or empty
                                     val releaseDate = movieDetails?.releaseDate
                                     if (!releaseDate.isNullOrEmpty()) {
@@ -336,7 +342,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     } else {
                                         // Handle the case where releaseDate is null or empty
                                         Text(
-                                            text = "N/A", // Fallback text
+                                            text = "Unknown", // Fallback text
                                             style = MaterialTheme.typography.bodyMedium
                                         )
                                     }
@@ -351,7 +357,16 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     modifier = Modifier.size(20.dp) // Adjust size as needed
                                 )
                                 Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
-                                RatingText(movieDetails)
+                                if (movieDetails?.audienceRating != 0.0)
+                                {
+                                    RatingText(movieDetails)
+                                } else {
+                                    Text(
+                                        text = "N/A", // Fallback text
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
                             }
 
                             Spacer(modifier = Modifier.height(16.dp))
