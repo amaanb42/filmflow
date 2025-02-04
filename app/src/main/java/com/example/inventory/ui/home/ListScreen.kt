@@ -334,7 +334,6 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 ListGridView(
                     navController,
                     sortedMovies,
-                    selectedList,
                     searchQuery,
                     // Pass fabVisible
                     { newValue -> fabVisible = newValue }, // Pass a lambda to update fabVisible
@@ -344,7 +343,6 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 ListHorizontalView(
                     navController,
                     sortedMovies,
-                    selectedList,
                     searchQuery,
                     // Pass fabVisible
                     { newValue -> fabVisible = newValue }, // Pass a lambda to update fabVisible
@@ -368,7 +366,6 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
 fun ListGridView(
     navController: NavHostController,
     listMovies: List<Movie>,
-    currList: String,
     searchQuery: String,
     // Receive fabVisible
     updateFabVisible: (Boolean) -> Unit, // Receive the update lambda
@@ -408,7 +405,7 @@ fun ListGridView(
                         contentDescription = null,
                         modifier = Modifier
                             .clickable {
-                                navigateToLocalDetails(navController, movie.movieID, currList)
+                                navigateToLocalDetails(navController, movie.movieID)
                             }
                             //width(135.dp)
                             .fillMaxWidth()
@@ -469,7 +466,6 @@ fun ListGridView(
 fun ListHorizontalView(
     navController: NavHostController,
     listMovies: List<Movie>,
-    currList: String,
     searchQuery: String,
     // Receive fabVisible
     updateFabVisible: (Boolean) -> Unit, // Receive the update lambda
@@ -497,7 +493,7 @@ fun ListHorizontalView(
                     .fillMaxSize()
                     .padding(5.dp)
                     .clickable {
-                        navigateToLocalDetails(navController, movie.movieID, currList)
+                        navigateToLocalDetails(navController, movie.movieID)
                     }
             ) {
                 Card(
@@ -968,6 +964,6 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
 }
 
 // function that handles navController and passes movieId to detail screen
-fun navigateToLocalDetails(navController: NavHostController, movieId: Int, currList: String) {
-    navController.navigate(LocalDetailDestination.createRoute(movieId, currList))
+fun navigateToLocalDetails(navController: NavHostController, movieId: Int) {
+    navController.navigate(DetailDestination.createRoute(movieId))
 }

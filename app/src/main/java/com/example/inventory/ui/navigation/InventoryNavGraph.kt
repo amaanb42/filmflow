@@ -1,6 +1,5 @@
 package com.example.inventory.ui.navigation
 
-import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -11,8 +10,6 @@ import androidx.navigation.navArgument
 import com.example.inventory.ui.home.DetailDestination
 import com.example.inventory.ui.home.ListDestination
 import com.example.inventory.ui.home.ListScreen
-import com.example.inventory.ui.home.LocalDetailDestination
-import com.example.inventory.ui.home.LocalMovieDetailsScreen
 import com.example.inventory.ui.home.MovieDetailsScreen
 import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.SearchScreen
@@ -52,20 +49,6 @@ fun InventoryNavHost(
         ) { backStackEntry ->
             val movieId = backStackEntry.arguments?.getInt("movieId") ?: error("Missing movieID argument")
             MovieDetailsScreen(navController, movieId)
-        }
-
-        composable(
-            route = LocalDetailDestination.ROUTE, // New route for LocalDetailScreen
-            arguments = listOf(
-                navArgument("movieId") { type = NavType.IntType },
-                navArgument("currList") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val movieId = backStackEntry.arguments?.getInt("movieId")
-                ?: error("Missing movieID argument")
-            val currListName = backStackEntry.arguments?.getString("currList")
-                ?: error("Missing currList argument")
-            LocalMovieDetailsScreen(navController, movieId)
         }
 
         composable(route = ListDestination.route) {
