@@ -58,9 +58,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -106,6 +108,10 @@ object DetailDestination {
 @Composable
 fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     var movieDetails by remember { mutableStateOf<MovieDetails?>(null) } // Renamed for clarity
+    var movieToAdd by remember { mutableStateOf<Movie?>(null) } // Make this a state
+    var userRating by rememberSaveable { mutableFloatStateOf(movieToAdd?.userRating ?: 0.0f) }
+
+
     val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
     val listMoviesRepository = InventoryApplication().container.listMoviesRepository
     val movieRepository = InventoryApplication().container.movieRepository
@@ -118,31 +124,43 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
 
     // collect data from ListScreenViewModel
     val listsMovieIn by viewModel.listsForMovie.collectAsState()
-    var movieToAdd by remember { mutableStateOf<Movie?>(null) } // Make this a state
     var expanded by remember { mutableStateOf(false) } // State for expanding synopsis
     val isInList by remember { derivedStateOf { "Planning" in listsMovieIn || "Watching" in listsMovieIn || "Completed" in listsMovieIn } }
 
     var showChangeRatingDialog by remember { mutableStateOf(false) }
 
+
     //Alter code below to fetch from local database instead of using the TMDB function
     LaunchedEffect(key1 = movieId) {
-        coroutineScope.launch(Dispatchers.IO) { // Launch in IO thread
-            movieDetails = getDetailsFromID(movieId)
-            // Update movie_to_add after movie is loaded
-            movieToAdd= Movie(
-                movieId,
-                movieDetails?.title ?: "", // Provide an empty string if title is null
-                movieDetails?.overview,
-                "", // Provide an empty string for director since it's missing
-                movieDetails?.posterPath ?: "", // Provide an empty string if posterPath is null
-                movieDetails?.releaseDate,
-                movieDetails?.runtime,
-                //movieDetails?.rating?.toFloat(), // Convert Double? to Float?
-                0.0.toFloat(), // Sends 0.0 to localDB instead of TMDB rating
-                emptyList() // Provide an empty list for genres
-            )
+        coroutineScope.launch(Dispatchers.IO) {
+            movieDetails = getDetailsFromID(movieId) // Fetch from API (if needed)
+
+            movieRepository.getMovieStream(movieId).collect { movieFromDb ->
+                movieToAdd = movieFromDb // Update the 'movie' state
+
+                if (movieFromDb!= null) {
+                    userRating = movieFromDb.userRating!! // Sync userRating from DB
+                } else {
+                    // Movie not in DB, create from API data (but don't set userRating yet)
+                    movieDetails?.let { details ->
+                        movieToAdd = Movie(
+                            movieId,
+                            details.title,
+                            details.overview,
+                            "",
+                            details.posterPath,
+                            details.releaseDate,
+                            details.runtime,
+                            0.0f, // Default user rating
+                            emptyList()
+                        )
+                    }
+                }
+            }
         }
     }
+
+
     Scaffold(
         //modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
@@ -355,7 +373,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                         } // display the dialog
                                 ) {
                                     RatingCircle(
-                                        userRating = (movieDetails?.audienceRating)?.toFloat() ?: 0.0f, // Add ? before toFloat()
+                                        userRating = userRating, // Add ? before toFloat()
                                         fontSize = 28.sp,
                                         radius = 50.dp,
                                         animDuration = 1000,
@@ -631,8 +649,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         }
     }
     if (showChangeRatingDialog) { // show the dialog for changing a rating
-        var newRating by remember { mutableStateOf("%.1f".format(movieToAdd?.userRating!!.toFloat())) }
-        var errorMessage by remember { mutableStateOf("") } // if its blank, then the user can submit their rating, otherwise no
+        userRating =movieToAdd?.userRating ?: 0.0f // Initialize with the current rating
+        var errorMessage by remember { mutableStateOf("") } // if it's blank, then the user can submit their rating, otherwise no
 
         AlertDialog(
             onDismissRequest = { showChangeRatingDialog = false },
@@ -647,18 +665,20 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     // Editable text field, border is dark blue unfocused and becomes brighter when user clicks on it
                     OutlinedTextField(
                         shape = RoundedCornerShape(36.dp),
-                        value = newRating,
-                        onValueChange = {
-                            if (it.length <= 4) { // longest string that can be inputted is 10.0
-                                newRating = it
-                                errorMessage =
-                                    if (newRating.toFloatOrNull() != null && newRating.toFloat() in 0.0..10.0) {
-                                        ""
-                                    } else if (newRating.toFloatOrNull() != null && newRating.toFloat() !in 0.0..10.0) {
-                                        "Rating must be between 0 and 10."
-                                    } else {
+                        value = "%.1f".format(userRating), // Format the Float to a String with one decimal place
+                        onValueChange = { newValue ->
+                            if (newValue.length <= 4) { // longest string that can be inputted is 10.0
+                                val parsedValue = newValue.toFloatOrNull()
+                                if (parsedValue != null && parsedValue in 0.0f..10.0f) {
+                                    userRating = parsedValue
+                                    errorMessage = ""
+                                } else {
+                                    errorMessage = if (parsedValue == null) {
                                         "Enter a valid number."
+                                    } else {
+                                        "Rating must be between 0 and 10."
                                     }
+                                }
                             }
                         },
                         keyboardOptions = KeyboardOptions(
@@ -676,9 +696,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         colors = OutlinedTextFieldDefaults.colors( // make border color appear if input is clicked (focused)
                             unfocusedBorderColor = dark_highlight_med,
                             focusedBorderColor = Color.Unspecified,
-                        ),
-
                         )
+                    )
                     if (errorMessage.isNotEmpty()) { // display an error message preventing user from selecting "Change"
                         Text(
                             text = errorMessage,
@@ -688,17 +707,15 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 .align(Alignment.CenterHorizontally)
                         )
                     }
-                    //Spacer(modifier = Modifier.height(15.dp))
                     // Slider for changing rating value from 0.0 to 10.0
                     LineSlider(
-                        value = if (newRating.toFloatOrNull() != null && newRating.toFloat() in 0.0..10.0) newRating.toFloat() else 0.0f,
+                        value = userRating, // Use the Float value directly
                         onValueChange = { value ->
+                            userRating = value // Update the Float value directly
                             errorMessage = "" // clear error message since slider will always have valid input
-                            newRating = "%.1f".format(value) // format to tens place
                         },
                         valueRange = 0.0f..10.0f,
-                        steps = 20, // 10.0 - 0.0 divided by 0.1 gives 100 steps
-
+                        steps = 20, // 10.0 - 0.0 divided by
                     )
                 }
             },
@@ -709,7 +726,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         .clickable {
                             if (errorMessage.isEmpty()) { // if there isn't an error message, let the user submit their rating
                                 movieToAdd?.movieID?.let {
-                                    viewModel.changeMovieRating(it, newRating.toFloat())
+                                    viewModel.changeMovieRating(it, userRating)
                                 }
                                 showChangeRatingDialog = false // close the dialog
                             }
