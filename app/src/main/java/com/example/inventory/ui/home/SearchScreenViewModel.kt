@@ -19,9 +19,6 @@ class SearchScreenViewModel : ViewModel() {
     var nowPlayingMovies by mutableStateOf(listOf<MovieSearchResult>())
         private set
 
-    var tempMovieList by mutableStateOf(listOf<MovieSearchResult>())
-        private set
-
     init {
         viewModelScope.launch(Dispatchers.IO) {
             trendingMovies = getTrendingMovies()

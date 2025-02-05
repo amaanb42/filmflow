@@ -48,7 +48,7 @@ object SettingsDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SettingsScreen(navController: NavHostController, modifier: Modifier = Modifier) {
+fun SettingsScreen(navController: NavHostController) {
 
     // var materialYouEnabled by remember { mutableStateOf(false) }
     var selectedTheme by remember { mutableStateOf("Light") }

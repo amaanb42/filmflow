@@ -233,9 +233,7 @@ fun SearchScreen(navController: NavHostController) {
             }
 
             // Below code for trending and theater carousels on search screen
-            Column (
-                //modifier = Modifier.padding(top = 32.dp)
-            ) {
+            Column {
                 Text(
                     text = "Trending",
                     modifier = Modifier
