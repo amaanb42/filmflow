@@ -239,7 +239,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -427,7 +427,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -505,7 +505,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item { // Card for movie actors
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -592,7 +592,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()

@@ -38,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -165,7 +166,10 @@ fun SearchScreen(navController: NavHostController) {
                             contentDescription = "Close Icon",
                         )
                     }
-                }
+                },
+                colors = SearchBarDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest, // Background color of the search bar
+                )
             ) {
                 if (searchQuery.isNotEmpty()) {
                     SearchRows(tempMovieList, navController, searchSubmitted)

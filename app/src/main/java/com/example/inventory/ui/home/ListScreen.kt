@@ -304,8 +304,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                             overflow = TextOverflow.Ellipsis
                         )
                     }, // default
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    containerColor = MaterialTheme.colorScheme.onPrimary,
+                    contentColor = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.sizeIn(maxWidth = 300.dp).offset(y = (20).dp)
                 )
             }
