@@ -67,7 +67,7 @@ fun SettingsScreen(navController: NavHostController) {
                     top = 0.dp,
                     bottom = 0.dp
                 ),
-                title = { Text("Settings") },
+                title = { Text("Settings (WIP)") },
                 actions = {
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(

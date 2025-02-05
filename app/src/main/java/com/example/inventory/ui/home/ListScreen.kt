@@ -96,7 +96,7 @@ import com.example.inventory.R
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.navigation.NavigationDestination
-import com.example.inventory.ui.theme.dark_pine
+//import com.example.inventory.ui.theme.dark_pine
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -304,8 +304,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                             overflow = TextOverflow.Ellipsis
                         )
                     }, // default
-                    containerColor = dark_pine,
-                    contentColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.sizeIn(maxWidth = 300.dp).offset(y = (20).dp)
                 )
             }
@@ -885,7 +885,7 @@ fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
         Spacer(modifier = Modifier.weight(1f)) //pushes button to center
         SmallFloatingActionButton(
             onClick = { showCreateDialog = true },
-            containerColor = dark_pine,
+            containerColor = MaterialTheme.colorScheme.primary,
             contentColor = Color.White
         ) {
             Icon(

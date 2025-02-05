@@ -45,7 +45,7 @@ import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.SettingsDestination
 import com.example.inventory.data.SettingsDataStore
 import com.example.inventory.ui.navigation.InventoryNavHost
-import com.example.inventory.ui.theme.InventoryTheme
+import com.example.inventory.ui.theme.FilmFlowTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
-            InventoryTheme {
+            FilmFlowTheme {
                 val items = listOf(
                     BottomNavigationItem(
                         title = "List",

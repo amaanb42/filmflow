@@ -1,6 +1,7 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import android.view.Surface
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -86,8 +87,8 @@ import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
-import com.example.inventory.ui.theme.dark_highlight_med
-import com.example.inventory.ui.theme.dark_pine
+//import com.example.inventory.ui.theme.dark_highlight_med
+//import com.example.inventory.ui.theme.dark_pine
 import com.example.inventory.ui.theme.material_red
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -193,7 +194,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             movieToAdd?.let { movie -> // Use movie here for clarity
                 // Animate the containerColor
                 val animatedContainerColor by animateColorAsState(
-                    targetValue = if (isInList) material_red else dark_pine,
+                    targetValue = if (isInList) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                     animationSpec = tween(durationMillis = 400) // Adjust duration as needed
                 )
 
@@ -209,7 +210,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         }
                     },
                     containerColor = animatedContainerColor,
-                    contentColor = Color.White,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.offset(y = (20).dp)
                 ) { // Icon is set directly in the content lambda
                     // Use AnimatedContent to smoothly transition between icons
@@ -238,7 +239,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -426,7 +427,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -504,7 +505,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item { // Card for movie actors
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -591,7 +592,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -708,7 +709,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             textAlign = TextAlign.Center
                         ),
                         colors = OutlinedTextFieldDefaults.colors( // make border color appear if input is clicked (focused)
-                            unfocusedBorderColor = dark_highlight_med,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.surface,
                             focusedBorderColor = Color.Unspecified,
                         )
                     )
