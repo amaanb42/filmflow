@@ -41,6 +41,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,7 +68,6 @@ import com.example.inventory.data.api.getMovieQuery
 import com.example.inventory.ui.navigation.NavigationDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -104,6 +104,7 @@ fun SearchScreen(navController: NavHostController) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
+
     Scaffold(
         modifier = Modifier.padding(0.dp)
     ) {
@@ -125,7 +126,7 @@ fun SearchScreen(navController: NavHostController) {
                     keyboardController?.hide()
                     searchSubmitted = true // Set to true when search is submitted
                     coroutineScope.launch(Dispatchers.IO) {
-                        delay(200)
+                        //delay(200)
                         async {
                             tempMovieList = getMovieQuery(searchQuery)
                         }.await()
@@ -168,7 +169,7 @@ fun SearchScreen(navController: NavHostController) {
                     }
                 },
                 colors = SearchBarDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest, // Background color of the search bar
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp), // Background color of the search bar
                 )
             ) {
                 if (searchQuery.isNotEmpty()) {
