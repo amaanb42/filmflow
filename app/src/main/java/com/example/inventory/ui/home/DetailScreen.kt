@@ -745,7 +745,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             },
             confirmButton = {
                 Text(
-                    "Change",
+                    "Confirm",
                     modifier = Modifier
                         .clickable {
                             if (errorMessage.isEmpty()) { // if there isn't an error message, let the user submit their rating
