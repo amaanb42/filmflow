@@ -390,7 +390,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    text = "Community Average",
+                                    text = "Your Rating",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }
@@ -697,8 +697,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             textAlign = TextAlign.Center
                         ),
                         colors = OutlinedTextFieldDefaults.colors( // make border color appear if input is clicked (focused)
-                            unfocusedBorderColor = MaterialTheme.colorScheme.surface,
-                            focusedBorderColor = Color.Unspecified,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
                         )
                     )
                     if (errorMessage.isNotEmpty()) { // display an error message preventing user from selecting "Change"
