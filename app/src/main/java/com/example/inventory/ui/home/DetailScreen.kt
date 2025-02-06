@@ -237,7 +237,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -256,7 +256,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 model = "https://image.tmdb.org/t/p/w500${movieDetails?.posterPath}",
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .clickable { }
+                                    .clickable {/* Expand image to full size */ }
                                     .width(170.dp)
                                     .aspectRatio(0.6667f),
                                 contentScale = ContentScale.Crop,

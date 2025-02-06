@@ -127,16 +127,16 @@ fun LineSlider(
                             shape = CircleShape,
                         )
                         .background(
-                            color = Color(0xff31748f),
+                            color = MaterialTheme.colorScheme.primary,
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        thumbDisplay(value),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Color.Black
-                    )
+//                    Text(
+//                        thumbDisplay(value),
+//                        style = MaterialTheme.typography.labelSmall,
+//                        color = Color.Black
+//                    )
                 }
 
                 val strokeColor = MaterialTheme.colorScheme.onSurface
