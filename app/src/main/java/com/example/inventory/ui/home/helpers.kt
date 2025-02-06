@@ -79,7 +79,9 @@ fun SegmentedButtons(
     val items = listOf(
         R.drawable.planning_icon,
         R.drawable.watching_icon,
-        R.drawable.completed_icon
+        R.drawable.completed_icon,
+//        R.drawable.paused,
+//        R.drawable.dropped
     )
     val listNames = listOf("Planning", "Watching", "Completed")
 
@@ -138,13 +140,13 @@ fun ListIconButton(
     onClick: () -> Unit,
     label: String, // Label for buttons
 ) {
-    val animateSurfaceColor = animateColorAsState(
+    val animateSurfaceColor by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
         animationSpec = tween(durationMillis = 400)
     )
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { onClick() } // Handle click outside the Surface
+        //modifier = Modifier.clickable { onClick() } // Handle click outside the Surface
     ) {
         Surface(
             modifier = Modifier
@@ -154,7 +156,7 @@ fun ListIconButton(
                     role = Role.Button
                 ),
             shape = MaterialTheme.shapes.small,
-            color = animateSurfaceColor.value
+            color = animateSurfaceColor
         ) {
             Row(
                 modifier = Modifier
@@ -167,11 +169,11 @@ fun ListIconButton(
                 )
             }
         }
-        Text(
-            text = label,
-            modifier = Modifier.padding(top = 4.dp),
-            fontSize = MaterialTheme.typography.bodyMedium.fontSize
-        )
+//        Text(
+//            text = label,
+//            modifier = Modifier.padding(top = 4.dp),
+//            fontSize = MaterialTheme.typography.bodyMedium.fontSize
+//        )
     }
 }
 
