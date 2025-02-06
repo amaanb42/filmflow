@@ -1,6 +1,8 @@
 package com.example.inventory.ui.home
 
 import android.icu.text.DecimalFormat
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -34,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -42,10 +45,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
-import com.example.inventory.ui.theme.material_green
-import com.example.inventory.ui.theme.material_orange
-import com.example.inventory.ui.theme.material_red
-import com.example.inventory.ui.theme.material_yellow
 
 
 // For formatting the TMDB community rating into a nice percentage
@@ -73,6 +72,8 @@ fun SegmentedButtons(
     viewModel: DetailViewModel,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+    val vibrator = context.getSystemService(Vibrator::class.java)
     val listsForMovie by viewModel.listsForMovie.collectAsState()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
     val items = listOf(
@@ -112,6 +113,7 @@ fun SegmentedButtons(
                             listNames.find { it in listsForMovie } // Find the current list
                         val newList = listNames[index]
                         if (currentList != null && currentList != newList) {
+                            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
                             viewModel.moveMovieToList(
                                 currentList,
                                 newList
@@ -222,17 +224,18 @@ fun RatingCircle(
 
     // Determine the color based on userRating
     // Use animateColorAsState for smooth color transitions
-    val color = animateColorAsState(
-        targetValue = when (userRating) {
-            in 0.0f..2.9f -> material_red        // 0 - 2.9: Red
-            in 3.0f..4.9f -> material_orange     // 3 - 4.9: Orange
-            in 5.0f..6.9f -> material_yellow     // 5 - 6.9: Yellow
-            in 7.0f..8.9f -> material_green      // 7 - 8.9: Green
-            in 9.0f..10.0f -> MaterialTheme.colorScheme.outline // 9 - 10: Blue
-            else -> MaterialTheme.colorScheme.outline // Default color
-        },
-        label = "Color Animation" // Add a label for debugging
-    ).value
+    val color = MaterialTheme.colorScheme.primary
+//    val color = animateColorAsState(
+//        targetValue = when (userRating) {
+//            in 0.0f..2.9f -> material_red        // 0 - 2.9: Red
+//            in 3.0f..4.9f -> material_orange     // 3 - 4.9: Orange
+//            in 5.0f..6.9f -> material_yellow     // 5 - 6.9: Yellow
+//            in 7.0f..8.9f -> material_green      // 7 - 8.9: Green
+//            in 9.0f..10.0f -> MaterialTheme.colorScheme.primary // 9 - 10: Blue
+//            else -> MaterialTheme.colorScheme.outline // Default color
+//        },
+//        label = "Color Animation" // Add a label for debugging
+//    ).value
 
     Box(
         contentAlignment = Alignment.Center,

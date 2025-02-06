@@ -3,6 +3,8 @@ package com.example.inventory.ui.home
 //import com.example.inventory.ui.theme.dark_highlight_med
 //import com.example.inventory.ui.theme.dark_pine
 import android.annotation.SuppressLint
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -68,9 +70,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
@@ -127,6 +131,10 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     val isInList by remember { derivedStateOf { "Planning" in listsMovieIn || "Watching" in listsMovieIn || "Completed" in listsMovieIn } }
 
     var showChangeRatingDialog by remember { mutableStateOf(false) }
+
+    // for vibration feedback
+    val context = LocalContext.current
+    val vibrator = context.getSystemService(Vibrator::class.java)
 
 
     //Alter code below to fetch from local database instead of using the TMDB function
@@ -200,10 +208,12 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     onClick = {
                         if (isInList) {
                             // Delete the movie from whichever list it's in
+                            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_DOUBLE_CLICK))
                             viewModel.deleteMovie(movieId) // New function in ViewModel
 
                         } else {
                             // Add the movie to the "Planning" list
+                            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
                             viewModel.addMovieToList("Planning", movie)
                         }
                     },
@@ -376,23 +386,29 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                             showChangeRatingDialog = true
                                         } // display the dialog
                                 ) {
-                                    RatingCircle(
-                                        userRating = userRating, // Add ? before toFloat()
-                                        fontSize = 28.sp,
-                                        radius = 50.dp,
-                                        animDuration = 1000,
-                                        strokeWidth = 8.dp
-                                    )
+                                    if (isInList) {
+                                        RatingCircle(
+                                            userRating = userRating, // Add ? before toFloat()
+                                            fontSize = 28.sp,
+                                            radius = 50.dp,
+                                            animDuration = 1000,
+                                            strokeWidth = 8.dp
+                                        )
+                                    }
                                 }
                             }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                Text(
-                                    text = "Your Rating",
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
+                                if (isInList)
+                                {
+                                    Text(
+                                        text = "Your Rating",
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
+
                             }
                         }
                     }
@@ -652,8 +668,12 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         }
     }
     if (showChangeRatingDialog) { // show the dialog for changing a rating
-        var tempUserRating by remember { mutableFloatStateOf(movieToAdd?.userRating ?: 0.0f) } // Temporary state for the rating being edited
-        var errorMessage by remember { mutableStateOf("") } // if it's blank, then the user can submit their rating, otherwise no
+//        var tempUserRating by remember { mutableFloatStateOf(movieToAdd?.userRating ?: 0.0f) } // Temporary state for the rating being edited
+//        var errorMessage by remember { mutableStateOf("") } // if it's blank, then the user can submit their rating, otherwise no
+        var rating by remember { mutableFloatStateOf(movieToAdd?.userRating ?: 0.0f) }
+        var textFieldValue by remember { mutableStateOf("%.1f".format(rating)) } // Separate state for text field display
+        var errorMessage by remember { mutableStateOf("") }
+        var isFocused by remember { mutableStateOf(false) }
 
         AlertDialog(
             onDismissRequest = { showChangeRatingDialog = false },
@@ -665,60 +685,57 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             },
             text = {
                 Column {
-                    // Editable text field, border is dark blue unfocused and becomes brighter when user clicks on it
                     OutlinedTextField(
                         shape = RoundedCornerShape(36.dp),
-                        value = "%.1f".format(tempUserRating), // Format the Float to a String with one decimal place
+                        value = textFieldValue,
                         onValueChange = { newValue ->
-                            if (newValue.length <= 4) { // longest string that can be inputted is 10.0
-                                val parsedValue = newValue.toFloatOrNull()
+                            textFieldValue = newValue // Update text field display immediately
+
+                            if (newValue.matches(Regex("^(10([.,])?0*)|([0-9]([.,])?[0-9]*)$"))) { // Improved regex validation
+                                val parsedValue = newValue.replace(',', '.').toFloatOrNull() // Handle commas as decimal separators too
                                 if (parsedValue != null && parsedValue in 0.0f..10.0f) {
-                                    tempUserRating = parsedValue
+                                    rating = parsedValue
                                     errorMessage = ""
                                 } else {
-                                    errorMessage = if (parsedValue == null) {
-                                        "Enter a valid number."
-                                    } else {
-                                        "Rating must be between 0 and 10."
-                                    }
+                                    errorMessage = "Invalid rating (Must be 0.0-10.0)"
                                 }
+                            } else {
+                                errorMessage = "Invalid characters"
                             }
+
                         },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Decimal // pull up num pad for users
-                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         modifier = Modifier
                             .padding(bottom = 8.dp)
                             .width(100.dp)
-                            .align(Alignment.CenterHorizontally),
+                            .align(Alignment.CenterHorizontally)
+                            .onFocusChanged { focusState ->
+                                if (focusState.isFocused && !isFocused) {
+                                    textFieldValue = "" // Clear the text field when it gains focus
+                                }
+                                isFocused = focusState.isFocused
+                            },
                         singleLine = true,
-                        textStyle = TextStyle(
-                            fontSize = 30.sp,
-                            textAlign = TextAlign.Center
-                        ),
-                        colors = OutlinedTextFieldDefaults.colors( // make border color appear if input is clicked (focused)
+                        textStyle = TextStyle(fontSize = 30.sp, textAlign = TextAlign.Center),
+                        colors = OutlinedTextFieldDefaults.colors(
                             unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                         )
                     )
-                    if (errorMessage.isNotEmpty()) { // display an error message preventing user from selecting "Change"
-                        Text(
-                            text = errorMessage,
-                            color = Color.Red,
-                            modifier = Modifier
-                                .padding(top = 4.dp)
-                                .align(Alignment.CenterHorizontally)
-                        )
+
+                    if (errorMessage.isNotEmpty()) {
+                        Text(errorMessage, color = Color.Red, modifier = Modifier.padding(top = 4.dp).align(Alignment.CenterHorizontally))
                     }
-                    // Slider for changing rating value from 0.0 to 10.0
+
                     LineSlider(
-                        value = tempUserRating, // Use the temporary Float value
-                        onValueChange = { value ->
-                            tempUserRating = value // Update the temporary Float value
-                            errorMessage = "" // clear error message since slider will always have valid input
+                        value = rating, // Use the single 'rating' state
+                        onValueChange = { newValue ->
+                            rating = newValue
+                            textFieldValue = "%.1f".format(newValue) // Update text field when slider changes
+                            errorMessage = ""
                         },
                         valueRange = 0.0f..10.0f,
-                        steps = 20, // 10.0 - 0.0 divided by
+                        steps = 20
                     )
                 }
             },
@@ -729,7 +746,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         .clickable {
                             if (errorMessage.isEmpty()) { // if there isn't an error message, let the user submit their rating
                                 movieToAdd?.movieID?.let {
-                                    viewModel.changeMovieRating(it, tempUserRating) // Update the actual userRating
+                                    viewModel.changeMovieRating(it, rating) // Update the actual userRating
                                 }
                                 showChangeRatingDialog = false // close the dialog
                             }

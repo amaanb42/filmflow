@@ -2,12 +2,13 @@
 
 package com.example.inventory.ui.home
 
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,9 +19,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -41,7 +42,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.IntOffset
@@ -51,8 +52,6 @@ import androidx.compose.ui.zIndex
 import kotlin.math.roundToInt
 
 
-val thumbSize = 32.dp
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LineSlider(
@@ -61,19 +60,12 @@ fun LineSlider(
     modifier: Modifier = Modifier,
     steps: Int = 0,
     valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
-    thumbDisplay: (Float) -> String = { "" },
 ) {
-
+    val thumbSize = 32.dp
+    val context = LocalContext.current
+    val vibrator = context.getSystemService(Vibrator::class.java)
+    val previousSnappedValue = remember { mutableFloatStateOf(value) } // Store the last snapped value
     val interaction = remember { MutableInteractionSource() }
-    val isDragging by interaction.collectIsDraggedAsState()
-    val density = LocalDensity.current
-    val offsetHeight by animateFloatAsState(
-        targetValue = with(density) { if (isDragging) 36.dp.toPx() else 0.dp.toPx() },
-        animationSpec = spring(
-            stiffness = Spring.StiffnessMediumLow,
-            dampingRatio = Spring.DampingRatioLowBouncy
-        ), label = "offsetAnimation"
-    )
 
     val stepSize = (valueRange.endInclusive - valueRange.start) / steps
     val animatedFraction by animateFloatAsState(
@@ -86,9 +78,17 @@ fun LineSlider(
     Slider(
         value = value,
         onValueChange = { newValue ->
-            val snappedValue = ((newValue / stepSize).roundToInt() * stepSize)
-                .coerceIn(valueRange)
-            onValueChange(snappedValue)
+            val snappedValue = if (steps > 0) { // Only snap if steps > 0
+                ((newValue / stepSize).roundToInt() * stepSize).coerceIn(valueRange)
+            } else {
+                newValue // If no steps, don't snap
+            }
+
+            if (snappedValue != previousSnappedValue.floatValue) {  // ***KEY CHANGE***
+                vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
+                previousSnappedValue.floatValue = snappedValue // Update the previous value
+                onValueChange(snappedValue)
+            }
         },
         modifier = modifier,
         valueRange = valueRange,
