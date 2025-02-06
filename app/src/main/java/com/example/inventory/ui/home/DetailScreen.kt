@@ -92,6 +92,7 @@ import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
+import com.example.inventory.ui.theme.material_red
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -200,7 +201,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             movieToAdd?.let { movie -> // Use movie here for clarity
                 // Animate the containerColor
                 val animatedContainerColor by animateColorAsState(
-                    targetValue = if (isInList) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                    targetValue = if (isInList) material_red else MaterialTheme.colorScheme.primary,
                     animationSpec = tween(durationMillis = 400) // Adjust duration as needed
                 )
 
@@ -368,25 +369,29 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
 
                             }
 
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
+                            Spacer(modifier = Modifier.height(18.dp))
+                            AnimatedVisibility(
+                                visible = isInList,
+                                enter = scaleIn(tween(500)) + fadeIn(tween(500)), // Or other animations
+                                exit = scaleOut(tween(500)) + fadeOut(tween(500))
                             ) {
-                                //Spacer(modifier = Modifier.width(10.dp))
-                                Box(
-                                    Modifier
-                                        .align(Alignment.CenterVertically)
-                                        .padding(bottom = 12.dp)
-                                        //.clip(CircleShape)
-                                        //.size(100.dp)
-                                        .clickable {
-                                            showChangeRatingDialog = true
-                                        } // display the dialog
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
                                 ) {
-                                    if (isInList) {
+                                    //Spacer(modifier = Modifier.width(10.dp))
+
+                                    Box(
+                                        Modifier
+                                            .align(Alignment.CenterVertically)
+                                            .padding(bottom = 12.dp)
+                                            //.clip(CircleShape)
+                                            //.size(100.dp)
+                                            .clickable {
+                                                showChangeRatingDialog = true
+                                            } // display the dialog
+                                    ) {
                                         RatingCircle(
                                             userRating = userRating, // Add ? before toFloat()
                                             fontSize = 28.sp,
@@ -394,21 +399,20 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                             animDuration = 1000,
                                             strokeWidth = 8.dp
                                         )
+
                                     }
                                 }
                             }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                if (isInList)
-                                {
+                            if (isInList){
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
                                     Text(
                                         text = "Your Rating",
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                 }
-
                             }
                         }
                     }
@@ -418,8 +422,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 AnimatedVisibility(
                     visible = isInList,
-                    enter = slideInVertically() + fadeIn(), // Or other animations
-                    exit = slideOutVertically() + fadeOut()  // Or other animations
+                    enter = slideInVertically(animationSpec = tween(durationMillis = 500)) + fadeIn(animationSpec = tween(durationMillis = 500)),
+                    exit = slideOutVertically(animationSpec = tween(durationMillis = 500)) + fadeOut(animationSpec = tween(durationMillis = 500))
                 ) {
                     Column {
                         StatusButtons(viewModel)
