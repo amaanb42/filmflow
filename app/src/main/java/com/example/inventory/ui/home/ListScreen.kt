@@ -1,5 +1,6 @@
 package com.example.inventory.ui.home
 
+//import com.example.inventory.ui.theme.dark_pine
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -17,8 +18,6 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
@@ -30,15 +29,11 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -48,13 +43,11 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -77,7 +70,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -94,9 +86,7 @@ import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.R
 import com.example.inventory.data.movie.Movie
-import com.example.inventory.data.userlist.UserList
 import com.example.inventory.ui.navigation.NavigationDestination
-//import com.example.inventory.ui.theme.dark_pine
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -127,7 +117,6 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     var fabVisible by rememberSaveable { mutableStateOf(true) }
 
     // collect data from ListScreenViewModel
-    val allLists by viewModel.allLists.collectAsState()
     val selectedList by viewModel.selectedList.collectAsState()
     val listMovies by viewModel.allMovies.collectAsState()
 
@@ -355,7 +344,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
             onDismissRequest = { showModal = false },
             sheetState = sheetState,
         ) {
-            ListSelectBottomSheet(allLists, viewModel, selectedList) { showModal = false }
+            ListSelectBottomSheet(viewModel, selectedList) { showModal = false }
         }
     }
 }
@@ -609,10 +598,8 @@ fun ListHorizontalView(
 }
 
 @Composable
-fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewModel, currList: String, onDismiss: () -> Unit) {
+fun ListSelectBottomSheet(viewModel: ListScreenViewModel, currList: String, onDismiss: () -> Unit) {
     // these are used for the rename list dialog
-    var showRenameDialog by remember { mutableStateOf(false) }
-    var oldListName by remember { mutableStateOf("") }
 
     val planningCount by viewModel.planningCount.collectAsState()
     val watchingCount by viewModel.watchingCount.collectAsState()
@@ -621,12 +608,12 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(max = (LocalConfiguration.current.screenHeightDp * 0.5f).dp) // Set the height to half the screen
     ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 2.dp, end = 2.dp, bottom = 100.dp)
+                //.padding(start = 2.dp, end = 2.dp, bottom = 100.dp) //bottom padding to make room for custom lists
+                .padding(start = 2.dp, end = 2.dp)
         ) {
             // first item in list is always All, but in settings screen add option to change default list displayed
             item {
@@ -708,256 +695,7 @@ fun ListSelectBottomSheet(allLists: List<UserList>, viewModel: ListScreenViewMod
                     )
                 }
             }
-            item {
-                HorizontalDivider(modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 10.dp))
-            }
-            // now display lists stored in the DB
-            items(allLists) { singleList ->
-                if (singleList.listName !in listOf("Completed", "Planning", "Watching")) {
-                    var expanded by remember { mutableStateOf(false) } // State for dropdown menu
-                    Row(
-                        modifier = Modifier
-                            .padding(start = 2.dp, end = 2.dp)
-                            .fillMaxWidth()
-                            .clickable {
-                                viewModel.selectList(singleList.listName)
-                                viewModel.updateListMovies(singleList.listName)
-                                onDismiss()
-                            }
-                            .padding(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.custom_list), // custom icon when user makes list
-                            contentDescription = singleList.listName,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = singleList.listName,
-                            fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
-                            modifier = Modifier.weight(1f)
-                        )
-                        Text(
-                            text = singleList.movieCount.toString(),
-                            fontWeight = if (singleList.listName == currList) FontWeight.ExtraBold else FontWeight.Normal,
-                            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
-                            textAlign = TextAlign.Right
-                        )
-                        Box {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More options",
-                                modifier = Modifier
-                                    .clickable {
-                                        expanded = true
-                                    }
-                            )
-                            // Dropdown menu for MoreVert icon
-                            DropdownMenu(
-                                shape = RoundedCornerShape(18.dp),
-                                expanded = expanded,
-                                onDismissRequest = {
-                                    expanded = false
-                                }, // Close the menu when clicked outside
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text(text = "Rename") },
-                                    onClick = {
-                                        showRenameDialog =
-                                            true // show the rename list dialog
-                                        oldListName = singleList.listName
-                                        expanded = false // Close the menu
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text(text = "Delete", color = Color.Red) },
-                                    onClick = {
-                                        viewModel.deleteList(singleList.listName) // delete the list
-                                        viewModel.selectList("") // reset back to default "All"
-                                        viewModel.updateListMovies("")
-                                        expanded = false // Close the menu
-                                    }
-                                )
-
-                            }
-                        }
-                    }
-                }
-            }
         }
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(10.dp)
-                .padding(bottom = 30.dp)
-        ) {
-            // button for creating a new list
-            AddNewListButtonWithDialog(viewModel)
-        }
-    }
-    // dialog for renaming a list
-    if (showRenameDialog) {
-        var newListName by remember { mutableStateOf(oldListName) }
-        var listExistsError by remember { mutableStateOf("") }
-
-        AlertDialog(
-            onDismissRequest = { showRenameDialog = false},
-            title = { Text(text = "Rename") },
-            text = {
-                Column {
-                    Text(text = "Give your list a new name:")
-                    Spacer(modifier = Modifier.height(15.dp))
-                    OutlinedTextField(
-                        shape = RoundedCornerShape(10.dp),
-                        value = newListName,
-                        onValueChange = {
-                            newListName = it
-                            viewModel.newListNameExists(oldListName, newListName.trim())
-                            listExistsError = if (viewModel.isInList) { // if new name already exists, display error message
-                                "A list of that name already exists!"
-                            } else {
-                                ""
-                            }
-                        },
-                        label = {
-                            Text(
-                                "New Name",
-                                color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-                    Text(text = listExistsError, color = Color.Red, modifier = Modifier.padding(start = 10.dp))
-
-                }
-            },
-            confirmButton = {
-                Text(
-                    "Rename",
-                    modifier = Modifier
-                        .clickable {
-                            viewModel.newListNameExists(oldListName, newListName.trim())
-                            if (!viewModel.isInList && newListName.isNotBlank()) { // if new name doesn't already exist
-                                viewModel.renameList(oldListName, newListName.trim())
-                                // need to select list again
-                                if (currList == oldListName) {
-                                    viewModel.selectList(newListName.trim())
-                                    viewModel.updateListMovies(newListName.trim())
-                                }
-                                showRenameDialog = false
-                            } else if (newListName.isBlank()) { // display message if whitespace is entered
-                                listExistsError = "List name can't be blank!"
-                            }
-                        }
-                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
-                )
-            },
-            dismissButton = {
-                Text(
-                    "Cancel",
-                    modifier = Modifier
-                        .clickable {
-                            showRenameDialog = false
-                        }
-                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
-                )
-            }
-        )
-    }
-}
-
-@Composable
-fun AddNewListButtonWithDialog(viewModel: ListScreenViewModel) {
-    var showCreateDialog by remember { mutableStateOf(false) }
-    var listName by remember { mutableStateOf("") }
-    var listExistsError by remember { mutableStateOf("") }
-
-    // "add custom list" button
-    Row(
-        modifier = Modifier
-            .padding(start = 2.dp, end = 2.dp)
-            .fillMaxWidth()
-            .padding(10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Spacer(modifier = Modifier.weight(1f)) //pushes button to center
-        SmallFloatingActionButton(
-            onClick = { showCreateDialog = true },
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = Color.White
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Create new list",
-            )
-        }
-        Spacer(modifier = Modifier.weight(1f)) //fills remaining space
-    }
-    // the dialog for creating a new custom list
-    if (showCreateDialog) {
-        AlertDialog(
-            onDismissRequest = { showCreateDialog = false },
-            title = { Text(text = "Create a List") },
-            text = {
-                Column {
-                    Text(text = "Enter a name for your new list:")
-                    Spacer(modifier = Modifier.height(15.dp))
-                    OutlinedTextField(
-                        shape = RoundedCornerShape(10.dp),
-                        value = listName,
-                        onValueChange = {
-                            listName = it
-                            viewModel.newListNameExists(null, listName.trim())
-                            listExistsError = if (viewModel.isInList) { // if name already exists, display error message
-                                "A list of that name already exists!"
-                            } else {
-                                ""
-                            }
-                        },
-                        label = {
-                            Text(
-                                "Name",
-                                color = LocalContentColor.current.copy(alpha = 0.5f) // makes text more transparent
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
-                    )
-                    Text(text = listExistsError, color = Color.Red, modifier = Modifier.padding(start = 10.dp, top = 5.dp))
-                }
-            },
-            confirmButton = {
-                Text(
-                    "Create",
-                    modifier = Modifier
-                        .clickable {
-                            viewModel.newListNameExists(null, listName.trim())
-                            if (!viewModel.isInList && listName.isNotBlank()) { // if list doesn't already exist
-                                viewModel.addNewList(listName.trim()) // insert list into db, trimming leading and trailing whitespace
-                                showCreateDialog = false
-                                listName = "" // reset list name
-                            } else if (listName.isBlank()) { // display error if attempting to submit whitespace
-                                listExistsError = "List name can't be blank!"
-                            }
-                        }
-                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
-                )
-            },
-            dismissButton = {
-                Text(
-                    "Cancel",
-                    modifier = Modifier
-                        .clickable {
-                            showCreateDialog = false
-                            listName = ""
-                            listExistsError = ""
-                        }
-                        .padding(top = 5.dp, bottom = 5.dp, start = 10.dp, end = 10.dp)
-                )
-            }
-        )
     }
 }
 
