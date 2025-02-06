@@ -1,7 +1,8 @@
 package com.example.inventory.ui.home
 
+//import com.example.inventory.ui.theme.dark_highlight_med
+//import com.example.inventory.ui.theme.dark_pine
 import android.annotation.SuppressLint
-import android.view.Surface
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -87,9 +88,6 @@ import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
-//import com.example.inventory.ui.theme.dark_highlight_med
-//import com.example.inventory.ui.theme.dark_pine
-import com.example.inventory.ui.theme.material_red
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -239,7 +237,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
