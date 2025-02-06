@@ -237,7 +237,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -269,17 +269,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                     ) {
                                         CircularProgressIndicator()
                                     }
-                                },
-//                            error = {
-//                                Box(
-//                                    modifier = Modifier
-//                                        .fillMaxWidth()
-//                                        .aspectRatio(0.6667f),
-//                                    contentAlignment = Alignment.Center
-//                                ) {
-//                                    CircularProgressIndicator()
-//                                }
-//                            }
+                                }
                             )
                         }
 
