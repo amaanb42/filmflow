@@ -182,7 +182,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 //colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
                 colors = TopAppBarDefaults.largeTopAppBarColors(
                     containerColor = Color.Transparent,
-                    scrolledContainerColor = MaterialTheme.colorScheme.surface
+                    scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow
                 ),
                 scrollBehavior = scrollBehavior,
                 actions = {

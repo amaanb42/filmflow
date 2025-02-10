@@ -51,7 +51,7 @@ object SettingsDestination : NavigationDestination {
 fun SettingsScreen(navController: NavHostController) {
 
     // var materialYouEnabled by remember { mutableStateOf(false) }
-    var selectedTheme by remember { mutableStateOf("Light") }
+    var selectedTheme by remember { mutableStateOf("Dynamic") }
     val themes = listOf("Dynamic", "Dark", "Light", "OLED Black")
     val tabOptions = listOf("List", "Discover", "Settings")
     val context = navController.context
