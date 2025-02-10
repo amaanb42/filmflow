@@ -7,7 +7,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,8 +20,11 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -69,6 +71,7 @@ fun RatingText(movieDetails: MovieDetails?) {
 }
 
 // For Status Buttons on detail screen
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SegmentedButtons(
     viewModel: DetailViewModel,
@@ -86,6 +89,8 @@ fun SegmentedButtons(
 //        R.drawable.dropped
     )
     val listNames = listOf("Planning", "Watching", "Completed")
+
+    val tooltipPosition = TooltipDefaults.rememberPlainTooltipPositionProvider()
 
     // Determine the initial selected index based on the movie's current list
     val status: String =
@@ -109,24 +114,33 @@ fun SegmentedButtons(
     ) {
         items.forEachIndexed { index, item ->
             key(selectedItemIndex) { // Add this key
-                ListIconButton(
-                    icon = item,
-                    isSelected = selectedItemIndex == index,
-                    onClick = {
-                        val currentList =
-                            listNames.find { it in listsForMovie } // Find the current list
-                        val newList = listNames[index]
-                        if (currentList != null && currentList != newList) {
-                            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
-                            viewModel.moveMovieToList(
-                                currentList,
-                                newList
-                            ) // Move only if necessary
+                TooltipBox(positionProvider = tooltipPosition,
+                    tooltip = {
+                        // Plain tooltip to show user the list they clicked on
+                        PlainTooltip {
+                            Text(listNames[index])
                         }
-                        selectedItemIndex = index
                     },
-                    label = listNames[index] // displays list name for icon
-                )
+                    state = rememberTooltipState(),
+                ) {
+                    ListIconButton(
+                        icon = item,
+                        isSelected = selectedItemIndex == index,
+                        onClick = {
+                            val currentList =
+                                listNames.find { it in listsForMovie } // Find the current list
+                            val newList = listNames[index]
+                            if (currentList != null && currentList != newList) {
+                                vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
+                                viewModel.moveMovieToList(
+                                    currentList,
+                                    newList
+                                ) // Move only if necessary
+                            }
+                            selectedItemIndex = index
+                        }
+                    )
+                }
             }
             if (index < items.size - 1) {
                 Spacer(modifier = Modifier.width(48.dp))
@@ -135,16 +149,12 @@ fun SegmentedButtons(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListIconButton(
     icon: Int, // Changed to Int for drawable resource ID
     isSelected: Boolean,
     onClick: () -> Unit,
-    label: String, // Label for buttons
 ) {
-    val tooltipState = rememberTooltipState()
-
     val animateSurfaceColor by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
         animationSpec = tween(durationMillis = 400)
