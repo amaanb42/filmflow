@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                         unselectedIcon = painterResource(id = R.drawable.explore),
                     ),
                     BottomNavigationItem(
-                        title = "Your Shows",
+                        title = "Your Shows (WIP)",
                         selectedIcon = painterResource(id = R.drawable.show_fill),
                         unselectedIcon = painterResource(id = R.drawable.show_no_fill),
                     )
