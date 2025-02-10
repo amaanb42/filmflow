@@ -11,15 +11,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -35,15 +26,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.inventory.data.SettingsDataStore
 import com.example.inventory.ui.home.ListDestination
 import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.SettingsDestination
-import com.example.inventory.data.SettingsDataStore
 import com.example.inventory.ui.navigation.InventoryNavHost
 import com.example.inventory.ui.theme.FilmFlowTheme
 import kotlinx.coroutines.flow.first
@@ -51,10 +43,8 @@ import kotlinx.coroutines.launch
 
 data class BottomNavigationItem(
     val title: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-    val hasNews: Boolean,
-    val badgeCount: Int? = null
+    val selectedIcon: Painter,
+    val unselectedIcon: Painter,
 )
 
 @Suppress("NAME_SHADOWING")
@@ -67,29 +57,19 @@ class MainActivity : ComponentActivity() {
             FilmFlowTheme {
                 val items = listOf(
                     BottomNavigationItem(
-                        title = "List",
-                        selectedIcon = Icons.AutoMirrored.Filled.List,
-                        unselectedIcon = Icons.AutoMirrored.Outlined.List,
-                        hasNews = false
+                        title = "Your Movies",
+                        selectedIcon = painterResource(id = R.drawable.movie_fill),
+                        unselectedIcon = painterResource(id = R.drawable.movie_no_fill),
                     ),
                     BottomNavigationItem(
                         title = "Discover",
-                        selectedIcon = Icons.Filled.Search,
-                        unselectedIcon = Icons.Outlined.Search,
-                        hasNews = false
+                        selectedIcon = painterResource(id = R.drawable.explore_fill),
+                        unselectedIcon = painterResource(id = R.drawable.explore),
                     ),
-//                    BottomNavigationItem(
-//                        title = "Stats",
-//                        selectedIcon = Icons.Filled.Star,
-//                        unselectedIcon = Icons.Outlined.Star,
-//                        hasNews = false
-//                    ),
                     BottomNavigationItem(
-                        title = "Settings",
-                        selectedIcon = Icons.Filled.Settings,
-                        unselectedIcon = Icons.Outlined.Settings,
-                        hasNews = false,
-                        badgeCount = null
+                        title = "Your Shows",
+                        selectedIcon = painterResource(id = R.drawable.show_fill),
+                        unselectedIcon = painterResource(id = R.drawable.show_no_fill),
                     )
                 )
 
@@ -165,15 +145,7 @@ class MainActivity : ComponentActivity() {
                                                             }
                                                         }
                                                         2 -> {
-                                                            if (currentRoute != SettingsDestination.route) {
-                                                                navController.navigate(SettingsDestination.route) {
-                                                                    popUpTo(ListDestination.route) {
-                                                                        inclusive = true
-                                                                        saveState = true
-                                                                    } // Pop up to Settings, but don't pop Settings itself
-                                                                    restoreState = true
-                                                                }
-                                                            }
+                                                            // to do
                                                         }
                                                         // ... other destinations ...
                                                     }
@@ -185,20 +157,11 @@ class MainActivity : ComponentActivity() {
                                             label = { Text(text = item.title) },
                                             alwaysShowLabel = false,
                                             icon = {
-                                                BadgedBox(
-                                                    badge = {
-                                                        if (item.badgeCount != null) {
-                                                            Badge { Text(text = item.badgeCount.toString()) }
-                                                        } else if (item.hasNews) {
-                                                            Badge()
-                                                        }
-                                                    }
-                                                ) {
-                                                    Icon(
-                                                        imageVector = if (selectedItemIndex == index) item.selectedIcon else item.unselectedIcon,
-                                                        contentDescription = item.title
-                                                    )
-                                                }
+                                                Icon(
+                                                    //imageVector = if (selectedItemIndex == index) item.selectedIcon else item.unselectedIcon,
+                                                    painter = if (selectedItemIndex == index) item.selectedIcon else item.unselectedIcon,
+                                                    contentDescription = item.title
+                                                )
                                             }
                                         )
                                     }
