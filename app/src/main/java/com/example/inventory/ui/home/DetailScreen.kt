@@ -192,7 +192,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             contentDescription = "Back"
                         )
                     }
-                },
+                }
             )
         },
         // Add movie to list FAB
