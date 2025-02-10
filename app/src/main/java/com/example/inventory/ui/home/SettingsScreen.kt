@@ -52,7 +52,7 @@ fun SettingsScreen(navController: NavHostController) {
 
     // var materialYouEnabled by remember { mutableStateOf(false) }
     var selectedTheme by remember { mutableStateOf("Light") }
-    val themes = listOf("Wallpaper", "Dark", "Light")
+    val themes = listOf("Dynamic", "Dark", "Light", "OLED Black")
     val tabOptions = listOf("List", "Discover", "Settings")
     val context = navController.context
     val coroutineScope = rememberCoroutineScope()

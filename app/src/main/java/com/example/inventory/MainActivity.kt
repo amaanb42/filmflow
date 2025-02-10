@@ -110,7 +110,7 @@ class MainActivity : ComponentActivity() {
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colorScheme.surface
                 ) {
                     Scaffold(
                         bottomBar = {
@@ -130,7 +130,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             ) {
                                 NavigationBar(
-                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                                     contentColor = MaterialTheme.colorScheme.onSurface,
                                     tonalElevation = 0.dp
                                 ) {

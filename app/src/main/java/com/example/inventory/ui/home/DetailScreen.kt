@@ -17,6 +17,8 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BasicTooltipBox
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -36,12 +38,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberBasicTooltipState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,6 +59,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -201,7 +207,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             movieToAdd?.let { movie -> // Use movie here for clarity
                 // Animate the containerColor
                 val animatedContainerColor by animateColorAsState(
-                    targetValue = if (isInList) material_red else MaterialTheme.colorScheme.primary,
+                    targetValue = if (isInList) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
                     animationSpec = tween(durationMillis = 400) // Adjust duration as needed
                 )
 
@@ -234,9 +240,11 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         } else {
                             Icons.Filled.Add
                         }
+                        val color = animateColorAsState(if (targetState) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onPrimary)
                         Icon(
                             imageVector = icon,
-                            contentDescription = if (targetState) "Remove from List" else "Add to List"
+                            contentDescription = if (targetState) "Remove from List" else "Add to List",
+                            tint = color.value
                         )
                     }
                 }
@@ -771,4 +779,3 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
         )
     }
 }
-
