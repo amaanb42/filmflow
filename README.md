@@ -1,7 +1,7 @@
 # Movie Tracker
 - Android app to track and rate movies.
-- Utilizes Room database, Jetpack Compose, and Kotlin
-- Connects to TMDB for online search queries
+- Room database, Jetpack Compose, and Kotlin
+- Utilizes TMDB for online search queries and media information
 - Follows Google's material design 3 UI guidelines 
 
 Primary Screen             |  Edit/Add Movie Screen
