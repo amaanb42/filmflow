@@ -2,6 +2,7 @@
 - Android app to track and rate movies.
 - Utilizes Room database, Jetpack Compose, and Kotlin
 - Connects to TMDB for online search queries
+- Follows Google's material design 3 UI guidelines 
 
 Primary Screen             |  Edit/Add Movie Screen
 :-------------------------:|:-------------------------:
