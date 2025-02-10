@@ -24,11 +24,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,9 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.inventory.R
-import com.example.inventory.data.SettingsDataStore
 import com.example.inventory.ui.navigation.NavigationDestination
-import kotlinx.coroutines.launch
 
 
 object SettingsDestination : NavigationDestination {
@@ -55,12 +51,8 @@ fun SettingsScreen(navController: NavHostController) {
     // var materialYouEnabled by remember { mutableStateOf(false) }
     var selectedTheme by remember { mutableStateOf("Dynamic") }
     val themes = listOf("Dynamic", "Dark", "Light", "OLED Black")
-    val tabOptions = listOf("List", "Discover", "Settings")
-    val context = navController.context
-    val coroutineScope = rememberCoroutineScope()
+    val tabOptions = listOf("Discover", "Movies", "TV Shows")
 
-    val startTabFlow = SettingsDataStore.getDefaultTab(context)
-    val startTab = startTabFlow.collectAsState(initial = "Discover").value
 
     Scaffold(
         topBar = {
@@ -133,12 +125,8 @@ fun SettingsScreen(navController: NavHostController) {
                 DropDownMenuSettings(
                     label = "Start Screen",
                     options = tabOptions,
-                    selectedOption = startTab,
-                    onSelect = { tab ->
-                        coroutineScope.launch {
-                            SettingsDataStore.saveDefault(context, tab)
-                        }
-                    }
+                    selectedOption = "Discover",
+                    onSelect = {/*TODO*/}
                 )
 
 //                Row(verticalAlignment = Alignment.CenterVertically) {
