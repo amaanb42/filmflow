@@ -303,7 +303,7 @@ fun MovieCard(movie: MovieSearchResult, onMovieClick: (Int) -> Unit) {
             contentDescription = movie.title, // Use movie title for accessibility
             modifier = Modifier
                 .clickable { onMovieClick(movie.id) }
-                .width(128.dp)
+                .width(108.dp)
                 .aspectRatio(0.6667f),
             contentScale = ContentScale.Crop,
             loading = {

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -34,8 +33,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,7 +55,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -67,7 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieSearchResult
 import com.example.inventory.data.api.displayRandomMovie
@@ -378,38 +373,8 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
                     modifier = Modifier.padding(top = 15.dp, start = 15.dp, end = 15.dp),
                     horizontalAlignment = Alignment.CenterHorizontally // Center the text
                 ) {
-                    Card {
-                        SubcomposeAsyncImage(
-                            model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
-                            contentDescription = null,
-                            modifier = Modifier
-                                .clickable {
-                                    navigateToMovieDetails(navController, movie.id)
-                                }
-                                .fillMaxWidth()
-                                .aspectRatio(0.6667f),
-                            contentScale = ContentScale.Crop,
-                            loading = {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .aspectRatio(0.6667f),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator()
-                                }
-                            },
-                            error = {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .aspectRatio(0.6667f),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text("Image not available")
-                                }
-                            }
-                        )
+                    MovieCard(movie = movie) { movieId ->
+                        navigateToMovieDetails(navController, movieId)
                     }
                     // Movie title
                     Text(
