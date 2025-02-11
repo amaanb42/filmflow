@@ -74,6 +74,12 @@ fun getNowPlayingMovies(): List<MovieSearchResult>{
     return parseMovieList(resultsArray)
 }
 
+fun getUpcomingMovies(): List<MovieSearchResult>{
+    val upcomingMovies = apiRequest("https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1")
+    val resultsArray = upcomingMovies?.getJSONArray("results") ?: JSONArray()
+    return parseMovieList(resultsArray)
+}
+
 fun getRecommendedMovies(id: Int): List<MovieSearchResult>{
     val recommendedMoviesJson = apiRequest("https://api.themoviedb.org/3/movie/${id}/recommendations?language=en-US&page=1")
     val resultsArray = recommendedMoviesJson?.getJSONArray("results") ?: JSONArray()
