@@ -9,6 +9,8 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.ConnectException
 import java.net.UnknownHostException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 const val apiAccessToken = BuildConfig.API_ACCESS_TOKEN
@@ -74,8 +76,24 @@ fun getNowPlayingMovies(): List<MovieSearchResult>{
     return parseMovieList(resultsArray)
 }
 
-fun getUpcomingMovies(): List<MovieSearchResult>{
-    val upcomingMovies = apiRequest("https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1")
+fun getUpcomingMovies(): List<MovieSearchResult> {
+    // Get today's date
+    val today = LocalDate.now()
+
+    // Format today's date as YYYY-MM-DD
+    val formattedToday = today.format(DateTimeFormatter.ISO_DATE)
+
+    // Calculate the date 10 months from today
+    val tenMonthsLater = today.plusMonths(10)
+
+    // Format the future date as YYYY-MM-DD
+    val formattedFutureDate = tenMonthsLater.format(DateTimeFormatter.ISO_DATE)
+
+
+    // Build the API request URL
+    val url = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&primary_release_date.gte=$formattedToday&primary_release_date.lte=$formattedFutureDate&sort_by=popularity.desc"
+
+    val upcomingMovies = apiRequest(url)
     val resultsArray = upcomingMovies?.getJSONArray("results") ?: JSONArray()
     return parseMovieList(resultsArray)
 }
