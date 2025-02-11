@@ -147,7 +147,8 @@ fun SearchScreen(navController: NavHostController) {
                 .padding(
                     top = if (active) 0.dp else innerPadding.calculateTopPadding(),
                     start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr)
+                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+                    //bottom = innerPadding.calculateBottomPadding()
                     // Exclude bottom padding
                 )
         ) {
@@ -279,7 +280,9 @@ fun SearchScreen(navController: NavHostController) {
 
             item {
                 // Below code for trending and theater carousels on search screen
-                Column {
+                Column (
+                    modifier = Modifier.padding(bottom = 24.dp)
+                ) {
                     Text(
                         text = "Trending",
                         modifier = Modifier
