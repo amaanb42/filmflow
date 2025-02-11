@@ -141,211 +141,217 @@ fun SearchScreen(navController: NavHostController) {
             }
         }
     ) {innerPadding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
                     top = if (active) 0.dp else innerPadding.calculateTopPadding(),
                     start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
                     end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-                    //bottom = innerPadding.calculateBottomPadding()
-                    // Exclude bottom padding
                 )
         ) {
-            item {
-                SearchBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = searchBarPadding)
-                        .padding(vertical = searchBarVerticalPadding),
-                    query = searchQuery,
-                    onQueryChange = {
-                        searchQuery = it
-                        searchSubmitted = false
-                    },
-                    onSearch = {
-                        keyboardController?.hide()
-                        searchSubmitted = true // Set to true when search is submitted
-                        coroutineScope.launch(Dispatchers.IO) {
-                            //delay(200)
-                            async {
-                                tempMovieList = getMovieQuery(searchQuery)
-                            }.await()
-                        }
-                    },
-                    active = active,
-                    onActiveChange = {
-                        active = it
-                    },
-                    placeholder = {
-                        Text(text = "Search for a movie")
-                    },
-                    leadingIcon = {
-                        if (active) {
-                            Icon(
-                                modifier = Modifier.clickable { searchQuery = ""; active = false },
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back Icon"
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search Icon"
-                            )
-                        }
-                    },
-                    trailingIcon = {
-                        if (active) {
-                            Icon(
-                                modifier = Modifier.clickable {
-                                    if (searchQuery.isNotEmpty()) {
-                                        searchQuery = ""  // Clear the search query first
-                                    } else {
-                                        active = false  // Close the search bar if the query is already empty
+            SearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = searchBarPadding)
+                    .padding(vertical = searchBarVerticalPadding),
+                query = searchQuery,
+                onQueryChange = {
+                    searchQuery = it
+                    searchSubmitted = false
+                },
+                onSearch = {
+                    keyboardController?.hide()
+                    searchSubmitted = true // Set to true when search is submitted
+                    coroutineScope.launch(Dispatchers.IO) {
+                        //delay(200)
+                        async {
+                            tempMovieList = getMovieQuery(searchQuery)
+                        }.await()
+                    }
+                },
+                active = active,
+                onActiveChange = {
+                    active = it
+                },
+                placeholder = {
+                    Text(text = "Search for a movie")
+                },
+                leadingIcon = {
+                    if (active) {
+                        Icon(
+                            modifier = Modifier.clickable { searchQuery = ""; active = false },
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back Icon"
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search Icon"
+                        )
+                    }
+                },
+                trailingIcon = {
+                    if (active) {
+                        Icon(
+                            modifier = Modifier.clickable {
+                                if (searchQuery.isNotEmpty()) {
+                                    searchQuery = ""  // Clear the search query first
+                                } else {
+                                    active = false  // Close the search bar if the query is already empty
+                                }
+                            },
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close Icon",
+                        )
+                    }
+                },
+                colors = SearchBarDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp), // Background color of the search bar
+                )
+            ) {
+                if (searchQuery.isNotEmpty()) {
+                    SearchRows(tempMovieList, navController, searchSubmitted)
+                } else {
+                    tempMovieList.clear()
+                }
+            }
+
+            // Randomize button
+            Button(
+                onClick = {
+                    isSheetOpen = true
+                },
+                //enabled = itemUiState.isEntryValid,
+                shape = RoundedCornerShape(32.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .width(100.dp)
+                    .wrapContentSize(align = Alignment.Center)
+            ) {
+                Text(text = stringResource(R.string.random_button))
+            }
+
+            if (isSheetOpen) {
+                ModalBottomSheet(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    sheetState = sheetState,
+                    onDismissRequest = { isSheetOpen = false },
+                ) {
+                    val genreList = getGenreHardCode()
+                    LazyVerticalGrid(columns = GridCells.Fixed(2))
+                    {
+                        var randMovieID = 0
+                        items(genreList.size) { genre ->
+                            ListItem(
+                                modifier = Modifier.combinedClickable(
+                                    onClick = { },
+                                ).clickable {
+                                    isSheetOpen = false
+                                    randomizeGenre = genreList[genre]
+                                    coroutineScope.launch(Dispatchers.IO) {
+                                        async {
+                                            randMovieID = displayRandomMovie(randomizeGenre) ?: 0
+                                        }.await()
+                                        withContext(Dispatchers.Main) {
+                                            navigateToMovieDetails(navController, randMovieID)
+                                        }
                                     }
                                 },
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Close Icon",
+                                headlineContent = {
+                                    Text(
+                                        text = genreList[genre].first,
+                                        textAlign = TextAlign.Center, // Center the text
+                                        modifier = Modifier.fillMaxWidth() // Make text fill the width
+                                    )
+                                }
                             )
                         }
-                    },
-                    colors = SearchBarDefaults.colors(
-                        containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp), // Background color of the search bar
-                    )
-                ) {
-                    if (searchQuery.isNotEmpty()) {
-                        SearchRows(tempMovieList, navController, searchSubmitted)
-                    } else {
-                        tempMovieList.clear()
-                    }
-                }
-            }
-
-            item {
-                // Randomize button
-                Button(
-                    onClick = {
-                        isSheetOpen = true
-                    },
-                    //enabled = itemUiState.isEntryValid,
-                    shape = RoundedCornerShape(32.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .width(100.dp)
-                        .wrapContentSize(align = Alignment.Center)
-                ) {
-                    Text(text = stringResource(R.string.random_button))
-                }
-
-                if (isSheetOpen) {
-                    ModalBottomSheet(
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        sheetState = sheetState,
-                        onDismissRequest = { isSheetOpen = false },
-                    ) {
-                        val genreList = getGenreHardCode()
-                        LazyVerticalGrid(columns = GridCells.Fixed(2))
-                        {
-                            var randMovieID = 0
-                            items(genreList.size) { genre ->
-                                ListItem(
-                                    modifier = Modifier.combinedClickable(
-                                        onClick = { },
-                                    ).clickable {
-                                        isSheetOpen = false
-                                        randomizeGenre = genreList[genre]
-                                        coroutineScope.launch(Dispatchers.IO) {
-                                            async {
-                                                randMovieID = displayRandomMovie(randomizeGenre) ?: 0
-                                            }.await()
-                                            withContext(Dispatchers.Main) {
-                                                navigateToMovieDetails(navController, randMovieID)
-                                            }
-                                        }
-                                    },
-                                    headlineContent = {
-                                        Text(
-                                            text = genreList[genre].first,
-                                            textAlign = TextAlign.Center, // Center the text
-                                            modifier = Modifier.fillMaxWidth() // Make text fill the width
-                                        )
-                                    }
-                                )
-                            }
-                        }
                     }
                 }
             }
 
 
-            item {
-                // Below code for trending and theater carousels on search screen
-                Column (
-                    modifier = Modifier.padding(bottom = 24.dp)
-                ) {
-                    Text(
-                        text = "Trending",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
-                        textAlign = TextAlign.Left,
-                        fontSize = 20.sp
-                    )
-
-                    LazyRow (
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+//                .padding(
+//                    top = if (active) 0.dp else innerPadding.calculateTopPadding(),
+//                    start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
+//                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+//                    //bottom = innerPadding.calculateBottomPadding()
+//                    // Exclude bottom padding
+//                )
+            ) {
+                item {
+                    // Below code for trending and theater carousels on search screen
+                    Column (
+                        modifier = Modifier.padding(bottom = 24.dp)
                     ) {
-                        items(viewModel.trendingMovies, key = { movie -> movie.id }) { movie ->
-                            MovieCard(movie = movie) { movieId ->
-                                navigateToMovieDetails(navController, movieId)
+                        Text(
+                            text = "Trending",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
+                            textAlign = TextAlign.Left,
+                            fontSize = 20.sp
+                        )
+
+                        LazyRow (
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(viewModel.trendingMovies, key = { movie -> movie.id }) { movie ->
+                                MovieCard(movie = movie) { movieId ->
+                                    navigateToMovieDetails(navController, movieId)
+                                }
                             }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(24.dp)) // Add vertical spacing
+                        Spacer(modifier = Modifier.height(24.dp)) // Add vertical spacing
 
-                    Text(
-                        text = "In Theaters",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
-                        textAlign = TextAlign.Left,
-                        fontSize = 20.sp
-                    )
+                        Text(
+                            text = "In Theaters",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
+                            textAlign = TextAlign.Left,
+                            fontSize = 20.sp
+                        )
 
-                    LazyRow (
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(viewModel.nowPlayingMovies, key = { movie -> movie.id }) { movie ->
-                            MovieCard(movie = movie) { movieId ->
-                                navigateToMovieDetails(navController, movieId)
+                        LazyRow (
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(viewModel.nowPlayingMovies, key = { movie -> movie.id }) { movie ->
+                                MovieCard(movie = movie) { movieId ->
+                                    navigateToMovieDetails(navController, movieId)
+                                }
                             }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(24.dp)) // Add vertical spacing
+                        Spacer(modifier = Modifier.height(24.dp)) // Add vertical spacing
 
-                    Text(
-                        text = "Upcoming",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
-                        textAlign = TextAlign.Left,
-                        fontSize = 20.sp
-                    )
+                        Text(
+                            text = "Upcoming",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
+                            textAlign = TextAlign.Left,
+                            fontSize = 20.sp
+                        )
 
-                    LazyRow (
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(viewModel.upcomingMovies, key = { movie -> movie.id }) { movie ->
-                            MovieCard(movie = movie) { movieId ->
-                                navigateToMovieDetails(navController, movieId)
+                        LazyRow (
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(viewModel.upcomingMovies, key = { movie -> movie.id }) { movie ->
+                                MovieCard(movie = movie) { movieId ->
+                                    navigateToMovieDetails(navController, movieId)
+                                }
                             }
                         }
                     }
