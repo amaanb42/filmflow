@@ -7,16 +7,21 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
@@ -47,8 +53,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
+import com.example.inventory.data.api.MovieSearchResult
 
 
 // For formatting the TMDB community rating into a nice percentage
@@ -283,6 +291,39 @@ fun RatingCircle(
             color = Color.White,
             fontSize = fontSize,
             fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun MovieCard(movie: MovieSearchResult, onMovieClick: (Int) -> Unit) {
+    Card {
+        SubcomposeAsyncImage(
+            model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+            contentDescription = movie.title, // Use movie title for accessibility
+            modifier = Modifier
+                .clickable { onMovieClick(movie.id) }
+                .width(128.dp)
+                .aspectRatio(0.6667f),
+            contentScale = ContentScale.Crop,
+            loading = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(), // Use fillMaxSize for proper centering
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            },
+            error = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(), // Use fillMaxSize for proper centering
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Image not available")
+                }
+            }
         )
     }
 }
