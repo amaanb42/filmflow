@@ -48,22 +48,22 @@ abstract class AppDatabase : RoomDatabase(){
                      * attempts to perform a migration with no defined migration path.
                      */
                     .fallbackToDestructiveMigration()
-                    .addCallback(object: RoomDatabase.Callback() {
+                    .addCallback(object: Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
                             val userListRepository = AppDataContainer(context).userListRepository
                             // insert initial data into database using background thread
                             CoroutineScope(Dispatchers.IO).launch {
-                                    // insert initial lists
-                                    userListRepository.insertList(
-                                        UserList("Watching")
-                                    )
-                                    userListRepository.insertList(
-                                        UserList("Planning")
-                                    )
-                                    userListRepository.insertList(
-                                        UserList("Completed")
-                                    )
+                                // insert initial lists
+                                userListRepository.insertList(
+                                    UserList("Watching")
+                                )
+                                userListRepository.insertList(
+                                    UserList("Planning")
+                                )
+                                userListRepository.insertList(
+                                    UserList("Completed")
+                                )
                             }
                         }
                     }
