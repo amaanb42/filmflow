@@ -2,6 +2,7 @@ package com.example.inventory.data.listshows
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import com.example.inventory.data.show.Show
 import com.example.inventory.data.userlist.UserList
 
@@ -23,7 +24,8 @@ import com.example.inventory.data.userlist.UserList
             onDelete = ForeignKey.CASCADE, // cascade deletes and updates from Show to here
             onUpdate = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index("showID")]
 )
 data class ListShows(
     val listName: String,

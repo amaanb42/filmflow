@@ -2,6 +2,7 @@ package com.example.inventory.data.listmovies
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
 
@@ -23,7 +24,8 @@ import com.example.inventory.data.userlist.UserList
             onDelete = ForeignKey.CASCADE, // cascade deletes and updates from Movie to here
             onUpdate = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index("movieID")]
 )
 data class ListMovies(
     val listName: String,
