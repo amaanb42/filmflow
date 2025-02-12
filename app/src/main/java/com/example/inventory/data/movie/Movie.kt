@@ -8,8 +8,6 @@ import kotlin.collections.List
 data class Movie(
     @PrimaryKey val movieID: Int,
     val title: String, // must stay
-//    val overview: String?, // can remove this
-//    val director: String?, // can remove this
     val posterPath: String, // keep this
     val releaseDate: String?, // must stay
     val runtime: Int?, // must stay
