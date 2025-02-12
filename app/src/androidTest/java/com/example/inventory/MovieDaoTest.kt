@@ -22,18 +22,17 @@ import kotlin.jvm.Throws
 class MovieDaoTest {
     private lateinit var movieDao: MovieDao
     private lateinit var db: AppDatabase
-    private val movie1 = Movie(123, "Smile", "It's fun.",
-        "Someone", "t324fdsaf/", "2023-09-08",
-        120, null, listOf("Horror", "Sci-fi"))
-    private val movie2 = Movie(456, "Ball", "Bouncy.",
-        "Rico", "y8787433434/", "2020-12-30",
-        146, null, listOf("Comedy", "Drama", "Thriller"))
-    private val movie3 = Movie(789, "Harry Potter", "Magical.",
-        "Columbus", "000123241/", "2001-10-01",
-        180, null, listOf("Fantasy"))
-    private val movie4 = Movie(123, "Laugh", "It's fun.",
-        "Someone", "t324fdsaf/", "2023-09-08",
-        120, null, listOf("Horror", "Sci-fi"))
+    private val movie1 = Movie(123, "Smile", "t324fdsaf/",
+        "2023-09-08", 120, 6.4f,listOf("Horror", "Sci-fi"))
+    private val movie2 = Movie(456, "Ball", "y8787433434/",
+        "2020-12-30", 146, 7.5f,
+        listOf("Comedy", "Drama", "Thriller"))
+    private val movie3 = Movie(789, "Harry Potter", "000123241/",
+        "2001-10-01", 180, 8.2f,
+        listOf("Fantasy"))
+    private val movie4 = Movie(123, "Laugh", "t324fdsaf/",
+        "2023-09-08", 120, 2.2f,
+         listOf("Horror", "Sci-fi"))
 
     @Before
     fun createDb() {
@@ -82,9 +81,8 @@ class MovieDaoTest {
     @Throws(Exception::class)
     fun updateMovieDetails() = runBlocking {
         movieDao.insert(movie1)
-        val updatedMovie = Movie(123, "Smile", "It's not fun.",
-            "Someone", "t324fdsaf/", "2023-12-23",
-            110, 10.0f, listOf("Horror", "Sci-fi", "Thriller"))
+        val updatedMovie = Movie(123, "Smile", "t324fdsaf/",
+            "2023-09-08", 120, 6.4f,listOf("Horror", "Sci-fi"))
         movieDao.update(updatedMovie)
         val getMovie1 = movieDao.getMovie(123).first()
         assertEquals(getMovie1, updatedMovie)

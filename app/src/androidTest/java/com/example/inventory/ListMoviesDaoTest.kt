@@ -31,13 +31,13 @@ class ListMoviesDaoTest {
     private val list1: UserList = UserList("Completed")
     private val list2: UserList = UserList("In Progress")
     private val movie1 = Movie(123, "Smile", "t324fdsaf/",
-        "2023-09-08", 120, 8.4,listOf("Horror", "Sci-fi"))
-    private val movie2 = Movie(456, "Ball", "Bouncy.",
-        "Rico", "y8787433434/", "2020-12-30",
-        146, null, listOf("Comedy", "Drama", "Thriller"))
-    private val movie3 = Movie(789, "Harry Potter", "Magical.",
-        "Columbus", "000123241/", "2001-10-01",
-        180, null, listOf("Fantasy"))
+        "2023-09-08", 120, 6.4f,listOf("Horror", "Sci-fi"))
+    private val movie2 = Movie(456, "Ball", "y8787433434/",
+        "2020-12-30", 146, 7.5f,
+         listOf("Comedy", "Drama", "Thriller"))
+    private val movie3 = Movie(789, "Harry Potter", "000123241/",
+        "2001-10-01", 180, 8.2f,
+         listOf("Fantasy"))
     private val listMoviePair1 = ListMovies("Completed", 123)
     private val listMoviePair2 = ListMovies("In Progress", 456)
     private val listMoviePair3 = ListMovies("Completed", 789)
