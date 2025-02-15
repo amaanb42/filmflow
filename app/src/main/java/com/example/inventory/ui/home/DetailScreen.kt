@@ -115,13 +115,15 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     var userRating by rememberSaveable { mutableFloatStateOf(movieToAdd?.userRating ?: 0.0f) }
 
 
-    val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
-    val listMoviesRepository = InventoryApplication().container.listMoviesRepository
-    val movieRepository = InventoryApplication().container.movieRepository
-    val viewModel: DetailViewModel = viewModel(factory = DetailViewModelFactory(userListRepository,
-        listMoviesRepository,
-        movieRepository,
-        movieId)
+    // Get the application context (safe in Compose)
+    val context = LocalContext.current.applicationContext as InventoryApplication
+    val userListRepository = context.container.userListRepository
+    val listMoviesRepository = context.container.listMoviesRepository
+    val movieRepository = context.container.movieRepository
+
+    // Use viewModel() with the factory
+    val viewModel: DetailViewModel = viewModel(
+        factory = DetailViewModelFactory(userListRepository, listMoviesRepository, movieRepository, movieId)
     )
     val coroutineScope = rememberCoroutineScope()
 
@@ -133,7 +135,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     var showChangeRatingDialog by remember { mutableStateOf(false) }
 
     // for vibration feedback
-    val context = LocalContext.current
+    //val context = LocalContext.current
     val vibrator = context.getSystemService(Vibrator::class.java)
 
 

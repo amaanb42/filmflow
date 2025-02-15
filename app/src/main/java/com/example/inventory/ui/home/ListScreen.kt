@@ -70,6 +70,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -102,13 +103,17 @@ object ListDestination : NavigationDestination {
 fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
 
     // for list selection sheet
-    val userListRepository = InventoryApplication().container.userListRepository // use app container to get repository
-    val listMoviesRepository = InventoryApplication().container.listMoviesRepository
-    val movieRepository = InventoryApplication().container.movieRepository
-    val viewModel: ListScreenViewModel = viewModel(factory = ListScreenViewModelFactory(userListRepository,
-        listMoviesRepository,
-        movieRepository)
+    // Get the application context (safe in Compose)
+    val context = LocalContext.current.applicationContext as InventoryApplication
+    val userListRepository = context.container.userListRepository
+    val listMoviesRepository = context.container.listMoviesRepository
+    val movieRepository = context.container.movieRepository
+
+    // Use viewModel() with the factory
+    val viewModel: ListScreenViewModel = viewModel(
+        factory = ListScreenViewModelFactory(userListRepository, listMoviesRepository, movieRepository)
     )
+
     val sheetState = rememberModalBottomSheetState()
     val coroutineScope = rememberCoroutineScope()
     var showModal by remember { mutableStateOf(false) }
