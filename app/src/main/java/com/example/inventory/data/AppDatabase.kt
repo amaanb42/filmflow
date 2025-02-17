@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.inventory.data.listmovies.ListMovies
 import com.example.inventory.data.listmovies.ListMoviesDao
 import com.example.inventory.data.listshows.ListShows
@@ -16,15 +15,11 @@ import com.example.inventory.data.show.Show
 import com.example.inventory.data.show.ShowDao
 import com.example.inventory.data.userlist.UserList
 import com.example.inventory.data.userlist.UserListDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 
 @Database(
     entities = [UserList::class, Movie::class, Show::class, ListMovies::class, ListShows::class],
-    version = 3,
-    exportSchema = false
+    version = 4, // IMPORTANT: Increment the version number!
+    exportSchema = true // Good practice to export schema
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -39,14 +34,15 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var Instance: AppDatabase? = null
 
-        fun getDatabase(
-            context: Context,
-            scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-        ): AppDatabase {
+        fun getDatabase(context: Context): AppDatabase {
             return Instance ?: synchronized(this) {
-                val instance = Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
-                    .fallbackToDestructiveMigration() // Keep for development without migrations
-                    .addCallback(PrepopulateCallback(context, scope))  // Use a custom callback
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "app_database" // Database name (should match asset file name, without extension)
+                )
+                    .createFromAsset("databases/app_database.db") // Use createFromAsset
+                    .fallbackToDestructiveMigration() // REMOVE THIS FOR PRODUCTION
                     .build()
                 Instance = instance
                 instance
@@ -55,24 +51,3 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 
-// Custom Callback for Pre-population
-class PrepopulateCallback(
-    private val context: Context,
-    private val scope: CoroutineScope
-) : RoomDatabase.Callback() {
-
-    override fun onCreate(db: SupportSQLiteDatabase) {
-        super.onCreate(db)
-        scope.launch {
-            prepopulateDatabase(context) // Pass the context, not the database instance
-        }
-    }
-
-    private suspend fun prepopulateDatabase(context: Context) {
-        // Now we use the AppContainer to get the repository. This is cleaner.
-        val userListRepository = AppDataContainer(context).userListRepository
-        userListRepository.insertList(UserList("Watching"))
-        userListRepository.insertList(UserList("Planning"))
-        userListRepository.insertList(UserList("Completed"))
-    }
-}
