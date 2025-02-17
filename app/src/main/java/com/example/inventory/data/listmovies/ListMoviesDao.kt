@@ -28,14 +28,14 @@ interface ListMoviesDao {
 
     /* Insert new list-movie relation */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(listMovieRelation: ListMovies)
+    suspend fun insert(listMovieRelation: ListMovies) : Long //returns id
 
     /* Update list-movie relation */
     @Update
     suspend fun update(listMovieRelation: ListMovies)
 
     /* Delete list-movie relation */
-    @Delete
-    suspend fun delete(listMovieRelation: ListMovies)
+    @Query("DELETE FROM list_movies WHERE listName = :listName AND movieID = :movieID")
+    suspend fun deleteByListNameAndMovieId(listName: String, movieID: Int)
 
 }

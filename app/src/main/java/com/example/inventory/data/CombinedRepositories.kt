@@ -45,7 +45,7 @@ interface ShowRepository {
 interface ListMoviesRepository {
     fun getMoviesForListStream(listName: String): Flow<List<Movie>>
     fun getListsForMovieStream(movieID: Int): Flow<List<String>>
-    suspend fun insertListMovieRelation(listMovieRelation: ListMovies)
+    suspend fun insertListMovieRelation(listMovieRelation: ListMovies): Long
     suspend fun updateListMovieRelation(listMovieRelation: ListMovies)
     suspend fun deleteListMovieRelation(listMovieRelation: ListMovies)
 }

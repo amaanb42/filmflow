@@ -3,12 +3,13 @@ package com.example.inventory.data.listmovies
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import androidx.room.PrimaryKey
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.data.userlist.UserList
 
 /* associative entity between List and Movie ; many-to-many relationship*/
-@Entity(tableName = "list_movies",
-    primaryKeys = ["listName", "movieID"],
+@Entity(
+    tableName = "list_movies",
     foreignKeys = [
         ForeignKey(
             entity = UserList::class, // reference to UserList entity
@@ -25,9 +26,10 @@ import com.example.inventory.data.userlist.UserList
             onUpdate = ForeignKey.CASCADE
         )
     ],
-    indices = [Index("movieID")]
+    indices = [Index("movieID"), Index("listName")]
 )
 data class ListMovies(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0, // Auto-generated PK
     val listName: String,
     val movieID: Int // TMDB id of a movie
 )

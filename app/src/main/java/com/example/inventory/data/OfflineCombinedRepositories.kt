@@ -53,7 +53,7 @@ class OfflineListMoviesRepository(private val listMoviesDao: ListMoviesDao) : Li
     override fun getListsForMovieStream(movieID: Int): Flow<List<String>> = listMoviesDao.getListsForMovie(movieID)
     override suspend fun insertListMovieRelation(listMovieRelation: ListMovies) = listMoviesDao.insert(listMovieRelation)
     override suspend fun updateListMovieRelation(listMovieRelation: ListMovies) = listMoviesDao.update(listMovieRelation)
-    override suspend fun deleteListMovieRelation(listMovieRelation: ListMovies) = listMoviesDao.delete(listMovieRelation)
+    override suspend fun deleteListMovieRelation(listMovieRelation: ListMovies) = listMoviesDao.deleteByListNameAndMovieId(listMovieRelation.listName, listMovieRelation.movieID)
 }
 
 class OfflineListShowsRepository(private val listShowsDao: ListShowsDao) : ListShowsRepository {

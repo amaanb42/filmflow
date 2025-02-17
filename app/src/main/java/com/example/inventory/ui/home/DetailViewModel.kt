@@ -53,7 +53,7 @@ class DetailViewModel(
         viewModelScope.launch {
             movieRepository.insertMovie(movie) // have to add to Movie table first
             if (listName !in listsForMovie.value) { // if movie isn't already in the selected list
-                listMoviesRepository.insertListMovieRelation(ListMovies(listName, movie.movieID)) //add to ListMovies relation table
+                listMoviesRepository.insertListMovieRelation(ListMovies(listName = listName, movieID = movie.movieID)) //add to ListMovies relation table
                 userListRepository.incMovieCount(listName) // increment the list's movie count
             }
         }
@@ -62,9 +62,9 @@ class DetailViewModel(
     fun moveMovieToList(oldListName: String, newListName: String) {
         viewModelScope.launch {
             // remove the other relation first and then insert new one
-            listMoviesRepository.deleteListMovieRelation(ListMovies(oldListName, currMovieID))
+            listMoviesRepository.deleteListMovieRelation(ListMovies(listName = oldListName, movieID = currMovieID))
             userListRepository.decMovieCount(oldListName) // decrement the old list's movie count
-            listMoviesRepository.insertListMovieRelation(ListMovies(newListName, currMovieID))
+            listMoviesRepository.insertListMovieRelation(ListMovies(listName = newListName, movieID = currMovieID))
             userListRepository.incMovieCount(newListName) // increment the new list's movie count
         }
     }
