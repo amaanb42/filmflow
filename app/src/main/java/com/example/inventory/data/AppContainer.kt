@@ -14,19 +14,26 @@ interface AppContainer {
 }
 
 class AppDataContainer(private val context: Context) : AppContainer {
+
+    // Create the database instance ONCE.
+    private val database: AppDatabase by lazy {
+        AppDatabase.getDatabase(context)
+    }
+
+
     override val userListRepository: UserListRepository by lazy {
-        OfflineUserListRepository(AppDatabase.getDatabase(context).userListDao())
+        OfflineUserListRepository(database.userListDao()) // Pass the instance
     }
     override val movieRepository: MovieRepository by lazy {
-        OfflineMovieRepository(AppDatabase.getDatabase(context).movieDao())
+        OfflineMovieRepository(database.movieDao())  // Pass the instance
     }
     override val listMoviesRepository: ListMoviesRepository by lazy {
-        OfflineListMoviesRepository(AppDatabase.getDatabase(context).listMoviesDao())
+        OfflineListMoviesRepository(database.listMoviesDao()) // Pass the instance
     }
     override val showRepository: ShowRepository by lazy {
-        OfflineShowRepository(AppDatabase.getDatabase(context).showDao())
+        OfflineShowRepository(database.showDao())  // Pass the instance
     }
     override val listShowsRepository: ListShowsRepository by lazy {
-        OfflineListShowsRepository(AppDatabase.getDatabase(context).listShowsDao())
+        OfflineListShowsRepository(database.listShowsDao())  // Pass the instance
     }
 }

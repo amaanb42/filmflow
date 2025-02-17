@@ -18,6 +18,7 @@ import com.example.inventory.data.userlist.UserList
 import com.example.inventory.data.userlist.UserListDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
 @Database(
@@ -26,7 +27,7 @@ import kotlinx.coroutines.launch
     exportSchema = false
 )
 @TypeConverters(Converters::class)
-abstract class AppDatabase : RoomDatabase(){
+abstract class AppDatabase : RoomDatabase() {
 
     abstract fun userListDao(): UserListDao
     abstract fun movieDao(): MovieDao
@@ -38,39 +39,40 @@ abstract class AppDatabase : RoomDatabase(){
         @Volatile
         private var Instance: AppDatabase? = null
 
-        fun getDatabase(context: Context): AppDatabase {
-            // if the Instance is not null, return it, otherwise create a new database instance.
+        fun getDatabase(
+            context: Context,
+            scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        ): AppDatabase {
             return Instance ?: synchronized(this) {
-                Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
-                    /**
-                     * Setting this option in your app's database builder means that Room
-                     * permanently deletes all data from the tables in your database when it
-                     * attempts to perform a migration with no defined migration path.
-                     */
-                    .fallbackToDestructiveMigration()
-                    .addCallback(object: Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            val userListRepository = AppDataContainer(context).userListRepository
-                            // insert initial data into database using background thread
-                            CoroutineScope(Dispatchers.IO).launch {
-                                // insert initial lists
-                                userListRepository.insertList(
-                                    UserList("Watching")
-                                )
-                                userListRepository.insertList(
-                                    UserList("Planning")
-                                )
-                                userListRepository.insertList(
-                                    UserList("Completed")
-                                )
-                            }
-                        }
-                    }
-                    )
+                val instance = Room.databaseBuilder(context, AppDatabase::class.java, "app_database")
+                    .fallbackToDestructiveMigration() // Keep for development without migrations
+                    .addCallback(PrepopulateCallback(context, scope))  // Use a custom callback
                     .build()
-                    .also { Instance = it }
+                Instance = instance
+                instance
             }
         }
+    }
+}
+
+// Custom Callback for Pre-population
+class PrepopulateCallback(
+    private val context: Context,
+    private val scope: CoroutineScope
+) : RoomDatabase.Callback() {
+
+    override fun onCreate(db: SupportSQLiteDatabase) {
+        super.onCreate(db)
+        scope.launch {
+            prepopulateDatabase(context) // Pass the context, not the database instance
+        }
+    }
+
+    private suspend fun prepopulateDatabase(context: Context) {
+        // Now we use the AppContainer to get the repository. This is cleaner.
+        val userListRepository = AppDataContainer(context).userListRepository
+        userListRepository.insertList(UserList("Watching"))
+        userListRepository.insertList(UserList("Planning"))
+        userListRepository.insertList(UserList("Completed"))
     }
 }
