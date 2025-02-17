@@ -27,7 +27,7 @@ interface ListShowsDao {
     fun getListsForShow(showID: Int): Flow<List<String>> //return list of strings (the list names)
 
     /* Insert new list-show relation */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(listShowRelation: ListShows)
 
     /* Update list-show relation */

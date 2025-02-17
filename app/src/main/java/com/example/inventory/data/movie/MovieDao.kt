@@ -29,7 +29,7 @@ interface MovieDao {
     suspend fun deleteMovieByID(movieID: Int)
 
     /* Insert a new movie */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(movie: Movie)
 
     /* Update a movie's details */

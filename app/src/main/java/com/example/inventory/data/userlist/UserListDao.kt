@@ -66,7 +66,7 @@ interface UserListDao {
     suspend fun deleteListByName(listName: String)
 
     /* Insert a new list */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(list: UserList)
 
     /* Update a list */

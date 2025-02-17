@@ -27,7 +27,7 @@ interface ListMoviesDao {
     fun getListsForMovie(movieID: Int): Flow<List<String>> //return list of strings (the list names)
 
     /* Insert new list-movie relation */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(listMovieRelation: ListMovies)
 
     /* Update list-movie relation */

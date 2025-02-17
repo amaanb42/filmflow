@@ -29,7 +29,7 @@ interface ShowDao {
     suspend fun deleteShowByID(showID: Int)
 
     /* Insert a new show */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(show: Show)
 
     /* Update a show's details */
