@@ -8,8 +8,6 @@ import kotlin.collections.List
 data class Show(
     @PrimaryKey val showID: Int,
     val title: String,
-    val overview: String?,
-    val creator: String?,
     val posterPath: String,
     val seasonCount: Int?,
     val episodeCount: Int?,
