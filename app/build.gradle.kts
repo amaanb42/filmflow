@@ -95,3 +95,8 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.2")
 
 }
+
+// for exporting schema
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
