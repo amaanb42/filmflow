@@ -104,10 +104,32 @@ fun getRecommendedMovies(id: Int): List<MovieSearchResult>{
     return parseMovieList(resultsArray)
 }
 
+fun getCollectionIdForMovie(movieId: Int): Int? {
+    val movieDetails = apiRequest("https://api.themoviedb.org/3/movie/${movieId}?language=en-US")
+
+    if (movieDetails == null) {
+        Log.e("getCollectionId", "Could not retrieve movie details for ID: $movieId")
+        return null
+    }
+
+    if (!movieDetails.has("belongs_to_collection")) {
+        Log.i("getCollectionId", "Movie with ID $movieId does not belong to a collection.")
+        return null
+    }
+
+    val collectionObject = movieDetails.optJSONObject("belongs_to_collection")
+    if (collectionObject == null) {
+        Log.i("getCollectionId", "Movie with ID $movieId has a null 'belongs_to_collection' field.")
+        return null
+    }
+
+    return collectionObject.optInt("id", -1).takeIf { it != -1 }
+}
+
 fun getMovieCollection(collection_id: Int): List<MovieSearchResult>{
-    val recommendedMoviesJson = apiRequest("https://api.themoviedb.org/3/collection/${collection_id}?language=en-US")
-    val resultsArray = recommendedMoviesJson?.getJSONArray("results") ?: JSONArray()
-    return parseMovieList(resultsArray)
+    val collectionJson = apiRequest("https://api.themoviedb.org/3/collection/${collection_id}?language=en-US")
+    val partsArray = collectionJson?.getJSONArray("parts") ?: JSONArray() // use parts instead of results
+    return parseMovieList(partsArray)
 }
 
 fun getMovieCast(id: Int): List<MovieCast> {

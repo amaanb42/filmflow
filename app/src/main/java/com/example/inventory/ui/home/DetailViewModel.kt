@@ -11,7 +11,9 @@ import com.example.inventory.data.MovieRepository
 import com.example.inventory.data.UserListRepository
 import com.example.inventory.data.api.MovieCast
 import com.example.inventory.data.api.MovieSearchResult
+import com.example.inventory.data.api.getCollectionIdForMovie
 import com.example.inventory.data.api.getMovieCast
+import com.example.inventory.data.api.getMovieCollection
 import com.example.inventory.data.api.getRecommendedMovies
 import com.example.inventory.data.listmovies.ListMovies
 import com.example.inventory.data.movie.Movie
@@ -26,19 +28,23 @@ class DetailViewModel(
     private val listMoviesRepository: ListMoviesRepository,
     private val movieRepository: MovieRepository,
     private val currMovieID: Int
+    //private val collectionID: Int
 ) : ViewModel() {
-
-
-    var recommendedMovies by mutableStateOf(listOf<MovieSearchResult>())
-        private set
 
     var movieCast by mutableStateOf(listOf<MovieCast>())
         private set
 
+    var recommendedMovies by mutableStateOf(listOf<MovieSearchResult>())
+        private set
+
+    var movieCollection by mutableStateOf(listOf<MovieSearchResult>())
+        private set
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            recommendedMovies = getRecommendedMovies(currMovieID)
             movieCast = getMovieCast(currMovieID)
+            movieCollection = getCollectionIdForMovie(currMovieID)?.let { getMovieCollection(it) } ?: listOf() // assigns empty list if movie does not have a collection
+            recommendedMovies = getRecommendedMovies(currMovieID)
         }
     }
 
@@ -92,6 +98,7 @@ class DetailViewModelFactory(
     private val listMoviesRepository: ListMoviesRepository,
     private val movieRepository: MovieRepository,
     private val currMovieID: Int
+    //private val collectionID: Int
 ) : ViewModelProvider.Factory {
     override fun <T: ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DetailViewModel::class.java)) {

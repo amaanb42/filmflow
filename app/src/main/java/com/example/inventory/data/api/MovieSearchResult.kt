@@ -6,5 +6,3 @@ data class MovieSearchResult(
     val posterPath: String,
     val popularity: Double
 )
-
-

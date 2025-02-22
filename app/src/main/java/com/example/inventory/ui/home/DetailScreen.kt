@@ -90,6 +90,7 @@ import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
+import com.example.inventory.data.api.getCollectionIdForMovie
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
 import kotlinx.coroutines.Dispatchers
@@ -113,7 +114,16 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     var movieDetails by remember { mutableStateOf<MovieDetails?>(null) } // Renamed for clarity
     var movieToAdd by remember { mutableStateOf<Movie?>(null) } // Make this a state
     var userRating by rememberSaveable { mutableFloatStateOf(movieToAdd?.userRating ?: 0.0f) }
+    val coroutineScope = rememberCoroutineScope()
 
+    // Get collection ID within LaunchedEffect
+    //var collectionID by remember { mutableStateOf<Int?>(null) }
+    // Fetch collection ID *before* creating the ViewModel
+//    LaunchedEffect(movieId) {
+//        coroutineScope.launch(Dispatchers.IO) {
+//            collectionID = getCollectionIdForMovie(movieId)
+//        }
+//    }
 
     // Get the application context (safe in Compose)
     val context = LocalContext.current.applicationContext as InventoryApplication
@@ -123,9 +133,14 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
 
     // Use viewModel() with the factory
     val viewModel: DetailViewModel = viewModel(
-        factory = DetailViewModelFactory(userListRepository, listMoviesRepository, movieRepository, movieId)
+        factory = DetailViewModelFactory(
+            userListRepository,
+            listMoviesRepository,
+            movieRepository,
+            movieId
+            //collectionID ?: -1 // Provide a default value if collectionId is null
+        )
     )
-    val coroutineScope = rememberCoroutineScope()
 
     // collect data from ListScreenViewModel
     val listsMovieIn by viewModel.listsForMovie.collectAsState()
@@ -591,6 +606,79 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                             modifier = Modifier.width(130.dp),
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp) // Consistent padding on all sides
+                ) {
+                    Column { // Use a Column to structure the content
+                        Text(
+                            text = "Related Films",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, top = 12.dp), // Consistent padding
+                            textAlign = TextAlign.Left,
+                            //fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold // Add FontWeight for emphasis
+                        )
+
+                        if (viewModel.movieCollection.isEmpty()) { // Check if the list is empty
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) { Text("Not Available") }
+                        } else {
+                            LazyRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp), // Consistent padding
+                                contentPadding = PaddingValues(vertical = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(
+                                    viewModel.movieCollection,
+                                    key = { movie -> movie.id }) { movie ->
+                                    Card {
+                                        SubcomposeAsyncImage(
+                                            model = "https://image.tmdb.org/t/p/w500${movie.posterPath}",
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .clickable {
+                                                    navigateToMovieDetails(
+                                                        navController,
+                                                        movie.id
+                                                    )
+                                                }
+                                                .width(124.dp)
+                                                .aspectRatio(0.6667f),
+                                            contentScale = ContentScale.Crop,
+                                            loading = {
+                                                Box(
+                                                    modifier = Modifier.size(24.dp), // changes size of loading icon
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    CircularProgressIndicator()
+                                                }
+                                            },
+                                            error = {
+                                                Text("Image not available")
+                                            }
                                         )
                                     }
                                 }
