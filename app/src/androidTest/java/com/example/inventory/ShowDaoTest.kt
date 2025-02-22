@@ -22,18 +22,50 @@ import kotlin.jvm.Throws
 class ShowDaoTest {
     private lateinit var showDao: ShowDao
     private lateinit var db: AppDatabase
-    private val show1 = Show(123, "GoT", "Dragoons.", "Martin",
-        "d98892u/", 7, 100, "2011-07-21",
-        "2017-11-01", null, listOf("Fantasy", "Fiction", "Adventure"))
-    private val show2 = Show(456, "Rob & Big", "Rad.", "Rob",
-        "rb838591/", 5, 80, "2005-01-21",
-        "2010-09-20", null, listOf("Reality"))
-    private val show3 = Show(789, "Barry", "IDK", "Someone",
-        "112324kjkj34/", 6, 99, "2014-04-20",
-        "2020-05-17", null, listOf("Fiction", "Drama"))
-    private val show4 = Show(123, "HoTD", "Dragoons.", "Martin",
-        "d98892u/", 7, 100, "2011-07-21",
-        "2017-11-01", null, listOf("Fantasy", "Fiction", "Adventure"))
+    private val show1 = Show(
+        showID = 123,
+        title = "GoT",
+        posterPath = "Dragoons.",
+        seasonCount = 7,
+        episodeCount = 100,
+        firstAirDate = "2011-07-21",
+        lastAirDate = "2017-11-01",
+        userRating = null,
+        genres = listOf("Fantasy", "Fiction", "Adventure")
+    )
+    private val show2 = Show(
+        showID = 456,
+        title = "Rob & Big",
+        posterPath = "Rad.",
+        seasonCount = 5,
+        episodeCount = 80,
+        firstAirDate = "2005-01-21",
+        lastAirDate = "2010-09-20",
+        userRating = null,
+        genres = listOf("Reality")
+    )
+    private val show3 = Show(
+        showID = 789,
+        title = "Barry",
+        posterPath = "IDK",
+        seasonCount = 6,
+        episodeCount = 99,
+        firstAirDate = "2014-04-20",
+        lastAirDate = "2020-05-17",
+        userRating = null,
+        genres = listOf("Fiction", "Drama")
+    )
+    private val show4 = Show(
+        showID = 123,
+        title = "HoTD",
+        posterPath = "Dragoons.",
+        seasonCount = 7,
+        episodeCount = 100,
+        firstAirDate = "2011-07-21",
+        lastAirDate = "2017-11-01",
+        userRating = null,
+        genres = listOf("Fantasy", "Fiction", "Adventure")
+    )
 
     @Before
     fun createDb() {
@@ -82,9 +114,17 @@ class ShowDaoTest {
     @Throws(Exception::class)
     fun updateMovieDetails() = runBlocking {
         showDao.insert(show1)
-        val updatedShow = Show(123, "GoT", "Dragoons and fire.", "Martin",
-            "3523gagew23/", 7, 89, "2011-07-21",
-            "2017-11-01", null, listOf("Fantasy"))
+        val updatedShow = Show(
+            showID = 123,
+            title = "GoT",
+            posterPath = "Dragoons and fire.",
+            seasonCount = 7,
+            episodeCount = 89,
+            firstAirDate = "2011-07-21",
+            lastAirDate = "2017-11-01",
+            userRating = null,
+            genres = listOf("Fantasy")
+        )
         showDao.update(updatedShow)
         val getShow1 = showDao.getShow(123).first()
         assertEquals(getShow1, updatedShow)

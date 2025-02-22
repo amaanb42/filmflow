@@ -38,10 +38,10 @@ class ListMoviesDaoTest {
     private val movie3 = Movie(789, "Harry Potter", "000123241/",
         "2001-10-01", 180, 8.2f,
          listOf("Fantasy"))
-    private val listMoviePair1 = ListMovies("Completed", 123)
-    private val listMoviePair2 = ListMovies("In Progress", 456)
-    private val listMoviePair3 = ListMovies("Completed", 789)
-    private val listMoviePair4 = ListMovies("In Progress", 123)
+    private val listMoviePair1 = ListMovies(1,"Completed", 123)
+    private val listMoviePair2 = ListMovies(2,"In Progress", 456)
+    private val listMoviePair3 = ListMovies(3,"Completed", 789)
+    private val listMoviePair4 = ListMovies(4,"In Progress", 123)
 
     @Before
     fun createDb() {

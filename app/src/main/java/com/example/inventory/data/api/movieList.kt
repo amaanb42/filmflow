@@ -104,6 +104,12 @@ fun getRecommendedMovies(id: Int): List<MovieSearchResult>{
     return parseMovieList(resultsArray)
 }
 
+fun getMovieCollection(collection_id: Int): List<MovieSearchResult>{
+    val recommendedMoviesJson = apiRequest("https://api.themoviedb.org/3/collection/${collection_id}?language=en-US")
+    val resultsArray = recommendedMoviesJson?.getJSONArray("results") ?: JSONArray()
+    return parseMovieList(resultsArray)
+}
+
 fun getMovieCast(id: Int): List<MovieCast> {
     val castSelection = apiRequest("https://api.themoviedb.org/3/movie/${id}/credits?language=en-US")
     val castArray = castSelection?.getJSONArray("cast") ?: JSONArray() // Access "cast" directly

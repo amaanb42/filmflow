@@ -30,19 +30,43 @@ class ListShowsDaoTest {
     private lateinit var db: AppDatabase
     private val list1: UserList = UserList("Completed")
     private val list2: UserList = UserList("In Progress")
-    private val show1 = Show(123, "GoT", "Dragoons.", "Martin",
-        "d98892u/", 7, 100, "2011-07-21",
-        "2017-11-01", null, listOf("Fantasy", "Fiction", "Adventure"))
-    private val show2 = Show(456, "Rob & Big", "Rad.", "Rob",
-        "rb838591/", 5, 80, "2005-01-21",
-        "2010-09-20", null, listOf("Reality"))
-    private val show3 = Show(789, "Barry", "IDK", "Someone",
-        "112324kjkj34/", 6, 99, "2014-04-20",
-        "2020-05-17", null, listOf("Fiction", "Drama"))
-    private val listShowPair1 = ListShows("Completed", 123)
-    private val listShowPair2 = ListShows("In Progress", 456)
-    private val listShowPair3 = ListShows("Completed", 789)
-    private val listShowPair4 = ListShows("In Progress", 123)
+    private val show1 = Show(
+        showID = 123,
+        title = "GoT",
+        posterPath = "/432er3jkd",
+        seasonCount = 7,
+        episodeCount = 100,
+        firstAirDate = "2011-07-21",
+        lastAirDate = "2017-11-01",
+        userRating = null,
+        genres = listOf("Fantasy", "Fiction", "Adventure")
+    )
+    private val show2 = Show(
+        showID = 456,
+        title = "Rob & Big",
+        posterPath = "/432er3jkd",
+        seasonCount = 5,
+        episodeCount = 80,
+        firstAirDate = "2005-01-21",
+        lastAirDate = "2010-09-20",
+        userRating = null,
+        genres = listOf("Reality")
+    )
+    private val show3 = Show(
+        showID = 789,
+        title = "Barry",
+        posterPath = "/432er3jkd",
+        seasonCount = 6,
+        episodeCount = 99,
+        firstAirDate = "2014-04-20",
+        lastAirDate = "2020-05-17",
+        userRating = null,
+        genres = listOf("Fiction", "Drama")
+    )
+    private val listShowPair1 = ListShows(1,"Completed", 123)
+    private val listShowPair2 = ListShows(2,"In Progress", 456)
+    private val listShowPair3 = ListShows(3,"Completed", 789)
+    private val listShowPair4 = ListShows(4,"In Progress", 123)
 
     @Before
     fun createDb() {
