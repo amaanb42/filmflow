@@ -91,6 +91,7 @@ import com.example.inventory.InventoryApplication
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.getCollectionIdForMovie
+import com.example.inventory.data.api.getCollectionNameForMovie
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
 import kotlinx.coroutines.Dispatchers
@@ -625,16 +626,18 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp) // Consistent padding on all sides
                 ) {
                     Column { // Use a Column to structure the content
-                        Text(
-                            text = "Related Films",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, top = 12.dp), // Consistent padding
-                            textAlign = TextAlign.Left,
-                            //fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold // Add FontWeight for emphasis
-                        )
+                        viewModel.movieCollectionName?.let { it1 ->
+                            Text(
+                                text = it1,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp, top = 12.dp), // Consistent padding
+                                textAlign = TextAlign.Left,
+                                //fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold // Add FontWeight for emphasis
+                            )
+                        }
 
                         if (viewModel.movieCollection.isEmpty()) { // Check if the list is empty
                             Box(

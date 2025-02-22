@@ -126,6 +126,28 @@ fun getCollectionIdForMovie(movieId: Int): Int? {
     return collectionObject.optInt("id", -1).takeIf { it != -1 }
 }
 
+fun getCollectionNameForMovie(movieId: Int): String? {
+    val movieDetails = apiRequest("https://api.themoviedb.org/3/movie/${movieId}?language=en-US")
+
+    if (movieDetails == null) {
+        Log.e("getCollectionName", "Could not retrieve movie details for ID: $movieId")
+        return null
+    }
+
+    if (!movieDetails.has("belongs_to_collection")) {
+        Log.i("getCollectionName", "Movie with ID $movieId does not belong to a collection.")
+        return null
+    }
+
+    val collectionObject = movieDetails.optJSONObject("belongs_to_collection")
+    if (collectionObject == null) {
+        Log.i("getCollectionName", "Movie with ID $movieId has a null 'belongs_to_collection' field.")
+        return null
+    }
+
+    return collectionObject.optString("name")
+}
+
 fun getMovieCollection(collection_id: Int): List<MovieSearchResult>{
     val collectionJson = apiRequest("https://api.themoviedb.org/3/collection/${collection_id}?language=en-US")
     val partsArray = collectionJson?.getJSONArray("parts") ?: JSONArray() // use parts instead of results

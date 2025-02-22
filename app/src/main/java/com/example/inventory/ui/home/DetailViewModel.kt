@@ -12,6 +12,7 @@ import com.example.inventory.data.UserListRepository
 import com.example.inventory.data.api.MovieCast
 import com.example.inventory.data.api.MovieSearchResult
 import com.example.inventory.data.api.getCollectionIdForMovie
+import com.example.inventory.data.api.getCollectionNameForMovie
 import com.example.inventory.data.api.getMovieCast
 import com.example.inventory.data.api.getMovieCollection
 import com.example.inventory.data.api.getRecommendedMovies
@@ -40,10 +41,14 @@ class DetailViewModel(
     var movieCollection by mutableStateOf(listOf<MovieSearchResult>())
         private set
 
+    var movieCollectionName by mutableStateOf<String?>(null) // Store the collection name
+        private set
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             movieCast = getMovieCast(currMovieID)
             movieCollection = getCollectionIdForMovie(currMovieID)?.let { getMovieCollection(it) } ?: listOf() // assigns empty list if movie does not have a collection
+            movieCollectionName = getCollectionNameForMovie(currMovieID)
             recommendedMovies = getRecommendedMovies(currMovieID)
         }
     }
