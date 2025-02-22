@@ -90,8 +90,6 @@ import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
-import com.example.inventory.data.api.getCollectionIdForMovie
-import com.example.inventory.data.api.getCollectionNameForMovie
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
 import kotlinx.coroutines.Dispatchers
