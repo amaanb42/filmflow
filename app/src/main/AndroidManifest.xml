@@ -10,12 +10,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:enableOnBackInvokedCallback="true"
-        android:theme="@style/Theme.Inventory"
-        tools:targetApi="34">
+        android:theme="@style/Theme.FilmFlow"
+        tools:targetApi="35">
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Inventory">
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.FilmFlow">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

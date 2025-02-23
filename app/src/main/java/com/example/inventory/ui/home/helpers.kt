@@ -262,6 +262,9 @@ fun RatingCircle(
 //        label = "Color Animation" // Add a label for debugging
 //    ).value
 
+    // Access MaterialTheme colors *outside* the Canvas for drawCircle
+    val onPrimaryContainerColor = MaterialTheme.colorScheme.onPrimaryContainer
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.size(radius * 2f)
@@ -272,7 +275,7 @@ fun RatingCircle(
         ) {
             // Draw the white circle first
             drawCircle(
-                color = Color.White,
+                color = onPrimaryContainerColor,
                 radius = radius.toPx(), // Adjust radius for the stroke width
                 style = Stroke(1.dp.toPx()) // Thin stroke width
             )
@@ -288,7 +291,7 @@ fun RatingCircle(
         }
         Text(
             text = String.format(java.util.Locale.ENGLISH, "%.1f", userRating), // Display userRating with one decimal place
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             fontSize = fontSize,
             fontWeight = FontWeight.Bold
         )
