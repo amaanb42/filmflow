@@ -42,7 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "app_database" // Database name (should match asset file name, without extension)
                 )
                     .createFromAsset("databases/app_database.db") // Use createFromAsset
-                    .fallbackToDestructiveMigration() // REMOVE THIS FOR PRODUCTION
+                    //.fallbackToDestructiveMigration() // REMOVE THIS FOR PRODUCTION
                     .build()
                 Instance = instance
                 instance
