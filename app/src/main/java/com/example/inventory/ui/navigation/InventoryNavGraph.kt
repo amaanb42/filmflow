@@ -1,5 +1,7 @@
 package com.example.inventory.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -15,6 +17,12 @@ import com.example.inventory.ui.home.SearchDestination
 import com.example.inventory.ui.home.SearchScreen
 import com.example.inventory.ui.home.SettingsDestination
 import com.example.inventory.ui.home.SettingsScreen
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 
 /**
  * Provides Navigation graph for the application.
@@ -35,27 +43,97 @@ fun InventoryNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = startDestination, // Set SearchDestination as the start destination
+        startDestination = startDestination,
         modifier = modifier
     ) {
-        composable(route = SearchDestination.route) {
+        composable(
+            route = SearchDestination.route,
+            enterTransition = {
+                fadeIn() + slideInHorizontally(
+                    initialOffsetX = { fullWidth -> fullWidth }, // Slide in from the right
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            },
+            exitTransition = {
+                fadeOut() + slideOutHorizontally(
+                    targetOffsetX = { fullWidth -> -fullWidth }, // Slide out to the left
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            },
+            popEnterTransition = {
+                fadeIn() + slideInHorizontally(
+                    initialOffsetX = { fullWidth -> -fullWidth },
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+
+            },
+            popExitTransition = {
+                fadeOut() + slideOutHorizontally(
+                    targetOffsetX = {fullWidth -> fullWidth},
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            }
+
+        ) {
             SearchScreen(navController)
-            // Pass navController to SearchScreen
         }
 
         composable(
             route = DetailDestination.ROUTE,
-            arguments = listOf(navArgument("movieId") { type = NavType.IntType }) // Define the argument type
+            arguments = listOf(navArgument("movieId") { type = NavType.IntType }),
+            enterTransition = {
+                fadeIn() + slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            },
+            exitTransition = {
+                if (this.targetState.destination.route == DetailDestination.ROUTE) {
+                    ExitTransition.None // No transition!
+                } else {
+                    fadeOut() + slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                    )
+                }
+            },
+            popEnterTransition = {
+                fadeIn()
+            },
+            popExitTransition = {
+                fadeOut() + slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            }
         ) { backStackEntry ->
             val movieId = backStackEntry.arguments?.getInt("movieId") ?: error("Missing movieID argument")
             MovieDetailsScreen(navController, movieId)
         }
 
-        composable(route = ListDestination.route) {
+        composable(
+            route = ListDestination.route,
+            /* enterTransition = { fadeIn() }, // Optional: Add to other routes if you want
+             exitTransition = { fadeOut() }*/
+        ) {
             ListScreen(navController)
         }
 
-        composable(route = SettingsDestination.route) {
+        composable(
+            route = SettingsDestination.route,
+            enterTransition = {
+                fadeIn() + slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            },  // Optional
+            exitTransition = {
+                fadeOut() + slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            }
+        ) {
             SettingsScreen(navController)
         }
     }

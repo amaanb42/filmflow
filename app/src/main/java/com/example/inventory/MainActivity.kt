@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
                             // Show the NavigationBar only on specified screens
                             // Use AnimatedVisibility for the NavigationBar
                             AnimatedVisibility(
-                                visible = currentRoute in listOf(SearchDestination.route, ListDestination.route, SettingsDestination.route), //add ListDestination.route and SettingsDestination.route in comma separated list
+                                visible = currentRoute in listOf(SearchDestination.route, ListDestination.route), //add ListDestination.route and SettingsDestination.route in comma separated list
                                 enter = slideInVertically(
                                     // Start the slide from below the screen
                                     initialOffsetY = { fullHeight -> fullHeight },
