@@ -692,7 +692,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 ) {
                     Column { // Use a Column to structure the content
                         Text(
-                            text = "Recommended",
+                            text = "Recommended (BETA)",
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier
                                 .fillMaxWidth()
