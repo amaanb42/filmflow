@@ -1,6 +1,7 @@
 package com.example.inventory.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -49,27 +50,50 @@ fun InventoryNavHost(
         composable(
             route = SearchDestination.route,
             enterTransition = {
-                fadeIn() + slideInHorizontally(
-                    initialOffsetX = { fullWidth -> fullWidth }, // Slide in from the right
-                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                )
+                if (this.initialState.destination.route == DetailDestination.ROUTE || this.initialState.destination.route == SettingsDestination.route) {
+                    EnterTransition.None
+                } else {
+                    fadeIn() + slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth }, // Slide in from the right
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                    )
+                }
             },
             exitTransition = {
-                fadeOut() + slideOutHorizontally(
-                    targetOffsetX = { fullWidth -> -fullWidth }, // Slide out to the left
-                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                )
+                when (this.targetState.destination.route) {
+                    ListDestination.route -> {
+                        fadeOut() + slideOutHorizontally(
+                            targetOffsetX = { fullWidth -> fullWidth }, // Slide out to the right
+                            animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                        )
+                    }
+                    DetailDestination.ROUTE -> {
+                        ExitTransition.None
+                    }
+                    SettingsDestination.route -> {
+                        ExitTransition.None
+                    }
+                    else -> {
+                        fadeOut() + slideOutHorizontally(
+                            targetOffsetX = { fullWidth -> -fullWidth }, // Slide out to the left
+                            animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                        )
+                    }
+                }
             },
             popEnterTransition = {
-                fadeIn() + slideInHorizontally(
-                    initialOffsetX = { fullWidth -> -fullWidth },
-                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                )
-
+                if (this.initialState.destination.route == DetailDestination.ROUTE || this.initialState.destination.route == SettingsDestination.route) {
+                    EnterTransition.None
+                } else {
+                    fadeIn() + slideInHorizontally(
+                        initialOffsetX = { fullWidth -> fullWidth }, // Slide in from the right
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                    )
+                }
             },
             popExitTransition = {
                 fadeOut() + slideOutHorizontally(
-                    targetOffsetX = {fullWidth -> fullWidth},
+                    targetOffsetX = {fullWidth -> -fullWidth},
                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
                 )
             }
@@ -82,7 +106,7 @@ fun InventoryNavHost(
             route = DetailDestination.ROUTE,
             arguments = listOf(navArgument("movieId") { type = NavType.IntType }),
             enterTransition = {
-                fadeIn() + slideIntoContainer(
+                slideIntoContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.Start,
                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
                 )
@@ -91,8 +115,8 @@ fun InventoryNavHost(
                 if (this.targetState.destination.route == DetailDestination.ROUTE) {
                     ExitTransition.None // No transition!
                 } else {
-                    fadeOut() + slideOutHorizontally(
-                        targetOffsetX = { fullWidth -> -fullWidth },
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
                         animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
                     )
                 }
@@ -101,7 +125,7 @@ fun InventoryNavHost(
                 fadeIn()
             },
             popExitTransition = {
-                fadeOut() + slideOutOfContainer(
+                slideOutOfContainer(
                     towards = AnimatedContentTransitionScope.SlideDirection.End,
                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
                 )
@@ -113,8 +137,18 @@ fun InventoryNavHost(
 
         composable(
             route = ListDestination.route,
-            /* enterTransition = { fadeIn() }, // Optional: Add to other routes if you want
-             exitTransition = { fadeOut() }*/
+            enterTransition = {
+                fadeIn() + slideInHorizontally(
+                    initialOffsetX = { fullWidth -> -fullWidth },
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            }, // Optional: Add to other routes if you want
+            exitTransition = {
+                fadeOut() + slideOutHorizontally(
+                    targetOffsetX = { fullWidth -> -fullWidth }, // Slide out to the left
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            }
         ) {
             ListScreen(navController)
         }
@@ -122,14 +156,14 @@ fun InventoryNavHost(
         composable(
             route = SettingsDestination.route,
             enterTransition = {
-                fadeIn() + slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Down,
                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
                 )
             },  // Optional
             exitTransition = {
-                fadeOut() + slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up,
                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
                 )
             }
