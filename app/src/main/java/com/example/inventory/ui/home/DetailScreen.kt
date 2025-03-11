@@ -615,36 +615,28 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             }
 
             item {
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp) // Consistent padding on all sides
-                ) {
-                    Column { // Use a Column to structure the content
-                        viewModel.movieCollectionName?.let { it1 ->
-                            Text(
-                                text = it1,
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp, top = 12.dp), // Consistent padding
-                                textAlign = TextAlign.Left,
-                                //fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold // Add FontWeight for emphasis
-                            )
-                        }
-
-                        if (viewModel.movieCollection.isEmpty()) { // Check if the list is empty
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) { Text("Not Available") }
-                        } else {
+                if (viewModel.movieCollection.isNotEmpty()) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp) // Consistent padding on all sides
+                    ) {
+                        Column { // Use a Column to structure the content
+                            viewModel.movieCollectionName?.let { it1 ->
+                                Text(
+                                    text = it1,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 16.dp, top = 12.dp), // Consistent padding
+                                    textAlign = TextAlign.Left,
+                                    //fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold // Add FontWeight for emphasis
+                                )
+                            }
                             LazyRow(
                                 modifier = Modifier
                                     .fillMaxWidth()

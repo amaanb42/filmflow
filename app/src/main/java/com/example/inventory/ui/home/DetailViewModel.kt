@@ -98,12 +98,12 @@ class DetailViewModel(
     }
 }
 // pass the repository to DetailViewModel
+@Suppress("UNCHECKED_CAST")
 class DetailViewModelFactory(
     private val userListRepository: UserListRepository,
     private val listMoviesRepository: ListMoviesRepository,
     private val movieRepository: MovieRepository,
     private val currMovieID: Int
-    //private val collectionID: Int
 ) : ViewModelProvider.Factory {
     override fun <T: ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DetailViewModel::class.java)) {
