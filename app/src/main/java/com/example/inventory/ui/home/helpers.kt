@@ -42,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
@@ -227,10 +226,10 @@ fun RatingCircle(
     userRating: Float, // Now takes userRating directly
     fontSize: TextUnit,
     radius: Dp,
-    // color: Color = MaterialTheme.colorScheme.outline,
     strokeWidth: Dp,
     animDuration: Int,
-    animDelay: Int = 100
+    animDelay: Int = 100,
+    isDetail: Boolean
 ) {
     var animationPlayed by remember { mutableStateOf(false) }
 
@@ -250,20 +249,12 @@ fun RatingCircle(
     // Determine the color based on userRating
     // Use animateColorAsState for smooth color transitions
     val color = MaterialTheme.colorScheme.primary
-//    val color = animateColorAsState(
-//        targetValue = when (userRating) {
-//            in 0.0f..2.9f -> material_red        // 0 - 2.9: Red
-//            in 3.0f..4.9f -> material_orange     // 3 - 4.9: Orange
-//            in 5.0f..6.9f -> material_yellow     // 5 - 6.9: Yellow
-//            in 7.0f..8.9f -> material_green      // 7 - 8.9: Green
-//            in 9.0f..10.0f -> MaterialTheme.colorScheme.primary // 9 - 10: Blue
-//            else -> MaterialTheme.colorScheme.outline // Default color
-//        },
-//        label = "Color Animation" // Add a label for debugging
-//    ).value
 
+    var onSurfaceColor = MaterialTheme.colorScheme.onBackground
     // Access MaterialTheme colors *outside* the Canvas for drawCircle
-    val onPrimaryContainerColor = MaterialTheme.colorScheme.onPrimaryContainer
+    if (isDetail) {
+        onSurfaceColor = MaterialTheme.colorScheme.onSurface
+    }
 
     Box(
         contentAlignment = Alignment.Center,
@@ -275,7 +266,7 @@ fun RatingCircle(
         ) {
             // Draw the white circle first
             drawCircle(
-                color = onPrimaryContainerColor,
+                color = onSurfaceColor,
                 radius = radius.toPx(), // Adjust radius for the stroke width
                 style = Stroke(1.dp.toPx()) // Thin stroke width
             )
@@ -291,7 +282,7 @@ fun RatingCircle(
         }
         Text(
             text = String.format(java.util.Locale.ENGLISH, "%.1f", userRating), // Display userRating with one decimal place
-            color = MaterialTheme.colorScheme.onPrimaryContainer,
+            color = onSurfaceColor,
             fontSize = fontSize,
             fontWeight = FontWeight.Bold
         )

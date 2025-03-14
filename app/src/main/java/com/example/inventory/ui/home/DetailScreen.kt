@@ -152,6 +152,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
     //val context = LocalContext.current
     val vibrator = context.getSystemService(Vibrator::class.java)
 
+    val cardColor = MaterialTheme.colorScheme.surfaceContainerHighest
+
 
     //Alter code below to fetch from local database instead of using the TMDB function
     LaunchedEffect(key1 = movieId) {
@@ -265,7 +267,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        containerColor = cardColor,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -414,7 +416,8 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                             fontSize = 28.sp,
                                             radius = 50.dp,
                                             animDuration = 1000,
-                                            strokeWidth = 8.dp
+                                            strokeWidth = 8.dp,
+                                            isDetail = true
                                         )
 
                                     }
@@ -452,7 +455,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        containerColor = cardColor,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -530,7 +533,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item { // Card for movie actors
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        containerColor = cardColor,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -618,7 +621,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                 if (viewModel.movieCollection.isNotEmpty()) {
                     Card(
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            containerColor = cardColor,
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -684,7 +687,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
             item {
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        containerColor = cardColor,
                     ),
                     modifier = Modifier
                         .fillMaxWidth()

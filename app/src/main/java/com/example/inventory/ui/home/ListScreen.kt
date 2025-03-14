@@ -329,7 +329,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     searchQuery,
                     // Pass fabVisible
                     { newValue -> fabVisible = newValue }, // Pass a lambda to update fabVisible
-                    navbarModifier = modifier
+                    modifier = modifier
                 )
             } else {
                 ListHorizontalView(
@@ -338,7 +338,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     searchQuery,
                     // Pass fabVisible
                     { newValue -> fabVisible = newValue }, // Pass a lambda to update fabVisible
-                    navbarModifier = modifier
+                    modifier = modifier
                 )
             }
         }
@@ -361,7 +361,7 @@ fun ListGridView(
     searchQuery: String,
     // Receive fabVisible
     updateFabVisible: (Boolean) -> Unit, // Receive the update lambda
-    navbarModifier: Modifier = Modifier // for navbar height adjustment
+    modifier: Modifier = Modifier // for navbar height adjustment
 ) {
     val filteredMovies = if (searchQuery.isEmpty()) {
         listMovies
@@ -379,7 +379,7 @@ fun ListGridView(
         state = scrollState,
         //columns = GridCells.Fixed(3),
         columns = GridCells.Adaptive(minSize = 108.dp),
-        modifier = navbarModifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
             //.padding(top = 36.dp),
         contentPadding = PaddingValues(horizontal = 15.dp)
     ) { // display the movies
@@ -461,7 +461,7 @@ fun ListHorizontalView(
     searchQuery: String,
     // Receive fabVisible
     updateFabVisible: (Boolean) -> Unit, // Receive the update lambda
-    navbarModifier: Modifier = Modifier // for navbar height adjustment
+    modifier: Modifier = Modifier // for navbar height adjustment
 ) {
     val filteredMovies = if (searchQuery.isEmpty()) {
         listMovies
@@ -476,7 +476,7 @@ fun ListHorizontalView(
 
     LazyColumn(
         state = scrollState,
-        modifier = navbarModifier
+        modifier = modifier
             .fillMaxSize()
     ) {
         items(filteredMovies) { movie ->
@@ -578,7 +578,7 @@ fun ListHorizontalView(
                                 //.padding(top = 24.dp)
                                 .padding(top = 16.dp, start = 4.dp)
                         ) {
-                            RatingCircle(userRating = movie.userRating ?: 0.0f, fontSize = 16.sp, radius = 24.dp, animDuration = 0, strokeWidth = 4.dp)
+                            RatingCircle(userRating = movie.userRating ?: 0.0f, fontSize = 16.sp, radius = 24.dp, animDuration = 0, strokeWidth = 4.dp, isDetail = false)
                         }
                         //Spacer(modifier = Modifier.weight(1f))
                     }
