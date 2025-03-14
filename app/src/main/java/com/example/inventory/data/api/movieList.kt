@@ -83,11 +83,11 @@ fun getUpcomingMovies(): List<MovieSearchResult> {
     // Format today's date as YYYY-MM-DD
     val formattedToday = today.format(DateTimeFormatter.ISO_DATE)
 
-    // Calculate the date 10 months from today
-    val tenMonthsLater = today.plusMonths(10)
+    // Calculate the date 3 months from today
+    val threeMonthsLater = today.plusMonths(3)
 
     // Format the future date as YYYY-MM-DD
-    val formattedFutureDate = tenMonthsLater.format(DateTimeFormatter.ISO_DATE)
+    val formattedFutureDate = threeMonthsLater.format(DateTimeFormatter.ISO_DATE)
 
 
     // Build the API request URL
@@ -148,8 +148,8 @@ fun getCollectionNameForMovie(movieId: Int): String? {
     return collectionObject.optString("name")
 }
 
-fun getMovieCollection(collection_id: Int): List<MovieSearchResult>{
-    val collectionJson = apiRequest("https://api.themoviedb.org/3/collection/${collection_id}?language=en-US")
+fun getMovieCollection(collectionId: Int): List<MovieSearchResult>{
+    val collectionJson = apiRequest("https://api.themoviedb.org/3/collection/${collectionId}?language=en-US")
     val partsArray = collectionJson?.getJSONArray("parts") ?: JSONArray() // use parts instead of results
     return parseMovieList(partsArray)
 }
@@ -166,7 +166,7 @@ fun getMovieCast(id: Int): List<MovieCast> {
 // maybe have a MovieSearchResult class and a MovieDetailed class
 fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
     val movieAttributes: MutableList<MovieSearchResult> = mutableListOf()
-    // val excludedKeywordId = 155477 // The ID for "softcore"
+    // val excludedKeywordId = 155477 // The ID for "soft-core"
 
     for ( i in 0 until movies.length()){
         val movie = movies.getJSONObject(i)
