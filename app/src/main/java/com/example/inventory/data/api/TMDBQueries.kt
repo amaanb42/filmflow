@@ -80,10 +80,8 @@ fun getUpcomingMovies(): List<MovieSearchResult> {
     // Get today's date
     val today = LocalDate.now()
 
-    val oneMonthLater = today.plusMonths(1)
-
     // Format today's date as YYYY-MM-DD
-    val formattedOneMonth = oneMonthLater.format(DateTimeFormatter.ISO_DATE)
+    val formattedToday = today.format(DateTimeFormatter.ISO_DATE)
 
     // Calculate the date 3 months from today
     val threeMonthsLater = today.plusMonths(3)
@@ -93,7 +91,7 @@ fun getUpcomingMovies(): List<MovieSearchResult> {
 
 
     // Build the API request URL
-    val url = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&primary_release_date.gte=$formattedOneMonth&primary_release_date.lte=$formattedFutureDate&sort_by=popularity.desc"
+    val url = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&primary_release_date.gte=$formattedToday&primary_release_date.lte=$formattedFutureDate&sort_by=popularity.desc"
 
     val upcomingMovies = apiRequest(url)
     val resultsArray = upcomingMovies?.getJSONArray("results") ?: JSONArray()
