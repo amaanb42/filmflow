@@ -56,6 +56,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
@@ -63,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImagePainter.State.Empty.painter
 import com.example.inventory.R
 import com.example.inventory.data.api.MovieSearchResult
 import com.example.inventory.data.api.displayRandomMovie
@@ -200,6 +202,15 @@ fun SearchScreen(navController: NavHostController) {
                             contentDescription = "Close Icon",
                         )
                     }
+                    else {
+                        Icon (
+                            modifier = Modifier.clickable {
+                                isSheetOpen = true
+                            },
+                            painter = painterResource(R.drawable.random),
+                            contentDescription = "Randomize movie button"
+                        )
+                    }
                 },
                 colors = SearchBarDefaults.colors(
                     containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp), // Background color of the search bar
@@ -210,21 +221,6 @@ fun SearchScreen(navController: NavHostController) {
                 } else {
                     tempMovieList.clear()
                 }
-            }
-
-            // Randomize button
-            Button(
-                onClick = {
-                    isSheetOpen = true
-                },
-                //enabled = itemUiState.isEntryValid,
-                shape = RoundedCornerShape(32.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .width(100.dp)
-                    .wrapContentSize(align = Alignment.Center)
-            ) {
-                Text(text = stringResource(R.string.random_button))
             }
 
             if (isSheetOpen) {
