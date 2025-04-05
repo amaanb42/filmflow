@@ -84,7 +84,7 @@ fun getUpcomingMovies(): List<MovieSearchResult> {
     val formattedToday = today.format(DateTimeFormatter.ISO_DATE)
 
     // Calculate the date 3 months from today
-    val threeMonthsLater = today.plusMonths(3)
+    val threeMonthsLater = today.plusMonths(2)
 
     // Format the future date as YYYY-MM-DD
     val formattedFutureDate = threeMonthsLater.format(DateTimeFormatter.ISO_DATE)
