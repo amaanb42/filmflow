@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,8 +28,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -36,6 +39,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -107,7 +111,25 @@ fun SearchScreen(navController: NavHostController) {
     }
 
     Scaffold (
+        //contentWindowInsets = WindowInsets(0.dp),
         topBar = {
+            if (!active) {
+                TopAppBar(
+                    windowInsets = WindowInsets(
+                        top = 0.dp,
+                        bottom = 0.dp
+                    ),
+                    title = { Text("Discover") },
+                    actions = {
+                        IconButton(onClick = { navController.navigate(SettingsDestination.route) }) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings"
+                            )
+                        }
+                    }
+                )
+            }
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,7 +196,11 @@ fun SearchScreen(navController: NavHostController) {
                     }
                 },
                 colors = SearchBarDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp), // Background color of the search bar
+                    containerColor = if (active) {
+                        MaterialTheme.colorScheme.background // Color when active is true
+                    } else {
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
+                    }
                 )
             ) {
                 if (searchQuery.isNotEmpty()) {
@@ -189,13 +215,11 @@ fun SearchScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    top = if (active) 0.dp else innerPadding.calculateTopPadding(),
+                    top = innerPadding.calculateTopPadding(),
                     start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
                     end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
                 )
         ) {
-
-
             if (isSheetOpen) {
                 ModalBottomSheet(
                     containerColor = MaterialTheme.colorScheme.surface,
