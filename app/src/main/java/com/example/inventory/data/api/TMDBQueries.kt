@@ -275,3 +275,44 @@ fun displayRandomMovie(movie: Pair<String, Int>): Int? { // Return Int?
         null // Return null if API request fails
     }
 }
+
+fun showQuery(name: String): MutableList<ShowSearchResult> {
+    // Gets rid of trailing and leading space and replaces the middle spaces with "%20"
+    val queryName = name.trim().replace(" ", "%20")
+
+    val showJson = apiRequest("https://api.themoviedb.org/3/search/tv?query=${queryName}&include_adult=false&language=en-US&page=1")
+
+
+    // Handle null response
+    val resultsArray = showJson?.getJSONArray("results") ?: JSONArray()
+
+    val showList = parseShowList(resultsArray)
+    // Sort the movieList by popularity in descending order
+    showList.sortByDescending { it.popularity }
+
+    return showList
+}
+
+fun parseShowList(shows: JSONArray): MutableList<ShowSearchResult>{
+    val showAttributes: MutableList<ShowSearchResult> = mutableListOf()
+    // val excludedKeywordId = 155477 // The ID for "soft-core"
+
+    for ( i in 0 until shows.length()){
+        val show = shows.getJSONObject(i)
+
+        // Safely access 'popularity' with a default value
+        val popularity = show.optDouble("popularity", 0.0) // Default to 0.0 if not found
+        val showToAdd = ShowSearchResult(
+            show.get("id") as Int,
+            show.get("name") as String,
+            show.get("poster_path").toString(),
+            popularity
+        )
+
+        //If the movie poster is null then it doesn't show up, to change remove the if and leave the "movieAttributes.add(movieToAdd)" as it is
+        if(show.get("poster_path").toString() != "null"){
+            showAttributes.add(showToAdd)
+        }
+    }
+    return showAttributes
+}
