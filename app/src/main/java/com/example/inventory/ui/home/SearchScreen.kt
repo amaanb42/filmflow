@@ -91,17 +91,6 @@ fun SearchScreen(navController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
     var randomizeGenre by remember { mutableStateOf(Pair("",1))}
 
-
-    val searchBarPadding by animateDpAsState(
-        targetValue = if (active) 0.dp else 24.dp,
-        label = "Search bar padding"
-    )
-
-    val searchBarVerticalPadding by animateDpAsState(
-        targetValue = if (active) 0.dp else 16.dp,
-        label = "Search bar padding"
-    )
-
     val keyboardController = LocalSoftwareKeyboardController.current
 
     // for randomize button
@@ -133,8 +122,8 @@ fun SearchScreen(navController: NavHostController) {
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = searchBarPadding)
-                    .padding(vertical = searchBarVerticalPadding),
+                    .padding(horizontal = if (active) 0.dp else 24.dp)
+                    .padding(top = if (active) 0.dp else 16.dp),
                 query = searchQuery,
                 onQueryChange = {
                     searchQuery = it
