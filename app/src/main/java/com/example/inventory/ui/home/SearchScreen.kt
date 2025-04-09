@@ -159,7 +159,7 @@ fun SearchScreen(navController: NavHostController) {
                     active = it
                 },
                 placeholder = {
-                    Text(text = "Search for a movie")
+                    Text(text = "Search movies and shows")
                 },
                 leadingIcon = {
                     if (active) {
