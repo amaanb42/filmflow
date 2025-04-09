@@ -54,9 +54,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.R
+import com.example.inventory.data.api.ComboSearchResult
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.MovieSearchResult
-
 
 // For formatting the TMDB community rating into a nice percentage
 @Composable
@@ -297,6 +297,39 @@ fun MovieCard(movie: MovieSearchResult, onMovieClick: (Int) -> Unit) {
             contentDescription = movie.title, // Use movie title for accessibility
             modifier = Modifier
                 .clickable { onMovieClick(movie.id) }
+                .width(108.dp)
+                .aspectRatio(0.6667f),
+            contentScale = ContentScale.Crop,
+            loading = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(), // Use fillMaxSize for proper centering
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            },
+            error = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(), // Use fillMaxSize for proper centering
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Image not available")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun MediaCard(media: ComboSearchResult, onMediaClick: (Int) -> Unit) {
+    Card {
+        SubcomposeAsyncImage(
+            model = "https://image.tmdb.org/t/p/w500${media.posterPath}",
+            contentDescription = media.name, // Use movie title for accessibility
+            modifier = Modifier
+                .clickable { onMediaClick(media.id) }
                 .width(108.dp)
                 .aspectRatio(0.6667f),
             contentScale = ContentScale.Crop,

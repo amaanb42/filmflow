@@ -276,7 +276,7 @@ fun displayRandomMovie(movie: Pair<String, Int>): Int? { // Return Int?
     }
 }
 
-fun showQuery(name: String): MutableList<ShowSearchResult> {
+fun tvSearchQuery(name: String): MutableList<ShowSearchResult> {
     // Gets rid of trailing and leading space and replaces the middle spaces with "%20"
     val queryName = name.trim().replace(" ", "%20")
 

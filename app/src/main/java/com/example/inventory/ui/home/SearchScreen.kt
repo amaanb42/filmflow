@@ -1,7 +1,6 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -60,10 +59,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.inventory.R
+import com.example.inventory.data.api.ComboSearchResult
+import com.example.inventory.data.api.MediaType
 import com.example.inventory.data.api.MovieSearchResult
+import com.example.inventory.data.api.ShowSearchResult
 import com.example.inventory.data.api.displayRandomMovie
 import com.example.inventory.data.api.getGenreHardCode
 import com.example.inventory.data.api.getMovieQuery
+import com.example.inventory.data.api.tvSearchQuery
 import com.example.inventory.ui.navigation.NavigationDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -86,12 +89,15 @@ fun SearchScreen(navController: NavHostController) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var active by rememberSaveable { mutableStateOf(false) }
     var tempMovieList by rememberSaveable { mutableStateOf(mutableListOf<MovieSearchResult>()) }
+    var tempShowList by rememberSaveable { mutableStateOf(mutableListOf<ShowSearchResult>()) }
+    var sortedList by rememberSaveable { mutableStateOf(mutableListOf<ComboSearchResult>()) }
     var searchSubmitted by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
     var randomizeGenre by remember { mutableStateOf(Pair("",1))}
 
     val keyboardController = LocalSoftwareKeyboardController.current
+
 
     // for randomize button
     val sheetState = rememberModalBottomSheetState()
@@ -136,6 +142,15 @@ fun SearchScreen(navController: NavHostController) {
                         //delay(200)
                         async {
                             tempMovieList = getMovieQuery(searchQuery)
+                            tempShowList = tvSearchQuery(searchQuery)
+                            val mappedMovieList = tempMovieList.map {
+                                ComboSearchResult(it.id, it.title, it.posterPath, it.popularity, MediaType.MOVIE)
+                            }
+                            val mappedShowList = tempShowList.map {
+                                ComboSearchResult(it.id, it.name, it.posterPath, it.popularity, MediaType.SHOW)
+                            }
+                            val combinedList = mappedMovieList + mappedShowList
+                            sortedList = combinedList.sortedByDescending { it.popularity }.toMutableList()
                         }.await()
                     }
                 },
@@ -193,7 +208,9 @@ fun SearchScreen(navController: NavHostController) {
                 )
             ) {
                 if (searchQuery.isNotEmpty()) {
-                    SearchRows(tempMovieList, navController, searchSubmitted)
+                    SearchRows(sortedList, navController, searchSubmitted)
+                    //SearchRows(tempMovieList, tempShowList, navController, searchSubmitted)
+                    //SearchTVRows(tempShowList, navController, searchSubmitted)
                 } else {
                     tempMovieList.clear()
                 }
@@ -340,8 +357,8 @@ fun SearchScreen(navController: NavHostController) {
 
 // Shows the search results as a vertical grid after entering query
 @Composable
-fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostController, searchSubmitted: Boolean) {
-    if (movieList.isNotEmpty()) {
+fun SearchRows(mediaList: List<ComboSearchResult>, navController: NavHostController, searchSubmitted: Boolean) {
+    if (mediaList.isNotEmpty()) {
         LazyVerticalGrid(
             //columns = GridCells.Fixed(2),
             columns = GridCells.Adaptive(minSize = 128.dp),
@@ -350,17 +367,20 @@ fun SearchRows(movieList: List<MovieSearchResult>, navController: NavHostControl
             verticalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp, start = 8.dp, end = 8.dp) // Add bottom padding
             ) {
-            items(movieList) { movie ->
+            items(mediaList) { media ->
                 Column(
                     modifier = Modifier.padding(top = 15.dp, start = 15.dp, end = 15.dp),
                     horizontalAlignment = Alignment.CenterHorizontally // Center the text
                 ) {
-                    MovieCard(movie = movie) { movieId ->
-                        navigateToMovieDetails(navController, movieId)
+                    MediaCard(media = media) { mediaId ->
+                        when (media.type) {
+                            MediaType.MOVIE -> navigateToMovieDetails(navController, mediaId)
+                            MediaType.SHOW -> {/*TODO*/}
+                        }
                     }
                     // Movie title
                     Text(
-                        text = movie.title,
+                        text = media.name,
                         modifier = Modifier.padding(top = 8.dp), // Add some spacing between image and text
                         textAlign = TextAlign.Center // Center the text within its container
                     )
