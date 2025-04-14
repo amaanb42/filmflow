@@ -138,16 +138,24 @@ fun InventoryNavHost(
         composable(
             route = ListDestination.route,
             enterTransition = {
-                fadeIn() + slideInHorizontally(
-                    initialOffsetX = { fullWidth -> -fullWidth },
-                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                )
+                if (this.initialState.destination.route == DetailDestination.ROUTE || this.initialState.destination.route == SettingsDestination.route) {
+                    EnterTransition.None
+                } else {
+                    fadeIn() + slideInHorizontally(
+                        initialOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                    )
+                }
             }, // Optional: Add to other routes if you want
             exitTransition = {
-                fadeOut() + slideOutHorizontally(
-                    targetOffsetX = { fullWidth -> -fullWidth }, // Slide out to the left
-                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                )
+                if (this.targetState.destination.route == DetailDestination.ROUTE) {
+                    ExitTransition.None
+                } else {
+                    fadeOut() + slideOutHorizontally(
+                        targetOffsetX = { fullWidth -> -fullWidth }, // Slide out to the left
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                    )
+                }
             }
         ) {
             ListScreen(navController)
