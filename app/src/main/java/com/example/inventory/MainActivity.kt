@@ -34,9 +34,8 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.inventory.data.SettingsDataStore
-import com.example.inventory.ui.home.ListDestination
-import com.example.inventory.ui.home.SearchDestination
-import com.example.inventory.ui.home.SettingsDestination
+import com.example.inventory.ui.movielist.ListDestination
+import com.example.inventory.ui.discover.SearchDestination
 import com.example.inventory.ui.navigation.InventoryNavHost
 import com.example.inventory.ui.theme.FilmFlowTheme
 import kotlinx.coroutines.flow.first

@@ -1,4 +1,4 @@
-package com.example.inventory.ui.home
+package com.example.inventory.ui.settings
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement

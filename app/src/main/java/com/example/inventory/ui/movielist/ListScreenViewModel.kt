@@ -1,4 +1,4 @@
-package com.example.inventory.ui.home
+package com.example.inventory.ui.movielist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

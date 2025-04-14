@@ -1,4 +1,4 @@
-package com.example.inventory.ui.home
+package com.example.inventory.ui.composables
 
 import android.icu.text.DecimalFormat
 import android.os.VibrationEffect
@@ -57,6 +57,7 @@ import com.example.inventory.R
 import com.example.inventory.data.api.ComboSearchResult
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.MovieSearchResult
+import com.example.inventory.ui.discover.DetailViewModel
 
 // For formatting the TMDB community rating into a nice percentage
 @Composable

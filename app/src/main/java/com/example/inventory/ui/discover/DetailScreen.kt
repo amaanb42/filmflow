@@ -1,4 +1,4 @@
-package com.example.inventory.ui.home
+package com.example.inventory.ui.discover
 
 //import com.example.inventory.ui.theme.dark_highlight_med
 //import com.example.inventory.ui.theme.dark_pine
@@ -92,6 +92,11 @@ import com.example.inventory.R
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.movie.Movie
+import com.example.inventory.ui.composables.LineSlider
+import com.example.inventory.ui.composables.RatingCircle
+import com.example.inventory.ui.composables.RatingText
+import com.example.inventory.ui.composables.StatusButtons
+import com.example.inventory.ui.composables.formatRuntime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate

@@ -1,4 +1,4 @@
-package com.example.inventory.ui.home
+package com.example.inventory.ui.discover
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateDpAsState
@@ -68,7 +68,10 @@ import com.example.inventory.data.api.displayRandomMovie
 import com.example.inventory.data.api.getGenreHardCode
 import com.example.inventory.data.api.getMovieQuery
 import com.example.inventory.data.api.tvSearchQuery
+import com.example.inventory.ui.composables.MediaCard
+import com.example.inventory.ui.composables.MovieCard
 import com.example.inventory.ui.navigation.NavigationDestination
+import com.example.inventory.ui.settings.SettingsDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch

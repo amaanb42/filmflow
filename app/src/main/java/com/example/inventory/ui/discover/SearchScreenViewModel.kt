@@ -1,4 +1,4 @@
-package com.example.inventory.ui.home
+package com.example.inventory.ui.discover
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

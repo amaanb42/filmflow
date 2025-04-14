@@ -1,4 +1,4 @@
-package com.example.inventory.ui.home
+package com.example.inventory.ui.movielist
 
 //import com.example.inventory.ui.theme.dark_pine
 import android.annotation.SuppressLint
@@ -87,6 +87,9 @@ import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.R
 import com.example.inventory.data.movie.Movie
+import com.example.inventory.ui.composables.RatingCircle
+import com.example.inventory.ui.composables.formatRuntime
+import com.example.inventory.ui.discover.DetailDestination
 import com.example.inventory.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 import java.time.LocalDate
