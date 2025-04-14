@@ -1,6 +1,7 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -98,6 +99,15 @@ fun SearchScreen(navController: NavHostController) {
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    val searchBarPadding by animateDpAsState(
+        targetValue = if (active) 0.dp else 24.dp,
+        label = "Search bar padding"
+    )
+
+    val searchBarVerticalPadding by animateDpAsState(
+        targetValue = if (active) 0.dp else 16.dp,
+        label = "Search bar padding"
+    )
 
     // for randomize button
     val sheetState = rememberModalBottomSheetState()
@@ -128,8 +138,8 @@ fun SearchScreen(navController: NavHostController) {
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = if (active) 0.dp else 24.dp)
-                    .padding(top = if (active) 0.dp else 16.dp),
+                    .padding(horizontal = searchBarPadding)
+                    .padding(top = searchBarVerticalPadding),
                 query = searchQuery,
                 onQueryChange = {
                     searchQuery = it
