@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ListMoviesRepository
 import com.example.inventory.data.MovieRepository
 import com.example.inventory.data.UserListRepository
-import com.example.inventory.data.api.MovieCast
+import com.example.inventory.data.api.MediaCast
 import com.example.inventory.data.api.MovieSearchResult
 import com.example.inventory.data.api.getCollectionIdForMovie
 import com.example.inventory.data.api.getCollectionNameForMovie
@@ -32,7 +32,7 @@ class DetailViewModel(
     //private val collectionID: Int
 ) : ViewModel() {
 
-    var movieCast by mutableStateOf(listOf<MovieCast>())
+    var mediaCast by mutableStateOf(listOf<MediaCast>())
         private set
 
     var recommendedMovies by mutableStateOf(listOf<MovieSearchResult>())
@@ -46,7 +46,7 @@ class DetailViewModel(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            movieCast = getMovieCast(currMovieID)
+            mediaCast = getMovieCast(currMovieID)
             movieCollection = getCollectionIdForMovie(currMovieID)?.let { getMovieCollection(it) } ?: listOf() // assigns empty list if movie does not have a collection
             movieCollectionName = getCollectionNameForMovie(currMovieID)
             recommendedMovies = getRecommendedMovies(currMovieID)

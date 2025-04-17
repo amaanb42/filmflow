@@ -1,7 +1,5 @@
 package com.example.inventory.ui.movielist
 
-//import com.example.inventory.ui.theme.dark_highlight_med
-//import com.example.inventory.ui.theme.dark_pine
 import android.annotation.SuppressLint
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -555,7 +553,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                             textAlign = TextAlign.Left,
                             fontWeight = FontWeight.Bold
                         )
-                        if (viewModel.movieCast.isEmpty()) { // Check if the list is empty
+                        if (viewModel.mediaCast.isEmpty()) { // Check if the list is empty
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -570,7 +568,7 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                                 contentPadding = PaddingValues(vertical = 12.dp),
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                items(viewModel.movieCast) { castMember ->
+                                items(viewModel.mediaCast) { castMember ->
                                     Column(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {

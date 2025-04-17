@@ -154,7 +154,7 @@ fun getMovieCollection(collectionId: Int): List<MovieSearchResult>{
     return parseMovieList(partsArray)
 }
 
-fun getMovieCast(id: Int): List<MovieCast> {
+fun getMovieCast(id: Int): List<MediaCast> {
     val castSelection = apiRequest("https://api.themoviedb.org/3/movie/${id}/credits?language=en-US")
     val castArray = castSelection?.getJSONArray("cast") ?: JSONArray() // Access "cast" directly
     return parseCastList(castArray)
@@ -188,12 +188,12 @@ fun parseMovieList(movies: JSONArray): MutableList<MovieSearchResult>{
     return movieAttributes
 }
 
-fun parseCastList(cast: JSONArray): MutableList<MovieCast> {
-    val castList: MutableList<MovieCast> = mutableListOf()
+fun parseCastList(cast: JSONArray): MutableList<MediaCast> {
+    val castList: MutableList<MediaCast> = mutableListOf()
 
     for (i in 0 until cast.length()) {
         val castMember = cast.getJSONObject(i)
-        val castToAdd = MovieCast(
+        val castToAdd = MediaCast(
             castMember.getInt("id"),
             castMember.getString("name"),
             castMember.getString("character"),
@@ -315,4 +315,10 @@ fun parseShowList(shows: JSONArray): MutableList<ShowSearchResult>{
         }
     }
     return showAttributes
+}
+
+fun getShowCast(id: Int): List<MediaCast> {
+    val castSelection = apiRequest("https://api.themoviedb.org/3/movie/${id}/credits?language=en-US")
+    val castArray = castSelection?.getJSONArray("cast") ?: JSONArray() // Access "cast" directly
+    return parseCastList(castArray)
 }

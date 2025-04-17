@@ -74,6 +74,7 @@ import com.example.inventory.ui.composables.MovieCard
 import com.example.inventory.ui.movielist.DetailDestination
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.settings.SettingsDestination
+import com.example.inventory.ui.showlist.ShowDetailDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -416,4 +417,9 @@ fun SearchRows(mediaList: List<ComboSearchResult>, navController: NavHostControl
 // function that handles navController and passes movieId to detail screen
 fun navigateToMovieDetails(navController: NavHostController, movieId: Int) {
     navController.navigate(DetailDestination.createRoute(movieId))
+}
+
+// function that handles navController and passes movieId to detail screen
+fun navigateToShowDetails(navController: NavHostController, showId: Int) {
+    navController.navigate(ShowDetailDestination.createRoute(showId))
 }
