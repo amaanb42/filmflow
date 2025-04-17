@@ -1,6 +1,7 @@
 package com.example.inventory.ui.discover
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -70,6 +71,7 @@ import com.example.inventory.data.api.getMovieQuery
 import com.example.inventory.data.api.tvSearchQuery
 import com.example.inventory.ui.composables.MediaCard
 import com.example.inventory.ui.composables.MovieCard
+import com.example.inventory.ui.movielist.DetailDestination
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.settings.SettingsDestination
 import kotlinx.coroutines.Dispatchers
@@ -388,7 +390,8 @@ fun SearchRows(mediaList: List<ComboSearchResult>, navController: NavHostControl
                     MediaCard(media = media) { mediaId ->
                         when (media.type) {
                             MediaType.MOVIE -> navigateToMovieDetails(navController, mediaId)
-                            MediaType.SHOW -> {/*TODO*/}
+                            MediaType.SHOW -> {
+                                Log.d("MediaID", mediaId.toString())}
                         }
                     }
                     // Movie title

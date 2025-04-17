@@ -89,7 +89,6 @@ import com.example.inventory.R
 import com.example.inventory.data.movie.Movie
 import com.example.inventory.ui.composables.RatingCircle
 import com.example.inventory.ui.composables.formatRuntime
-import com.example.inventory.ui.discover.DetailDestination
 import com.example.inventory.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 import java.time.LocalDate

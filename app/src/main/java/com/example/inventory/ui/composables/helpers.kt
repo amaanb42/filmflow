@@ -57,7 +57,7 @@ import com.example.inventory.R
 import com.example.inventory.data.api.ComboSearchResult
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.MovieSearchResult
-import com.example.inventory.ui.discover.DetailViewModel
+import com.example.inventory.ui.movielist.DetailViewModel
 
 // For formatting the TMDB community rating into a nice percentage
 @Composable

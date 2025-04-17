@@ -1,4 +1,4 @@
-package com.example.inventory.ui.discover
+package com.example.inventory.ui.movielist
 
 //import com.example.inventory.ui.theme.dark_highlight_med
 //import com.example.inventory.ui.theme.dark_pine
@@ -97,6 +97,7 @@ import com.example.inventory.ui.composables.RatingCircle
 import com.example.inventory.ui.composables.RatingText
 import com.example.inventory.ui.composables.StatusButtons
 import com.example.inventory.ui.composables.formatRuntime
+import com.example.inventory.ui.discover.navigateToMovieDetails
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDate

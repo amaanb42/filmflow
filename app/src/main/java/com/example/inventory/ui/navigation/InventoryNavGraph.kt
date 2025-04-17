@@ -10,10 +10,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.inventory.ui.discover.DetailDestination
+import com.example.inventory.ui.movielist.DetailDestination
 import com.example.inventory.ui.movielist.ListDestination
 import com.example.inventory.ui.movielist.ListScreen
-import com.example.inventory.ui.discover.MovieDetailsScreen
+import com.example.inventory.ui.movielist.MovieDetailsScreen
 import com.example.inventory.ui.discover.SearchDestination
 import com.example.inventory.ui.discover.SearchScreen
 import com.example.inventory.ui.settings.SettingsDestination
