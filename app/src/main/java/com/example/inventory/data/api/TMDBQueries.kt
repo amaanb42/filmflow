@@ -322,3 +322,9 @@ fun getShowCast(id: Int): List<MediaCast> {
     val castArray = castSelection?.getJSONArray("cast") ?: JSONArray() // Access "cast" directly
     return parseCastList(castArray)
 }
+
+fun getRecommendedShows(id: Int): List<ShowSearchResult>{
+    val recommendedMoviesJson = apiRequest("https://api.themoviedb.org/3/tv/${id}/recommendations?language=en-US&page=1")
+    val resultsArray = recommendedMoviesJson?.getJSONArray("results") ?: JSONArray()
+    return parseShowList(resultsArray)
+}

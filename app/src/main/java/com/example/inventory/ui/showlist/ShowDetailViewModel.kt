@@ -10,7 +10,6 @@ import com.example.inventory.data.ListShowsRepository
 import com.example.inventory.data.ShowRepository
 import com.example.inventory.data.UserListRepository
 import com.example.inventory.data.api.MediaCast
-import com.example.inventory.data.api.ShowCast
 import com.example.inventory.data.api.ShowSearchResult
 import com.example.inventory.data.api.getShowCast
 import com.example.inventory.data.api.getRecommendedShows
