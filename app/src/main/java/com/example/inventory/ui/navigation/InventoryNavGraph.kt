@@ -24,6 +24,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import com.example.inventory.ui.showlist.ShowDetailDestination
+import com.example.inventory.ui.showlist.ShowDetailsScreen
 
 /**
  * Provides Navigation graph for the application.
@@ -133,6 +135,39 @@ fun InventoryNavHost(
         ) { backStackEntry ->
             val movieId = backStackEntry.arguments?.getInt("movieId") ?: error("Missing movieID argument")
             MovieDetailsScreen(navController, movieId)
+        }
+
+        composable(
+            route = ShowDetailDestination.ROUTE,
+            arguments = listOf(navArgument("showId") { type = NavType.IntType }),
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            },
+            exitTransition = {
+                if (this.targetState.destination.route == ShowDetailDestination.ROUTE) {
+                    ExitTransition.None // No transition!
+                } else {
+                    slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.End,
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                    )
+                }
+            },
+            popEnterTransition = {
+                fadeIn()
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            }
+        ) { backStackEntry ->
+            val showId = backStackEntry.arguments?.getInt("showId") ?: error("Missing showID argument")
+            ShowDetailsScreen(navController, showId)
         }
 
         composable(

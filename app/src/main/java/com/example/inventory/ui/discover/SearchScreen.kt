@@ -391,8 +391,7 @@ fun SearchRows(mediaList: List<ComboSearchResult>, navController: NavHostControl
                     MediaCard(media = media) { mediaId ->
                         when (media.type) {
                             MediaType.MOVIE -> navigateToMovieDetails(navController, mediaId)
-                            MediaType.SHOW -> {
-                                Log.d("MediaID", mediaId.toString())}
+                            MediaType.SHOW -> navigateToShowDetails(navController, mediaId)
                         }
                     }
                     // Movie title
@@ -419,7 +418,7 @@ fun navigateToMovieDetails(navController: NavHostController, movieId: Int) {
     navController.navigate(DetailDestination.createRoute(movieId))
 }
 
-// function that handles navController and passes movieId to detail screen
+// function that handles navController and passes showId to show detail screen
 fun navigateToShowDetails(navController: NavHostController, showId: Int) {
     navController.navigate(ShowDetailDestination.createRoute(showId))
 }

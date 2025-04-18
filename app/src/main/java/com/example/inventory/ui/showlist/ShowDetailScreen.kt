@@ -89,10 +89,12 @@ import com.example.inventory.InventoryApplication
 import com.example.inventory.R
 import com.example.inventory.data.api.ShowDetails
 import com.example.inventory.data.api.getDetailsFromID
+import com.example.inventory.data.api.getShowDetailsFromID
 import com.example.inventory.data.show.Show
 import com.example.inventory.ui.composables.LineSlider
 import com.example.inventory.ui.composables.RatingCircle
 import com.example.inventory.ui.composables.RatingText
+import com.example.inventory.ui.composables.ShowRatingText
 import com.example.inventory.ui.composables.StatusButtons
 import com.example.inventory.ui.composables.formatRuntime
 import com.example.inventory.ui.discover.navigateToShowDetails
@@ -162,7 +164,7 @@ fun ShowDetailsScreen(navController: NavHostController, showId: Int) {
     //Alter code below to fetch from local database instead of using the TMDB function
     LaunchedEffect(key1 = showId) {
         coroutineScope.launch(Dispatchers.IO) {
-            showDetails = getDetailsFromID(showId) // Fetch from API (if needed)
+            showDetails = getShowDetailsFromID(showId) // Fetch from API (if needed)
 
             showRepository.getShowStream(showId).collect { showFromDb ->
                 showToAdd = showFromDb // Update the 'show' state
@@ -176,8 +178,10 @@ fun ShowDetailsScreen(navController: NavHostController, showId: Int) {
                             showId,
                             details.title,
                             details.posterPath,
-                            details.releaseDate,
-                            details.runtime,
+                            details.seasonCount,
+                            details.episodeCount,
+                            details.firstAirDate,
+                            details.lastAirDate,
                             0.0f, // Default user rating
                             emptyList()
                         )
@@ -320,26 +324,26 @@ fun ShowDetailsScreen(navController: NavHostController, showId: Int) {
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
-                            Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
-                            Row {
-                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.runtime),
-                                    contentDescription = "Runtime Icon",
-                                    modifier = Modifier.size(20.dp) // Adjust size as needed
-                                )
-                                Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
-                                if (showDetails?.runtime != 0)
-                                {
-                                    Text(
-                                        text = formatRuntime(showDetails?.runtime),
-                                        style = MaterialTheme.typography.bodyMedium,
-                                    )
-                                } else {
-                                    Text(
-                                        text = "Unknown", // Fallback text
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
+//                            Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
+//                            Row {
+//                                Icon(imageVector = ImageVector.vectorResource(id = R.drawable.runtime),
+//                                    contentDescription = "Runtime Icon",
+//                                    modifier = Modifier.size(20.dp) // Adjust size as needed
+//                                )
+//                                Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
+//                                if (showDetails?.runtime != 0)
+//                                {
+//                                    Text(
+//                                        text = formatRuntime(showDetails?.runtime),
+//                                        style = MaterialTheme.typography.bodyMedium,
+//                                    )
+//                                } else {
+//                                    Text(
+//                                        text = "Unknown", // Fallback text
+//                                        style = MaterialTheme.typography.bodyMedium
+//                                    )
+//                                }
+//                            }
 
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
 
@@ -349,9 +353,9 @@ fun ShowDetailsScreen(navController: NavHostController, showId: Int) {
                                     modifier = Modifier.size(20.dp) // Adjust size as needed
                                 )
                                 Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
-                                if (showDetails?.releaseDate != null) {
+                                if (showDetails?.firstAirDate != null) {
                                     // Check if releaseDate is not null or empty
-                                    val releaseDate = showDetails?.releaseDate
+                                    val releaseDate = showDetails?.firstAirDate
                                     if (!releaseDate.isNullOrEmpty()) {
                                         val originalDate = LocalDate.parse(
                                             releaseDate,
@@ -382,7 +386,7 @@ fun ShowDetailsScreen(navController: NavHostController, showId: Int) {
                                 Spacer(modifier = Modifier.width(4.dp)) // Small spacing between icon and text
                                 if (showDetails?.audienceRating != 0.0)
                                 {
-                                    RatingText(showDetails)
+                                    ShowRatingText(showDetails)
                                 } else {
                                     Text(
                                         text = "N/A", // Fallback text
@@ -443,18 +447,18 @@ fun ShowDetailsScreen(navController: NavHostController, showId: Int) {
                 }
             }
 
-            item {
-                AnimatedVisibility(
-                    visible = isInList,
-                    enter = slideInVertically(animationSpec = tween(durationMillis = 500)) + fadeIn(animationSpec = tween(durationMillis = 500)),
-                    exit = slideOutVertically(animationSpec = tween(durationMillis = 500)) + fadeOut(animationSpec = tween(durationMillis = 500))
-                ) {
-                    Column {
-                        StatusButtons(viewModel)
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-                }
-            }
+//            item {
+//                AnimatedVisibility(
+//                    visible = isInList,
+//                    enter = slideInVertically(animationSpec = tween(durationMillis = 500)) + fadeIn(animationSpec = tween(durationMillis = 500)),
+//                    exit = slideOutVertically(animationSpec = tween(durationMillis = 500)) + fadeOut(animationSpec = tween(durationMillis = 500))
+//                ) {
+//                    Column {
+//                        StatusButtons(viewModel)
+//                        Spacer(modifier = Modifier.height(16.dp))
+//                    }
+//                }
+//            }
 
             item {
                 Card(

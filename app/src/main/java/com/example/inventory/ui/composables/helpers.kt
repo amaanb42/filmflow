@@ -57,12 +57,31 @@ import com.example.inventory.R
 import com.example.inventory.data.api.ComboSearchResult
 import com.example.inventory.data.api.MovieDetails
 import com.example.inventory.data.api.MovieSearchResult
+import com.example.inventory.data.api.ShowDetails
 import com.example.inventory.ui.movielist.DetailViewModel
 
 // For formatting the TMDB community rating into a nice percentage
 @Composable
 fun RatingText(movieDetails: MovieDetails?) {
     val rating = movieDetails?.audienceRating
+
+    val formattedRating = if (rating != null) {
+        val percentage = rating * 10 // Multiply by 10 to shift decimal place
+        val formattedPercentage = DecimalFormat("0").format(percentage) //Format to a whole number. You can also use "0.0" if you want 1 decimal place
+        "$formattedPercentage%"
+    } else {
+        "N/A" // Or handle the null case as needed, e.g., "N/A"
+    }
+
+    Text(
+        text = formattedRating,
+        style = MaterialTheme.typography.bodyMedium
+    )
+}
+
+@Composable
+fun ShowRatingText(showDetails: ShowDetails?) {
+    val rating = showDetails?.audienceRating
 
     val formattedRating = if (rating != null) {
         val percentage = rating * 10 // Multiply by 10 to shift decimal place
