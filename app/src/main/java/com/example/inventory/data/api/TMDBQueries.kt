@@ -328,3 +328,23 @@ fun getRecommendedShows(id: Int): List<ShowSearchResult>{
     val resultsArray = recommendedMoviesJson?.getJSONArray("results") ?: JSONArray()
     return parseShowList(resultsArray)
 }
+
+fun parseShowDetails(show: JSONObject): ShowDetails {
+    return ShowDetails(
+        show.getInt("id"), // Use "id" for showID
+        show.getString("title"),
+        show.getString("poster_path") ?: "",
+        show.getInt("number_of_seasons"), // Using number_of_seasons for seasonCount, providing default value
+        null, //episodeCount is not in the JSONObject, setting to null
+        show.getString("first_air_date") ?: "",
+        show.getString("last_air_date") ?: "",
+        show.getDouble("vote_average").toFloat(), // Convert Double to Float
+        null // genres is not in the JSONObject, setting to null
+    )
+}
+
+// TV Series details
+fun getShowDetailsFromID(id: Int): ShowDetails? {
+    val showJson = apiRequest("https://api.themoviedb.org/3/tv/${id}?language=en-US")
+    return showJson?.let { parseShowDetails(it) }  // Parse the JSON object here
+}
