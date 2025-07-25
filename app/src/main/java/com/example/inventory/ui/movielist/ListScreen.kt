@@ -155,10 +155,10 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
     Scaffold(
         topBar = {
             TopAppBar(
-                windowInsets = WindowInsets(
-                    top = 0.dp,
-                    bottom = 0.dp
-                ),
+//                windowInsets = WindowInsets(
+//                    top = 0.dp,
+//                    bottom = 0.dp
+//                ),
                 title = {
                     if (isSearching) { // Display TextField when searching
                         OutlinedTextField(

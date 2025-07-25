@@ -1,7 +1,6 @@
 package com.example.inventory.ui.discover
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -11,9 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,10 +25,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -40,7 +34,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -55,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -73,7 +65,6 @@ import com.example.inventory.ui.composables.MediaCard
 import com.example.inventory.ui.composables.MovieCard
 import com.example.inventory.ui.movielist.DetailDestination
 import com.example.inventory.ui.navigation.NavigationDestination
-import com.example.inventory.ui.settings.SettingsDestination
 import com.example.inventory.ui.showlist.ShowDetailDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -124,28 +115,24 @@ fun SearchScreen(navController: NavHostController) {
     Scaffold (
         //contentWindowInsets = WindowInsets(0.dp),
         topBar = {
-            if (!active) {
-                TopAppBar(
-                    windowInsets = WindowInsets(
-                        top = 0.dp,
-                        bottom = 0.dp
-                    ),
-                    title = { Text("Discover") },
-                    actions = {
-                        IconButton(onClick = { navController.navigate(SettingsDestination.route) }) {
-                            Icon(
-                                imageVector = Icons.Default.Settings,
-                                contentDescription = "Settings"
-                            )
-                        }
-                    }
-                )
-            }
+//            if (!active) {
+//                TopAppBar(
+//                    title = { Text("Discover") },
+//                    actions = {
+//                        IconButton(onClick = { navController.navigate(SettingsDestination.route) }) {
+//                            Icon(
+//                                imageVector = Icons.Default.Settings,
+//                                contentDescription = "Settings"
+//                            )
+//                        }
+//                    }
+//                )
+//            }
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = searchBarPadding)
-                    .padding(top = searchBarVerticalPadding),
+                    .padding(horizontal = searchBarPadding),
+                    //.padding(top = searchBarVerticalPadding),
                 query = searchQuery,
                 onQueryChange = {
                     searchQuery = it
@@ -236,11 +223,7 @@ fun SearchScreen(navController: NavHostController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = innerPadding.calculateTopPadding(),
-                    start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
-                )
+                .padding(innerPadding)
         ) {
             if (isSheetOpen) {
                 ModalBottomSheet(
@@ -302,7 +285,7 @@ fun SearchScreen(navController: NavHostController) {
                             text = "Trending",
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 16.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
+                                .padding(top = 32.dp, bottom = 12.dp, start = 20.dp), // Add some top padding for spacing
                             textAlign = TextAlign.Left,
                             fontSize = 20.sp
                         )

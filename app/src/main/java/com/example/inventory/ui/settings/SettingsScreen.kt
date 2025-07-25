@@ -57,10 +57,10 @@ fun SettingsScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                windowInsets = WindowInsets(
-                    top = 0.dp,
-                    bottom = 0.dp
-                ),
+//                windowInsets = WindowInsets(
+//                    top = 0.dp,
+//                    bottom = 0.dp
+//                ),
                 title = { Text("Settings (WIP)") },
                 actions = {
                     IconButton(onClick = { /*TODO*/ }) {

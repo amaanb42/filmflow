@@ -11,7 +11,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -34,8 +33,8 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.inventory.data.SettingsDataStore
-import com.example.inventory.ui.movielist.ListDestination
 import com.example.inventory.ui.discover.SearchDestination
+import com.example.inventory.ui.movielist.ListDestination
 import com.example.inventory.ui.navigation.InventoryNavHost
 import com.example.inventory.ui.theme.FilmFlowTheme
 import kotlinx.coroutines.flow.first
@@ -169,11 +168,11 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         }
-                    ) { innerPadding ->
+                    ) { //innerPadding ->
                         // Replace InventoryApp with InventoryNavHost
                         InventoryNavHost(
                             navController = navController,
-                            modifier = Modifier.padding(innerPadding),
+                            //modifier = Modifier.padding(innerPadding),
                             defaultTab = defaultTab
                         )
                     }

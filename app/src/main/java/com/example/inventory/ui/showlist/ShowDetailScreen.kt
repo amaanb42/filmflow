@@ -12,8 +12,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,7 +21,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -54,7 +51,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -88,15 +84,11 @@ import coil.compose.SubcomposeAsyncImage
 import com.example.inventory.InventoryApplication
 import com.example.inventory.R
 import com.example.inventory.data.api.ShowDetails
-import com.example.inventory.data.api.getDetailsFromID
 import com.example.inventory.data.api.getShowDetailsFromID
 import com.example.inventory.data.show.Show
 import com.example.inventory.ui.composables.LineSlider
 import com.example.inventory.ui.composables.RatingCircle
-import com.example.inventory.ui.composables.RatingText
 import com.example.inventory.ui.composables.ShowRatingText
-import com.example.inventory.ui.composables.StatusButtons
-import com.example.inventory.ui.composables.formatRuntime
 import com.example.inventory.ui.discover.navigateToShowDetails
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -196,10 +188,10 @@ fun ShowDetailsScreen(navController: NavHostController, showId: Int) {
         //modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-                windowInsets = WindowInsets(
-                    top = 0.dp,
-                    bottom = 0.dp
-                ),
+//                windowInsets = WindowInsets(
+//                    top = 0.dp,
+//                    bottom = 0.dp
+//                ),
                 title = {
                     // Show title in top bar
                     showDetails?.let {
@@ -280,8 +272,7 @@ fun ShowDetailsScreen(navController: NavHostController, showId: Int) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        //.padding(top = 26.dp)
-                        .padding(top = TopAppBarDefaults.TopAppBarExpandedHeight)
+                        .padding(top = 108.dp)
                 ) {
                     Row(
                         modifier = Modifier
