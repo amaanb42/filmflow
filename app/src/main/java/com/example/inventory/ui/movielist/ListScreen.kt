@@ -1,7 +1,6 @@
 package com.example.inventory.ui.movielist
 
 //import com.example.inventory.ui.theme.dark_pine
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -13,12 +12,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
@@ -100,7 +100,6 @@ object ListDestination : NavigationDestination {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
 
@@ -240,9 +239,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                             coroutineScope.launch {
                                 viewModel.changeListView() // helps switch the view
                             }
-                        },
-                        //colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
-                        //modifier = Modifier.padding(end = 6.dp, bottom = 12.dp)
+                        }
                     ) {
                         Icon(painter = if (showGridView) horizontalIcon else gridIcon, contentDescription = "View")
                     }
@@ -302,7 +299,7 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                     }, // default
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.sizeIn(maxWidth = 300.dp).offset(y = (20).dp)
+                    modifier = Modifier.sizeIn(maxWidth = 300.dp).padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
                 )
             }
         }
@@ -312,7 +309,8 @@ fun ListScreen(navController: NavHostController, modifier: Modifier = Modifier){
                 .padding(
                     top = innerPadding.calculateTopPadding(),
                     start = innerPadding.calculateStartPadding(LayoutDirection.Ltr),
-                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr)
+                    end = innerPadding.calculateEndPadding(LayoutDirection.Ltr),
+                    //bottom = innerPadding.calculateBottomPadding()
                 ) // Exclude bottom padding
                 .fillMaxSize()
         ) {

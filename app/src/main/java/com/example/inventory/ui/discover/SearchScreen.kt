@@ -101,11 +101,6 @@ fun SearchScreen(navController: NavHostController) {
         label = "Search bar padding"
     )
 
-    val searchBarVerticalPadding by animateDpAsState(
-        targetValue = if (active) 0.dp else 16.dp,
-        label = "Search bar padding"
-    )
-
     // for randomize button
     val sheetState = rememberModalBottomSheetState()
     var isSheetOpen by rememberSaveable {
@@ -115,19 +110,6 @@ fun SearchScreen(navController: NavHostController) {
     Scaffold (
         //contentWindowInsets = WindowInsets(0.dp),
         topBar = {
-//            if (!active) {
-//                TopAppBar(
-//                    title = { Text("Discover") },
-//                    actions = {
-//                        IconButton(onClick = { navController.navigate(SettingsDestination.route) }) {
-//                            Icon(
-//                                imageVector = Icons.Default.Settings,
-//                                contentDescription = "Settings"
-//                            )
-//                        }
-//                    }
-//                )
-//            }
             SearchBar(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -167,7 +149,10 @@ fun SearchScreen(navController: NavHostController) {
                 leadingIcon = {
                     if (active) {
                         Icon(
-                            modifier = Modifier.clickable { searchQuery = ""; active = false },
+                            modifier = Modifier.clickable {
+                                searchQuery = ""
+                                active = false
+                            },
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back Icon"
                         )
@@ -212,10 +197,8 @@ fun SearchScreen(navController: NavHostController) {
             ) {
                 if (searchQuery.isNotEmpty()) {
                     SearchRows(sortedList, navController, searchSubmitted)
-                    //SearchRows(tempMovieList, tempShowList, navController, searchSubmitted)
-                    //SearchTVRows(tempShowList, navController, searchSubmitted)
                 } else {
-                    tempMovieList.clear()
+                    sortedList.clear()
                 }
             }
         }
