@@ -2,19 +2,19 @@
 
 import java.util.Properties
 
-
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp") version "1.8.21-1.0.11"
-    id("kotlin-parcelize")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.inventory"
+        applicationId = "com.example.filmflow"
         minSdk = 31
         targetSdk = 35
         versionCode = 1
@@ -44,18 +44,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     buildFeatures {
         compose = true
         buildConfig = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.7"
     }
     packaging {
         resources {
@@ -67,34 +61,36 @@ android {
 
 dependencies {
     // Import the Compose BOM
-    implementation(platform("androidx.compose:compose-bom:2025.02.00"))
-    implementation("androidx.activity:activity-compose:1.10.0")
-    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.ui:ui:1.7.8")
-    implementation("androidx.compose.ui:ui-tooling")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    implementation("androidx.navigation:navigation-compose:2.8.7")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("io.coil-kt:coil:2.7.0")
-    implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation(platform(libs.compose.bom))
 
-    //Room
-    implementation("androidx.room:room-runtime:2.6.1")
-    implementation("androidx.core:core-ktx:1.15.0")
-    ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
-    implementation("androidx.room:room-ktx:2.6.1")
+    // Compose bundle
+    implementation(libs.bundles.compose)
 
-    // Testing
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    // AndroidX Core
+    implementation(libs.core.ktx)
+    implementation(libs.core.splashscreen)
 
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    // Lifecycle bundle
+    implementation(libs.bundles.lifecycle)
 
-    implementation("androidx.datastore:datastore-preferences:1.1.2")
+    // Navigation
+    implementation(libs.navigation.compose)
 
+    // Network
+    implementation(libs.okhttp)
+
+    // Image Loading bundle
+    implementation(libs.bundles.coil)
+
+    // Room bundle
+    implementation(libs.bundles.room)
+    ksp(libs.room.compiler)
+
+    // DataStore
+    implementation(libs.datastore.preferences)
+
+    // Testing bundle
+    androidTestImplementation(libs.bundles.testing)
 }
 
 // for exporting schema
