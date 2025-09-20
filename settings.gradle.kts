@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Inventory"
+rootProject.name = "FilmFlow"
 include(":app")
