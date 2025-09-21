@@ -288,7 +288,7 @@ fun RatingCircle(
             drawCircle(
                 color = onSurfaceColor,
                 radius = radius.toPx(), // Adjust radius for the stroke width
-                style = Stroke(1.dp.toPx()) // Thin stroke width
+                style = Stroke(3.dp.toPx()) // Thin stroke width
             )
 
             // Draw arc on top

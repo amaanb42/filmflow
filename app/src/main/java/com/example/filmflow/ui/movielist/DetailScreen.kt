@@ -1,5 +1,6 @@
 package com.example.filmflow.ui.movielist
 
+import android.R.attr.top
 import android.annotation.SuppressLint
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -279,6 +280,23 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(top = 16.dp, start = 16.dp, end = 8.dp),
+                        verticalAlignment = Alignment.Top // Align to the top of the row
+                    ) {
+                        movieDetails?.let { it1 ->
+                            Text(
+                                text = it1.title,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 4,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(16.dp),
                         verticalAlignment = Alignment.Top // Align to the top of the row
                     ) {
@@ -307,16 +325,16 @@ fun MovieDetailsScreen(navController: NavHostController, movieId: Int) {
                         Spacer(modifier = Modifier.width(16.dp))
 
                         Column {
-                            movieDetails?.let { it1 ->
-                                Text(
-                                    text = it1.title,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
+//                            movieDetails?.let { it1 ->
+//                                Text(
+//                                    text = it1.title,
+//                                    style = MaterialTheme.typography.bodyMedium,
+//                                    fontSize = 16.sp,
+//                                    fontWeight = FontWeight.Bold,
+//                                    maxLines = 4,
+//                                    overflow = TextOverflow.Ellipsis
+//                                )
+//                            }
                             Spacer(modifier = Modifier.height(8.dp)) // Increased spacing
                             Row {
                                 Icon(imageVector = ImageVector.vectorResource(id = R.drawable.runtime),
